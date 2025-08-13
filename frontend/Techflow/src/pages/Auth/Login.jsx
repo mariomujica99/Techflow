@@ -28,7 +28,11 @@ const Login = () => {
     setError('');
 
     // Login API Call
+    try {
 
+    } catch (error) {
+      
+    }
   };
 
   return <AuthLayout>
@@ -51,14 +55,14 @@ const Login = () => {
           value={password}
           onChange={({ target }) => setPassword(target.value)}
           label="Password"
-          placeholder="Minimum 8 characters"
+          placeholder="Enter your password"
           type="password"
         />
 
         {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
         <button type="submit" className="btn-primary">
-          LOGIN
+          LOG IN
         </button>
 
         <p className="text-[13px] text-slate-800 mt-3">
