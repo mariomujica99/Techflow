@@ -5,8 +5,8 @@ const TaskListTable = ({tableData}) => {
   const getStatusBadgeColor = (status) => {
     switch (status) {
       case 'Completed': return 'bg-green-100 text-green-500 border border-green-200';
-      case 'Pending': return 'bg-purple-100 text-purple-500 border border-purple-200';
-      case 'In Progress': return 'bg-orange-100 text-orange-500 border border-orange-200';
+      case 'Pending': return 'bg-violet-100 text-violet-500 border border-violet-200';
+      case 'In Progress': return 'bg-cyan-100 text-cyan-500 border border-cyan-200';
       default: return 'bg-gray-100 text-gray-500 border border-gray-200';
     }
   };
@@ -15,7 +15,7 @@ const TaskListTable = ({tableData}) => {
     switch (priority) {
       case 'STAT': return 'bg-red-100 text-red-500 border border-red-200';
       case 'ASAP': return 'bg-orange-100 text-orange-500 border border-orange-200';
-      case 'Routine': return 'bg-amber-100 text-amber-500 border border-amber-200';
+      case 'Routine': return 'bg-lime-100 text-lime-500 border border-lime-200';
       default: return 'bg-gray-100 text-gray-500 border border-gray-200'
     }
   };
