@@ -49,8 +49,6 @@ const SideMenu = ({activeMenu}) => {
       <h5 className="text-gray-950 font-medium leading-6 mt-3">
         {user?.name || ""}
       </h5>
-
-      <p className="text-[12px] text-gray-500">{user?.email || ""}</p>
     </div>
 
     {sideMenuData.map((item, index) => (
