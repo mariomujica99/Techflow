@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import DashboardLayout from "../../components/layouts/DashboardLayout"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import UserCard from "../../components/Cards/UserCard";
+import { UserContext } from "../../context/userContext";
 
 const ManageUsers = () => {
+  const { user } = useContext(UserContext);
+
+  // Redirect non-admin users
+  if (user?.role !== 'admin') {
+    return <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'} />;
+  }
+
   const [allUsers, setAllUsers] = useState([]);
 
   const getAllUsers = async () => {

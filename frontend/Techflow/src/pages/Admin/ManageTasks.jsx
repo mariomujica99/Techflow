@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import DashboardLayout from "../../components/layouts/DashboardLayout"
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
@@ -6,8 +6,11 @@ import { API_PATHS } from "../../utils/apiPaths";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import TaskStatusTabs from "../../components/TaskStatusTabs";
 import TaskCard from "../../components/Cards/TaskCard";
+import { UserContext } from "../../context/userContext";
 
 const ManageTasks = () => {
+  const { user } = useContext(UserContext);
+  
   const [allTasks, setAllTasks] = useState([]);
 
   const [tabs, setTabs] = useState([]);
@@ -17,7 +20,7 @@ const ManageTasks = () => {
 
   const getAllTasks = async () => {
     try {
-      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS, {
+      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE, {
         params: {
           status: filterStatus === "All" ? "" : filterStatus,
         },
@@ -42,7 +45,8 @@ const ManageTasks = () => {
   };
 
   const handleClick = (taskData) => {
-    navigate(`/admin/create-task`, { state: { taskId: taskData._id } });
+    const basePath = user?.role === 'admin' ? '/admin' : '/user';
+    navigate(`${basePath}/create-task`, { state: { taskId: taskData._id } });
   };
 
   // Download task report
@@ -79,13 +83,15 @@ const ManageTasks = () => {
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl md:text-xl font-medium">Manage Tasks</h2>
 
-            <button
-              className="flex lg:hidden download-btn"
-              onClick={handleDownloadReport}
-            >
-              <LuFileSpreadsheet className="text-lg" />
-              Download Report
-            </button>
+            {user?.role === 'admin' && (
+              <button
+                className="flex lg:hidden download-btn"
+                onClick={handleDownloadReport}
+              >
+                <LuFileSpreadsheet className="text-lg" />
+                Download Report
+              </button>
+            )}
           </div>
 
           {tabs?.[0]?.count > 0 && (
@@ -96,10 +102,12 @@ const ManageTasks = () => {
                 setActiveTab={setFilterStatus}
               />
 
-              <button className="hidden md:flex download-btn" onClick={handleDownloadReport}>
-                <LuFileSpreadsheet className="text-lg" />
-                Download Report
-              </button>
+              {user?.role === 'admin' && (
+                <button className="hidden md:flex download-btn" onClick={handleDownloadReport}>
+                  <LuFileSpreadsheet className="text-lg" />
+                  Download Report
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -109,13 +117,13 @@ const ManageTasks = () => {
             <TaskCard
               key={item._id}
               title={item.title}
-              description={item.description}
+              orderType={item.orderType}
               priority={item.priority}
               status={item.status}
               progress={item.progress}
               createdAt={item.createdAt}
-              dueDate={item.dueDate}
-              assignedTo={item.assignedTo?.map((item) => item.profileImageUrl)}
+              completedOn={item.completedOn}
+              assignedTo={item.assignedTo || []}
               attachmentCount={item.attachments?.length || 0}
               completedTodoCount={item.completedTodoCount || 0}
               todoChecklist={item.todoChecklist || []}

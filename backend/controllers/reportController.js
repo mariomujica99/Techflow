@@ -15,10 +15,11 @@ const exportTasksReport = async (req, res) => {
     worksheet.columns = [
       { header: 'Task ID', key: '_id', width: 25 },
       { header: 'Title', key: 'title', width: 30 },
-      { header: 'Description', key: 'description', width: 50 },
+      { header: 'Order Type', key: 'orderType', width: 50 },
       { header: 'Priority', key: 'priority', width: 15 },
       { header: 'Status', key: 'status', width: 20 },
-      { header: 'Due Date', key: 'dueDate', width: 20 },
+      { header: 'Completed On', key: 'completedOn', width: 20 },
+      { header: 'Created On', key: 'createdOn', width: 20 },
       { header: 'Assigned To', key: 'assignedTo', width: 30 },
     ];
 
@@ -29,10 +30,11 @@ const exportTasksReport = async (req, res) => {
       worksheet.addRow({
         _id: task._id,
         title: task.title,
-        description: task.description,
+        orderType: task.orderType,
         priority: task.priority,
         status: task.status,
-        dueDate: task.dueDate.toISOString().split('T')[0],
+        completedOn: task.completedOn ? task.completedOn.toISOString().split('T')[0] : 'Not Completed',
+        createdOn: task.createdAt.toISOString().split('T')[0],
         assignedTo: assignedTo || 'Unassigned',
       });
     });

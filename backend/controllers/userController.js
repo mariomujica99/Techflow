@@ -2,12 +2,12 @@ const Task = require('../models/Task');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-// @desc    Get all users (Admin only)
+// @desc    Get all users
 // @route   GET /api/users
-// @access  Private (Admin only)
+// @access  Private
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({ role:'member' }).select('-password');
+    const users = await User.find({ role: { $in: ['member', 'admin'] } }).select('-password');
 
     // Add Task counts to each user
     const usersWithTaskCounts = await Promise.all(

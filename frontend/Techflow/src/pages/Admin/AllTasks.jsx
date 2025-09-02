@@ -8,7 +8,7 @@ import TaskStatusTabs from "../../components/TaskStatusTabs";
 import TaskCard from "../../components/Cards/TaskCard";
 import { UserContext } from "../../context/userContext";
 
-const MyTasks = () => {
+const AllTasks = () => {
   const { user } = useContext(UserContext);
 
   const [allTasks, setAllTasks] = useState([]);
@@ -20,7 +20,7 @@ const MyTasks = () => {
 
   const getAllTasks = async () => {
     try {
-      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS, {
+      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE, {
         params: {
           status: filterStatus === "All" ? "" : filterStatus,
         },
@@ -46,7 +46,7 @@ const MyTasks = () => {
 
   const handleClick = (taskId) => {
     const basePath = user?.role === 'admin' ? 'admin' : 'user';
-    navigate(`/${basePath}/task-details/${taskId}`, { state: { from: "My Tasks" } });
+    navigate(`/${basePath}/task-details/${taskId}`, { state: { from: "All Tasks" } });
   };
 
   useEffect(() => {
@@ -55,10 +55,10 @@ const MyTasks = () => {
   }, [filterStatus]);
 
   return (
-    <DashboardLayout activeMenu="My Tasks">
+    <DashboardLayout activeMenu="All Tasks">
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-          <h2 className="text-xl md:text-xl font-medium">My Tasks</h2>
+          <h2 className="text-xl md:text-xl font-medium">All Tasks</h2>
 
           {tabs?.[0]?.count > 0 && (
             <TaskStatusTabs
@@ -95,4 +95,4 @@ const MyTasks = () => {
   );
 };
 
-export default MyTasks;
+export default AllTasks;

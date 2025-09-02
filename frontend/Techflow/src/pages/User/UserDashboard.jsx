@@ -51,7 +51,7 @@ const UserDashboard = () => {
   const getDashboardData = async () => {
     try {
       const response = await axiosInstance.get(
-        API_PATHS.TASKS.GET_USER_DASHBOARD_DATA
+        API_PATHS.TASKS.GET_DASHBOARD_DATA
       );
       if (response.data) {
         setDashboardData(response.data);
@@ -63,7 +63,7 @@ const UserDashboard = () => {
   };
 
   const onSeeMore = () => {
-    navigate("/admin/tasks")
+    navigate("/admin/all-tasks")
   }
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const UserDashboard = () => {
       <div className="card my-5">
         <div>
           <div className="col-span-3">
-            <h2 className="text-xl md:text-2xl">Hello {user?.name}</h2>
+            <h2 className="text-xl md:text-2xl">Hello {user?.name?.split(" ")[0]}</h2>
             <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
               {moment().format("dddd Do MMM YYYY")}
             </p>

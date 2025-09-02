@@ -1,6 +1,6 @@
 const Task = require('../models/Task');
 
-// @desc    Get all tasks (Admin: all, User: only assigned tasks)
+// @desc    Get tasks assigned to the current user (always user-specific)
 // @route   GET /api/tasks/
 // @access  Private
 const getTasks = async (req, res) => {
@@ -12,21 +12,13 @@ const getTasks = async (req, res) => {
       filter.status = status;
     }
 
-    let tasks;
+    // Always restrict to current user, even if admin
+    let tasks = await Task.find({ ...filter, assignedTo: req.user._id }).populate(
+      'assignedTo',
+      'name email profileImageUrl'
+    );
 
-    if (req.user.role === 'admin') {
-      tasks = await Task.find(filter).populate(
-        'assignedTo', 
-        'name email profileImageUrl'
-      );
-    } else {
-      tasks = await Task.find({ ...filter, assignedTo: req.user._id }).populate(
-        'assignedTo',
-        'name email profileImageUrl'
-      );
-    }
-
-    // Add completed todoChecklist count to each task
+    // Add completed todoChecklist count
     tasks = await Promise.all(
       tasks.map(async (task) => {
         const completedCount = task.todoChecklist.filter(
@@ -36,31 +28,78 @@ const getTasks = async (req, res) => {
       })
     );
 
-    // Status summary counts
-    const allTasks = await Task.countDocuments(
-      req.user.role === 'admin' ? {} : { assignedTo: req.user._id }
-    );
+    // Status summary counts (always user-specific)
+    const allTasks = await Task.countDocuments({ assignedTo: req.user._id });
 
     const pendingTasks = await Task.countDocuments({
       ...filter,
       status: 'Pending',
-      ...(req.user.role !== 'admin' && { assignedTo: req.user._id }),
+      assignedTo: req.user._id,
     });
 
     const inProgressTasks = await Task.countDocuments({
       ...filter,
       status: 'In Progress',
-      ...(req.user.role !== 'admin' && { assignedTo: req.user._id }),
+      assignedTo: req.user._id,
     });
 
     const completedTasks = await Task.countDocuments({
       ...filter,
       status: 'Completed',
-      ...(req.user.role !== 'admin' && { assignedTo: req.user._id }),
+      assignedTo: req.user._id,
     });
 
     res.json({
       tasks,
+      statusSummary: {
+        all: allTasks,
+        pendingTasks,
+        inProgressTasks,
+        completedTasks,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+// @desc    Get all tasks for all users (Admin and User access)
+// @route   GET /api/tasks/all
+// @access  Private
+const getAllTasksForEveryone = async (req, res) => {
+  try {
+    const { status } = req.query;
+    let filter = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    // Get all tasks regardless of role
+    const tasks = await Task.find(filter).populate(
+      'assignedTo', 
+      'name email profileImageUrl'
+    );
+
+    // Add completed todoChecklist count to each task
+    const tasksWithCount = await Promise.all(
+      tasks.map(async (task) => {
+        const completedCount = task.todoChecklist.filter(
+          (item) => item.completed
+        ).length;
+        return { ...task._doc, completedTodoCount: completedCount };
+      })
+    );
+
+    // Status summary counts for all tasks
+    const allTasks = await Task.countDocuments();
+    const pendingTasks = await Task.countDocuments({ status: 'Pending' });
+    const inProgressTasks = await Task.countDocuments({ status: 'In Progress' });
+    const completedTasks = await Task.countDocuments({ status: 'Completed' });
+
+    res.json({
+      tasks: tasksWithCount,
       statusSummary: {
         all: allTasks,
         pendingTasks,
@@ -98,9 +137,9 @@ const createTask = async (req, res) => {
   try {
     const {
       title,
-      description,
+      orderType,
       priority,
-      dueDate,
+      // dueDate,
       assignedTo,
       attachments,
       todoChecklist,
@@ -112,9 +151,9 @@ const createTask = async (req, res) => {
 
     const task = await Task.create({
       title,
-      description,
+      orderType,
       priority,
-      dueDate,
+      // dueDate,
       assignedTo,
       createdBy: req.user._id,
       todoChecklist,
@@ -137,9 +176,9 @@ const updateTask = async (req, res) => {
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
     task.title = req.body.title || task.title;
-    task.description = req.body.description || task.description;
+    task.orderType = req.body.orderType || task.orderType;
     task.priority = req.body.priority || task.priority;
-    task.dueDate = req.body.dueDate || task.dueDate;
+    // task.dueDate = req.body.dueDate || task.dueDate;
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
     task.attachments = req.body.attachments || task.attachments;
 
@@ -214,8 +253,13 @@ const updateTaskChecklist = async (req, res) => {
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    if (!task.assignedTo.includes(req.user._id) && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'You are not authorized to update this checklist' });
+    // if (!task.assignedTo.includes(req.user._id) && req.user.role !== 'admin') {
+    //   return res.status(403).json({ message: 'You are not authorized to update this checklist' });
+    // }
+
+    // Auto-assign user to task if they're not already assigned
+    if (!task.assignedTo.includes(req.user._id)) {
+      task.assignedTo.push(req.user._id);
     }
 
     task.todoChecklist = todoChecklist; // Replace with updated checklist
@@ -231,10 +275,17 @@ const updateTaskChecklist = async (req, res) => {
     // Auto-mark task as completed if all items are checked
     if (task.progress === 100) {
       task.status = 'Completed';
+      if (!task.completedOn) {
+        const today = new Date();
+        const localDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());        
+        task.completedOn = localDate;
+      }
     } else if (task.progress > 0) {
       task.status = 'In Progress';
+      task.completedOn = null; // Remove completion date if not fully completed
     } else {
       task.status = 'Pending';
+      task.completedOn = null; // Remove completion date if not fully completed
     }
 
     await task.save();
@@ -258,10 +309,10 @@ const getDashboardData = async (req, res) => {
     const totalTasks = await Task.countDocuments();
     const pendingTasks = await Task.countDocuments({ status: 'Pending' });
     const completedTasks = await Task.countDocuments({ status: 'Completed' });
-    const overdueTasks = await Task.countDocuments({
-      status: { $ne: 'Completed' },
-      dueDate: { $lt: new Date() },
-    });
+    // const overdueTasks = await Task.countDocuments({
+    //   status: { $ne: 'Completed' },
+    //   dueDate: { $lt: new Date() },
+    // });
 
     // Ensure all possible statuses are included
     const taskStatuses = ['Pending', 'In Progress', 'Completed'];
@@ -301,14 +352,14 @@ const getDashboardData = async (req, res) => {
     const recentTasks = await Task.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('title status priority dueDate createdAt')
+      .select('title status priority createdAt')
     
     res.status(200).json({
       statistics: {
         totalTasks,
         pendingTasks,
         completedTasks,
-        overdueTasks,
+        // overdueTasks,
       },
       charts: {
         taskDistribution,
@@ -332,11 +383,11 @@ const getUserDashboardData = async (req, res) => {
     const totalTasks = await Task.countDocuments({ assignedTo: userId });
     const pendingTasks = await Task.countDocuments({ assignedTo: userId, status: 'Pending' });
     const completedTasks = await Task.countDocuments({ assignedTo: userId, status: 'Completed' });
-    const overdueTasks = await Task.countDocuments({
-      assignedTo: userId,
-      status: { $ne: 'Completed' },
-      dueDate: { $lt: new Date() },
-    });
+    // const overdueTasks = await Task.countDocuments({
+    //   assignedTo: userId,
+    //   status: { $ne: 'Completed' },
+    //   dueDate: { $lt: new Date() },
+    // });
 
     // Task distribution by status
     const taskStatuses = ['Pending', 'In Progress', 'Completed'];
@@ -370,14 +421,14 @@ const getUserDashboardData = async (req, res) => {
     const recentTasks = await Task.find({ assignedTo: userId })
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('title status priority dueDate createdAt');
+      .select('title status priority createdAt');
     
     res.status(200).json({
       statistics: {
         totalTasks,
         pendingTasks,
         completedTasks,
-        overdueTasks,
+        // overdueTasks,
       },
       charts: {
         taskDistribution,
@@ -392,6 +443,7 @@ const getUserDashboardData = async (req, res) => {
 
 module.exports = {
   getTasks,
+  getAllTasksForEveryone,
   getTaskById,
   createTask,
   updateTask,

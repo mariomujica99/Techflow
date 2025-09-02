@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { PRIORITY_DATA } from "../../utils/data";
+import { PRIORITY_DATA, ORDER_TYPE_DATA, AUTOMATIC_CHECKLIST_ITEMS } from "../../utils/data";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import toast from "react-hot-toast";
@@ -13,17 +13,20 @@ import TodoListInput from "../../components/Inputs/TodoListInput";
 import AddAttachmentsInput from "../../components/Inputs/AddAttachmentsInput";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
+import { UserContext } from "../../context/userContext";
 
 const CreateTask = () => {
+  const { user } = useContext(UserContext);
+
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
 
   const [taskData, setTaskData] = useState({
     title: "",
-    description: "",
+    orderType: "Routine EEG | IP",
     priority: "Routine",
-    dueDate: null,
+    // dueDate: null,
     assignedTo: [],
     todoChecklist: [],
     attachments: [],
@@ -44,9 +47,9 @@ const CreateTask = () => {
     // Reset form
     setTaskData({
       title: "",
-      description: "",
+      orderType: "Routine EEG | IP",
       priority: "Routine",
-      dueDate: null,
+      // dueDate: null,
       assignedTo: [],
       todoChecklist: [],
       attachments: [],
@@ -65,7 +68,7 @@ const CreateTask = () => {
 
       const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
-        dueDate: new Date(taskData.dueDate).toISOString(),
+        // dueDate: taskData.dueDate,
         todoChecklist: todolist,
       });
 
@@ -99,12 +102,15 @@ const CreateTask = () => {
         API_PATHS.TASKS.UPDATE_TASK(taskId),
         {
           ...taskData,
-          dueDate: new Date(taskData.dueDate).toISOString(),
+          // dueDate: taskData.dueDate,
           todoChecklist: todolist,
         }
       );
 
       toast.success("Task Updated Successfully");
+
+      const basePath = user?.role === 'admin' ? '/admin' : '/user';
+      navigate(`${basePath}/manage-tasks`);
     } catch (error) {
       console.error("Error creating task:", error);
       setLoading(false);
@@ -121,10 +127,11 @@ const CreateTask = () => {
       setError("Title is required.");
       return;
     }
-    if (!taskData.description.trim()) {
-      setError("Description is required.");
+    if (!taskData.orderType) {
+      setError("Order Type is required.");
       return;
     }
+    /*
     if (!taskData.dueDate) {
       setError("Due date is required.");
       return;
@@ -133,6 +140,7 @@ const CreateTask = () => {
       setError("Task not assigned to any member.");
       return;
     }
+    */
     if (taskData.todoChecklist?.length === 0) {
       setError("Add at least one todo task.");
       return;
@@ -158,11 +166,11 @@ const CreateTask = () => {
 
         setTaskData((prevState) => ({
           title: taskInfo.title,
-          description: taskInfo.description,
+          orderType: taskInfo.orderType || "Routine EEG | IP",
           priority: taskInfo.priority,
-          dueDate: taskInfo.dueDate
-            ? moment(taskInfo.dueDate).format("YYYY-MM-DD")
-            : null,
+          // dueDate: taskInfo.dueDate
+          //   ? moment(taskInfo.dueDate).utc().format("YYYY-MM-DD")
+          //   : null,
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           attachments: taskInfo?.attachments || [],
@@ -180,7 +188,9 @@ const CreateTask = () => {
 
       setOpenDeleteAlert(false);
       toast.success("Task details deleted successfully");
-      navigate('/admin/tasks')
+
+      const basePath = user?.role === 'admin' ? '/admin' : '/user';
+      navigate(`${basePath}/manage-tasks`);
     } catch (error) {
       console.error(
         "Error deleting task:",
@@ -188,6 +198,20 @@ const CreateTask = () => {
       );
     }
   };
+
+  // Auto-populate checklist when orderType changes
+  useEffect(() => {
+    if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType]) {
+      const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType];
+      const existingCustomItems = taskData.todoChecklist.filter(item => 
+        !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
+      );
+      setTaskData(prev => ({
+        ...prev,
+        todoChecklist: [...automaticItems, ...existingCustomItems]
+      }));
+    }
+  }, [taskData.orderType]);
 
   useEffect(() => {
     if (taskId) {
@@ -218,11 +242,11 @@ const CreateTask = () => {
 
             <div className="mt-4">
               <label className="text-xs font-medium text-slate-600">
-                Task Title
+                Room
               </label>
 
               <input
-                placeholder="Routine 6820"
+                placeholder="6820"
                 className="form-input"
                 value={taskData.title}
                 onChange={({ target }) =>
@@ -233,17 +257,14 @@ const CreateTask = () => {
 
             <div className="mt-3">
               <label className="text-xs font-medium text-slate-600">
-                Description
+                Order Type
               </label>
 
-              <textarea
-                placeholder="Describe Task"
-                className="form-input"
-                rows={4}
-                value={taskData.description}
-                onChange={({ target }) =>
-                  handleValueChange("description", target.value)
-                }
+              <SelectDropdown
+                options={ORDER_TYPE_DATA}
+                value={taskData.orderType}
+                onChange={(value) => handleValueChange("orderType", value)}
+                placeholder="Select Order Type"
               />
             </div>
 
@@ -261,13 +282,14 @@ const CreateTask = () => {
                 />
               </div>
 
+              {/*
               <div className="col-span-6 md:col-span-4">
                 <label className="text-xs font-medium text-slate-600">
                   Due Date
                 </label>
 
                 <input
-                  placeholder="Routine 6820"
+                  placeholder="6820"
                   className="form-input"
                   value={taskData.dueDate}
                   onChange={({ target }) =>
@@ -276,6 +298,7 @@ const CreateTask = () => {
                   type="date"
                 />
               </div>
+              */}
 
               <div className="col-span-12 md:col-span-3">
                 <label className="text-xs font-medium text-slate-600">

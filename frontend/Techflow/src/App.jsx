@@ -13,6 +13,8 @@ import ManageTasks from './pages/Admin/ManageTasks';
 import CreateTask from './pages/Admin/CreateTask';
 import ManageUsers from './pages/Admin/ManageUsers';
 
+import AllTasks from './pages/Admin/AllTasks';
+
 import UserDashboard from './pages/User/UserDashboard';
 import MyTasks from './pages/User/MyTasks';
 import ViewTaskDetails from './pages/User/ViewTaskDetails';
@@ -33,15 +35,21 @@ const App = () => {
             {/* Admin Routes */}
             <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
-              <Route path="/admin/tasks" element={<ManageTasks />} />
-              <Route path="/admin/create-task" element={<CreateTask />} />
+              <Route path="/admin/all-tasks" element={<AllTasks />} />
+              <Route path="/admin/tasks" element={<MyTasks />} />
+              <Route path="/admin/manage-tasks" element={<ManageTasks />} />
+              <Route path="/admin/create-task" element={<CreateTask />} />              
+              <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/admin/users" element={<ManageUsers />} />
             </Route>
 
             {/* User Routes */}
             <Route element={<PrivateRoute allowedRoles={["user"]} />}>
               <Route path="/user/dashboard" element={<UserDashboard />} />
+              <Route path="/user/all-tasks" element={<AllTasks />} />
               <Route path="/user/tasks" element={<MyTasks />} />
+              <Route path="/user/manage-tasks" element={<ManageTasks />} />
+              <Route path="/user/create-task" element={<CreateTask />} />    
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
             </Route>
 

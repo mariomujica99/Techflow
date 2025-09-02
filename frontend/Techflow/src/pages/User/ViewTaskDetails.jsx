@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
@@ -8,6 +8,9 @@ import moment from "moment";
 import { LuSquareArrowOutUpRight } from "react-icons/lu";
 
 const ViewTaskDetails = () => {
+  const location = useLocation();
+  const activeMenu = location.state?.from || "My Tasks";
+
   const { id } = useParams(null);
   const [task, setTask] = useState(null);
 
@@ -78,7 +81,7 @@ const ViewTaskDetails = () => {
     return () => {};
   }, [id]);
   return (
-    <DashboardLayout activeMenu="My Tasks">
+    <DashboardLayout activeMenu={activeMenu}>
       <div className="mt-5">
         {task && (
           <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
@@ -96,23 +99,26 @@ const ViewTaskDetails = () => {
               </div>
 
               <div className="mt-4">
-                <InfoBox label="Description" value={task?.description} />
+                <InfoBox label="Order Type" value={task?.orderType} />
               </div>
 
               <div className="grid grid-cols-12 gap-4 mt-4">
                 <div className="col-span-6 md:col-span-4">
                   <InfoBox label="Priority" value={task?.priority} />
                 </div>
+
+                {/*
                 <div className="col-span-6 md:col-span-4">
                   <InfoBox
                     label="Due Date"
                     value={
                       task?.dueDate
-                        ? moment(task?.dueDate).format("Do MMM YYYY")
+                        ? moment(task?.dueDate).utc().format("Do MMM YYYY")
                         : "N/A"
                     }
                   />
                 </div>
+                */}
 
                 <div className="col-span-6 md:col-span-4">
                   <label className="text-xs font-medium text-slate-500">

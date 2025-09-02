@@ -4,6 +4,7 @@ import { API_PATHS } from "../../utils/apiPaths";
 import { LuUsers } from "react-icons/lu";
 import Modal from "../Modal";
 import AvatarGroup from "../AvatarGroup";
+import { getInitials } from "../../utils/getInitials";
 
 const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   const [allUsers, setAllUsers] = useState([]);
@@ -34,9 +35,10 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
     setIsModalOpen(false);
   };
 
-  const selectedUserAvatars = allUsers
-    .filter((user) => selectedUsers.includes(user._id))
-    .map((user) => user.profileImageUrl);
+  const selectedUserData = allUsers
+    .filter((user) => selectedUsers.includes(user._id));
+
+  const selectedUserAvatars = selectedUserData.map((user) => user.profileImageUrl);
 
   useEffect(() => {
     getAllUsers();
@@ -60,7 +62,11 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
 
       {selectedUserAvatars.length > 0 && (
         <div className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
-          <AvatarGroup avatars={selectedUserAvatars} maxVisible={3} />
+          <AvatarGroup 
+            avatars={selectedUserAvatars} 
+            users={selectedUserData}
+            maxVisible={3} 
+          />
         </div>
       )}
 
@@ -75,15 +81,19 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
               key={user._id}
               className="flex items-center gap-4 p-3 border-b border-gray-200"
             >
-              <img
-                src={user.profileImageUrl}
-                alt={user.name}
-                className="w-10 h-10 rounded-full object-cover"
-              />
+              {user.profileImageUrl ? (
+                <img
+                  src={user.profileImageUrl}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white text-sm font-medium">
+                  {getInitials(user.name)}
+                </div>
+              )}
               <div className="flex-1">
-                <p className="font-medium text-gray-800 dark:text-white">
-                  {user.name}
-                </p>
+                <p className="font-medium text-gray-800 dark:text-white">{user.name}</p>
                 <p className="text-[13px] text-gray-500">{user.email}</p>
               </div>
 

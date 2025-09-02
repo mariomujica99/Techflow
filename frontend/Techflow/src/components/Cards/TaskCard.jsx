@@ -1,20 +1,21 @@
 import React from "react";
 import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
-import { LuPaperclip } from "react-icons/lu";
+import { LuPaperclip, LuClock, LuLoader, LuCircle } from "react-icons/lu";
 import moment from "moment";
 
 const TaskCard = ({
   title,
-  description,
+  orderType,
   priority,
   status,
   progress,
   createdAt,
-  dueDate,
+  // dueDate,
   assignedTo,
   attachmentCount,
   completedTodoCount,
+  completedOn,
   todoChecklist,
   onClick
 }) => {
@@ -40,6 +41,18 @@ const TaskCard = ({
         return 'bg-red-50 text-red-500 border border-red-500/10';
     }
   };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case "In Progress":
+        return <LuClock className="text-cyan-500 text-sm" />;
+      case "Pending":
+        return <LuCircle className="text-violet-500 text-sm" />;
+      default:
+        return <LuCircle className="text-gray-400 text-sm" />;
+    }
+  };
+  
   return <div
       className="bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer"
       onClick={onClick}
@@ -53,7 +66,7 @@ const TaskCard = ({
         <div
           className={`text-[11px] font-medium ${getPriorityTagColor()} px-4 py-0.5 rounded`}
         >
-          {priority} Priority
+          {priority}
         </div>
       </div>
 
@@ -66,12 +79,12 @@ const TaskCard = ({
             : "border-violet-500"  
         }`}
       >
-        <p className="text-sm font-medium text-gray-800 mt-4 line-clamp-2">
+        <p className="text-lg font-medium text-gray-800 mt-4 line-clamp-2">
           {title}
         </p>
 
         <p className="text-xs text-gray-500 mt-1.5 line-clamp-2 leading-[18px]">
-          {description}
+          {orderType}
         </p>
 
         <p className="text-[13px] text-gray-700/80 font-medium mt-2 mb-2 leading-[18px]">
@@ -87,22 +100,33 @@ const TaskCard = ({
       <div className="px-4">
         <div className="flex items-center justify-between my-1">
           <div>
-            <label className="text-xs text-gray-500">Start Date</label>
-            <p className="text-[13px] font-medium text-gray-900">
-              {moment(createdAt).format("Do MMM YYYY")}
+            <label className="text-xs text-gray-500">Created On</label>
+            <p className="text-[13px] font-medium text-gray-700">
+              {moment(createdAt).utc().format("Do MMM YYYY")}
             </p>
           </div>
 
           <div>
-            <label className="text-xs text-gray-500">Due Date</label>
-            <p className="text-[13px] font-medium text-gray-900">
-              {moment(dueDate).format("Do MMM YYYY")}
-            </p>
+            <label className="text-xs text-gray-500">Completed On</label>
+            {completedOn ? (
+              <p className="text-[13px] font-medium text-gray-700">
+                {moment(completedOn).utc().format("Do MMM YYYY")}
+              </p>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                {getStatusIcon()}
+                <span className="text-[13px] text-gray-700">—</span>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex items-center justify-between mt-3">
-          <AvatarGroup avatars={assignedTo || []} />
+          <AvatarGroup 
+            avatars={assignedTo?.map(user => user.profileImageUrl) || []} 
+            users={assignedTo || []}
+          />
+
 
           {attachmentCount > 0 && (
             <div className="flex items-center gap-2 bg-blue-50 px-2.5 py-1.5 rounded-lg">
