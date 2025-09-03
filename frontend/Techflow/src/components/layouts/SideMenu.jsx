@@ -31,8 +31,8 @@ const SideMenu = ({activeMenu}) => {
     }
     return () => {};
   }, [user]);
-  return <div className="w-64 h-[calc(100vh-61px)] bg-white border-r border-gray-200/50 sticky top-[61px] z-20">
-    <div className="flex flex-col items-center justify-center mb-7 pt-5">
+  return <div className="w-64 h-[calc(100vh-61px)] bg-white border-r border-gray-200/50 sticky top-[61px] z-20 overflow-y-auto py-2">
+    <div className="flex flex-col items-center justify-center mb-5 pt-5">
       <div className="relative">
         {user?.profileImageUrl ? (
           <img
@@ -48,7 +48,7 @@ const SideMenu = ({activeMenu}) => {
       </div>
 
       {user?.role === "admin" && (
-        <div className="text-[10px] font-medium text-white bg-primary px-3 py-0.5 rounded mt-1">
+        <div className="mt-4 text-[10px] font-medium text-white bg-primary px-3 py-0.5 rounded mt-1">
           Admin
         </div>
       )}
@@ -61,14 +61,14 @@ const SideMenu = ({activeMenu}) => {
     {sideMenuData.map((item, index) => (
       <button
         key={`menu_${index}`}
-        className={`w-full flex items-center gap-4 text-[15px] ${
+        className={`w-full flex items-center gap-3 text-[15px] ${
           activeMenu == item.label
             ? "text-primary bg-linear-to-r from-blue-50/40 to-blue-100/50 border-r-3"
-            : ""
-        } py-3 px-6 mb-3 cursor-pointer`}
+            : "text-gray-700 hover:bg-gray-50"
+        } py-2 px-5 mb-1.5 rounded cursor-pointer`}
         onClick={() => handleClick(item.path)}
       >
-        <item.icon className="text-xl" />
+        <item.icon className="text-lg" />
         {item.label}
       </button>
     ))}

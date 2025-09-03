@@ -73,9 +73,9 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Select Users"
+        title="Select Member"
       >
-        <div className="space-y-4 h-[60vh] overflow-y-auto">
+        <div className="space-y-4 h-[60vh] overflow-y-auto pr-4 pl-4">
           {allUsers.map((user) => (
             <div
               key={user._id}
@@ -101,13 +101,13 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
                 type="checkbox"
                 checked={tempSelectedUsers.includes(user._id)}
                 onChange={() => toggleUserSelection(user._id)}
-                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded-sm outline-none"
+                className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none"
               />
             </div>
           ))}
         </div>
 
-        <div className="flex justify-end gap-4 pt-4">
+        <div className="flex justify-end gap-4 pt-4 pr-4">
           <button className="card-btn" onClick={() => setIsModalOpen(false)}>
             CANCEL
           </button>

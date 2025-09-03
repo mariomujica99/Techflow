@@ -100,7 +100,7 @@ const exportUsersReport = async (req, res) => {
     const worksheet = workbook.addWorksheet('User Tasks Report');
 
     worksheet.columns = [
-      { header: 'User Name', key: 'name', width: 30 },
+      { header: 'Name', key: 'name', width: 30 },
       { header: 'Email', key: 'email', width: 40 },
       { header: 'Total Assigned Tasks', key: 'taskCount', width: 20 },
       { header: 'Pending Tasks', key: 'pendingTasks', width: 20 },

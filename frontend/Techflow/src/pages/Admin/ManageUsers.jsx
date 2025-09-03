@@ -5,6 +5,7 @@ import { API_PATHS } from "../../utils/apiPaths";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import UserCard from "../../components/Cards/UserCard";
 import { UserContext } from "../../context/userContext";
+import { Navigate } from "react-router-dom";
 
 const ManageUsers = () => {
   const { user } = useContext(UserContext);

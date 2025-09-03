@@ -316,7 +316,7 @@ const CreateTask = () => {
 
             <div className="mt-3">
               <label className="text-xs font-medium text-slate-600">
-                TODO Checklist
+                Tasks
               </label>
 
               <TodoListInput

@@ -108,6 +108,8 @@ export const ORDER_TYPE_DATA = [
   { label: "Routine EEG | IP", value: "Routine EEG | IP" },
   { label: "Routine EEG | OP", value: "Routine EEG | OP" },
   { label: "Routine EEG | BMC", value: "Routine EEG | BMC" },
+  { label: "Routine EEG | Pediatric", value: "Routine EEG | Pediatric" },
+  { label: "Routine EEG | Neonate", value: "Routine EEG | Neonate" },
   { label: "Routine EEG | WADA", value: "Routine EEG | WADA" },
   { label: "Continuous EEG | LTM", value: "Continuous EEG | LTM" },
   { label: "Continuous EEG | EMU", value: "Continuous EEG | EMU" },
@@ -145,6 +147,16 @@ export const AUTOMATIC_CHECKLIST_ITEMS = {
     "3 Disconnect",
     "4 Upload to Server", 
     "5 Place Charge & Chart"
+  ],
+  "Routine EEG | Pediatric": [
+    "1 Hook-Up",
+    "2 Disconnect",
+    "3 Place Charge & Chart"
+  ],
+  "Routine EEG | Neonate": [
+    "1 Hook-Up",
+    "2 Disconnect",
+    "3 Place Charge & Chart"
   ],
   "Routine EEG | WADA": [
     "1 Hook-Up",

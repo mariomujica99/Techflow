@@ -66,6 +66,26 @@ const ViewTaskDetails = () => {
     }
   };
 
+  // Handle complete all todos
+  const completeAllTodos = async () => {
+    const todoChecklist = task?.todoChecklist?.map(item => ({
+      ...item,
+      completed: true
+    }));
+
+    try {
+      const response = await axiosInstance.put(
+        API_PATHS.TASKS.UPDATE_TODO_CHECKLIST(id),
+        { todoChecklist }
+      );
+      if (response.status === 200) {
+        setTask(response.data?.task || task);
+      }
+    } catch (error) {
+      console.error("Error completing all todos:", error);
+    }
+  };
+
   // Handle attachment link click
   const handleLinkClick = (link) => {
     if (!/^https?:\/\//i.test(link)) {
@@ -125,32 +145,43 @@ const ViewTaskDetails = () => {
                     Assigned To
                   </label>
 
-                  <AvatarGroup
-                    avatars={
-                      task?.assignedTo?.map((item) => item?.profileImageUrl) || []
-                    }
+
+                  <AvatarGroup 
+                    avatars={task?.assignedTo?.map(item => item?.profileImageUrl) || []} 
+                    users={task?.assignedTo || []}
                     maxVisible={5}
                   />
                 </div>
               </div>
 
               <div className="mt-2">
-                <label className="text-xs font-medium text-slate-500">
-                  Todo Checklist
-                </label>
-
-                {task?.todoChecklist?.map((item, index) => (
-                  <TodoCheckList
-                    key={`todo_${index}`}
-                    text={item.text}
-                    isChecked={item?.completed}
-                    onChange={() => updateTodoChecklist(index)}
-                  />
-                ))}
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-slate-500">
+                    Tasks
+                  </label>                  
+                </div>
+                <div className="mb-2">
+                  {task?.todoChecklist?.map((item, index) => (
+                    <TodoCheckList
+                      key={`todo_${index}`}
+                      text={item.text}
+                      isChecked={item?.completed}
+                      onChange={() => updateTodoChecklist(index)}
+                    />
+                  ))}
+                </div>
               </div>
+              {task?.todoChecklist?.some(item => !item.completed) && (
+                <button 
+                  className="text-xs font-medium text-green-500 bg-green-50 px-3 py-1 rounded border border-green-100 hover:border-green-300 cursor-pointer"
+                  onClick={completeAllTodos}
+                >
+                  Complete All
+                </button>
+              )}
 
               {task?.attachments?.length > 0 && (
-                <div className="mt-2">
+                <div className="mt-4">
                   <label className="text-xs font-medium text-slate-500">
                     Attachments
                   </label>

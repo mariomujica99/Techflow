@@ -69,7 +69,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
       {/* Template Dropdown Section */}
       <div className="mt-4">
         <label className="text-xs font-medium text-slate-600 mb-2 block">
-          Select Template
+          Select Task Template
         </label>
         
         <div className="relative">
@@ -77,7 +77,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-3 py-2 rounded-md flex justify-between items-center"
           >
-            {selectedTemplate || "Choose from templates..."}
+            {selectedTemplate || "Select Task"}
             <LuChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
