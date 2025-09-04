@@ -118,6 +118,8 @@ const ManageTasks = () => {
               key={item._id}
               title={item.title}
               orderType={item.orderType}
+              electrodeType={item.electrodeType}
+              allergyType={item.allergyType}
               priority={item.priority}
               status={item.status}
               progress={item.progress}

@@ -7,6 +7,8 @@ import moment from "moment";
 const TaskCard = ({
   title,
   orderType,
+  electrodeType,
+  allergyType,
   priority,
   status,
   progress,
@@ -79,13 +81,39 @@ const TaskCard = ({
             : "border-violet-500"  
         }`}
       >
-        <p className="text-lg font-medium text-gray-800 mt-4 line-clamp-2">
-          {title}
-        </p>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-lg font-medium text-gray-800 line-clamp-2">
+            {title}
+          </p>
 
-        <p className="text-xs text-gray-500 mt-1.5 line-clamp-2 leading-[18px]">
-          {orderType}
-        </p>
+          {/* Electrode Type - only show for Continuous EEG */}
+          {orderType?.includes("Continuous EEG") && (
+            <div
+              className={`text-[11px] font-medium px-3 py-0.25 rounded-full ring-1 ${
+                electrodeType === "MRI Leads" 
+                  ? "text-rose-600 bg-rose-50 ring-rose-200"
+                  : "text-blue-600 bg-blue-50 ring-blue-200"
+              }`}
+            >
+              {electrodeType === "MRI Leads" ? "MRI" : "Regular"}
+            </div>
+          )}
+        </div>
+
+
+        <div className="flex items-center justify-between mt-1.5">
+          <p className="text-xs text-gray-500 line-clamp-2 leading-[18px]">
+            {orderType}
+          </p>
+          
+          {/* Allergy - only show if Adhesive Allergy */}
+          {allergyType === "Adhesive Allergy" && (
+            <div className="text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
+              Allergy
+            </div>
+          )}
+        </div>
+
 
         <p className="text-[13px] text-gray-700/80 font-medium mt-2 mb-2 leading-[18px]">
           Task Done:{" "}

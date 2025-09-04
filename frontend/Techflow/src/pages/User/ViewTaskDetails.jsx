@@ -123,6 +123,20 @@ const ViewTaskDetails = () => {
               </div>
 
               <div className="grid grid-cols-12 gap-4 mt-4">
+                <div className="col-span-4">
+                  <InfoBox label="Electrode Type" value={task?.electrodeType || "Regular Leads"} />
+                </div>
+                
+                <div className="col-span-4">
+                  <InfoBox label="Adhesive Type" value={task?.adhesiveType || "Collodion"} />
+                </div>
+                
+                <div className="col-span-4">
+                  <InfoBox label="Allergy" value={task?.allergyType || "None"} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 gap-4 mt-4">
                 <div className="col-span-6 md:col-span-4">
                   <InfoBox label="Priority" value={task?.priority} />
                 </div>
@@ -224,7 +238,7 @@ const TodoCheckList = ({ text, isChecked, onChange }) => {
       type="checkbox"
       checked={isChecked}
       onChange={onChange}
-      className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
+      className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
     />
 
     <p className="text-[13px] text-gray-800">{text}</p>

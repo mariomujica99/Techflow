@@ -121,7 +121,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
         <div className="flex items-center gap-3">
           <input
             type="text"
-            placeholder="Enter custom task"
+            placeholder="Type a Custom Task"
             value={customText}
             onChange={({ target }) => setCustomText(target.value)}
             className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md"

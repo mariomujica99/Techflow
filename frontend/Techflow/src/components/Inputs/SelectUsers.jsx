@@ -45,6 +45,12 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   }, []);
 
   useEffect(() => {
+    if (isModalOpen) {
+      setTempSelectedUsers(selectedUsers);
+    }
+  }, [isModalOpen, selectedUsers]);
+
+  useEffect(() => {
     if (selectedUsers.length === 0) {
       setTempSelectedUsers([]);
     }
@@ -101,7 +107,7 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
                 type="checkbox"
                 checked={tempSelectedUsers.includes(user._id)}
                 onChange={() => toggleUserSelection(user._id)}
-                className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none"
+                className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
               />
             </div>
           ))}

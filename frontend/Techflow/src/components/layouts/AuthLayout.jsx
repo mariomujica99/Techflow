@@ -1,5 +1,5 @@
 import React  from 'react';
-import UI_IMG from '../../assets/images/auth-image.png';
+import UI_IMG from '../../assets/images/logo.png';
 
 const AuthLayout = ({ children }) => {
   return <div className="flex">

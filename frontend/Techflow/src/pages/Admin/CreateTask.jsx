@@ -25,6 +25,9 @@ const CreateTask = () => {
   const [taskData, setTaskData] = useState({
     title: "",
     orderType: "Routine EEG | IP",
+    electrodeType: "Regular Leads",
+    adhesiveType: "Collodion", 
+    allergyType: "None",
     priority: "Routine",
     // dueDate: null,
     assignedTo: [],
@@ -48,6 +51,9 @@ const CreateTask = () => {
     setTaskData({
       title: "",
       orderType: "Routine EEG | IP",
+      electrodeType: "Regular Leads",
+      adhesiveType: "Collodion", 
+      allergyType: "None",
       priority: "Routine",
       // dueDate: null,
       assignedTo: [],
@@ -167,6 +173,9 @@ const CreateTask = () => {
         setTaskData((prevState) => ({
           title: taskInfo.title,
           orderType: taskInfo.orderType || "Routine EEG | IP",
+          electrodeType: taskInfo.electrodeType || "Regular Leads",
+          adhesiveType: taskInfo.adhesiveType || "Collodion",
+          allergyType: taskInfo.allergyType || "None",
           priority: taskInfo.priority,
           // dueDate: taskInfo.dueDate
           //   ? moment(taskInfo.dueDate).utc().format("YYYY-MM-DD")
@@ -206,9 +215,33 @@ const CreateTask = () => {
       const existingCustomItems = taskData.todoChecklist.filter(item => 
         !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
       );
+      
+      // Reset procedure-dependent supplies based on order type
+      let resetData = {
+        todoChecklist: [...automaticItems, ...existingCustomItems]
+      };
+      
+      // For Continuous EEG types, reset all three fields
+      if (taskData.orderType?.includes("Continuous EEG")) {
+        resetData = {
+          ...resetData,
+          electrodeType: "Regular Leads",
+          adhesiveType: "Collodion",
+          allergyType: "None"
+        };
+      }
+      // For non-Continuous types (except SEEG), reset only allergy
+      else if (!taskData.orderType?.includes("Continuous")) {
+        resetData = {
+          ...resetData,
+          allergyType: "None"
+        };
+      }
+      // For Continuous SEEG, don't show any checkboxes (no reset needed)
+      
       setTaskData(prev => ({
         ...prev,
-        todoChecklist: [...automaticItems, ...existingCustomItems]
+        ...resetData
       }));
     }
   }, [taskData.orderType]);
@@ -267,6 +300,74 @@ const CreateTask = () => {
                 placeholder="Select Order Type"
               />
             </div>
+
+            {/* Procedure-Dependent Supplies Section */}
+            {(taskData.orderType?.includes("Continuous EEG") || 
+              (!taskData.orderType?.includes("Continuous SEEG") && !taskData.orderType?.includes("Continuous EEG"))) && (
+              <div className="mt-4">
+                <label className="text-xs font-medium text-slate-600 mb-3 block">
+                  Procedure-Dependent Supplies
+                </label>
+                
+                {/* Continuous EEG types show all three checkboxes */}
+                {taskData.orderType?.includes("Continuous EEG") && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={taskData.electrodeType === "MRI Leads"}
+                        onChange={(e) => handleValueChange("electrodeType", e.target.checked ? "MRI Leads" : "Regular Leads")}
+                        className="w-4 h-4 accent-primary rounded cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">MRI Leads</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={taskData.adhesiveType === "Tensive"}
+                        onChange={(e) => handleValueChange("adhesiveType", e.target.checked ? "Tensive" : "Collodion")}
+                        className="w-4 h-4 accent-primary rounded cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">Tensive</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={taskData.allergyType === "Adhesive Allergy"}
+                        onChange={(e) => handleValueChange("allergyType", e.target.checked ? "Adhesive Allergy" : "None")}
+                        className="w-4 h-4 accent-primary rounded cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">Adhesive Allergy</span>
+                    </label>
+                    
+                    <p className="text-xs text-gray-500 mt-2">
+                      Defaults to Regular Leads | Collodion | No Adhesive Allergy
+                    </p>
+                  </div>
+                )}
+                
+                {/* All other types (except Continuous SEEG) show only Adhesive Allergy */}
+                {!taskData.orderType?.includes("Continuous") && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={taskData.allergyType === "Adhesive Allergy"}
+                        onChange={(e) => handleValueChange("allergyType", e.target.checked ? "Adhesive Allergy" : "None")}
+                        className="w-4 h-4 accent-primary rounded"
+                      />
+                      <span className="text-sm text-gray-700">Adhesive Allergy</span>
+                    </label>
+                    
+                    <p className="text-xs text-gray-500 mt-2">
+                      Defaults to No Adhesive Allergy
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-12 gap-4 mt-2">
               <div className="col-span-6 md:col-span-4">

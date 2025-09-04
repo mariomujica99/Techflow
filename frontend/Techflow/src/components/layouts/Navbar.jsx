@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import SideMenu from "./SideMenu";
-import image from "../../assets/images/auth-image.png";
+import logo from "../../assets/images/logo.png";
 
 
 const Navbar = ({ activeMenu }) => {
@@ -26,7 +26,7 @@ const Navbar = ({ activeMenu }) => {
 
       <div className="flex items-center gap-2">
         <img
-          src={image}
+          src={logo}
           alt="Auth"
           className="rounded-full h-8 w-8 object-cover"
         />
