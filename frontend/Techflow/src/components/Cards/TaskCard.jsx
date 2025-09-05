@@ -1,7 +1,7 @@
 import React from "react";
 import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
-import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuEyeOff, LuBrain } from "react-icons/lu";
+import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuShieldAlert, LuBrain, LuBrainCircuit, LuTriangleAlert } from "react-icons/lu";
 import moment from "moment";
 
 const TaskCard = ({
@@ -14,7 +14,6 @@ const TaskCard = ({
   status,
   progress,
   createdAt,
-  // dueDate,
   assignedTo,
   attachmentCount,
   completedTodoCount,
@@ -104,16 +103,33 @@ const TaskCard = ({
             {title}
           </p>
 
-          {/* Electrode Type - only show for Continuous EEG */}
-          {orderType?.includes("Continuous EEG") && (
+          {/* Electrode Type - only show for Continuous */}
+          {(orderType?.includes("Continuous EEG") || orderType?.includes("Continuous SEEG")) && (
             <div
-              className={`text-[11px] font-medium px-3 py-0.25 rounded-full ring-1 ${
-                electrodeType === "MRI Leads" 
+              className={`flex items-center gap-1 text-[11px] font-medium px-3 py-0.25 rounded-full ring-1 ${
+                electrodeType === "MRI Leads"
                   ? "text-rose-600 bg-rose-50 ring-rose-200"
+                  : orderType?.includes("Continuous SEEG")
+                  ? "text-teal-600 bg-teal-50 ring-teal-200"
                   : "text-blue-600 bg-blue-50 ring-blue-200"
               }`}
             >
-              {electrodeType === "MRI Leads" ? "MRI" : "Regular"}
+              {electrodeType === "MRI Leads" ? (
+                <>
+                  <LuTriangleAlert className="text-xs" />
+                  <span>MRI</span>
+                </>
+              ) : orderType?.includes("Continuous SEEG") ? (
+                <>
+                  <LuBrainCircuit className="text-xs" />
+                  <span>Depth</span>
+                </>
+              ) : (
+                <>
+                  <LuBrain className="text-xs" />
+                  <span>Regular</span>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -126,8 +142,9 @@ const TaskCard = ({
           
           {/* Allergy - only show if Adhesive Tape Allergy */}
           {allergyType === "Adhesive Tape" && (
-            <div className="text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
-              Allergy
+            <div className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
+              <LuShieldAlert className="text-xs" />
+              <span>Allergy</span>
             </div>
           )}
         </div>

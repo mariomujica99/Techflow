@@ -18,7 +18,6 @@ const taskSchema = new mongoose.Schema(
     sleepDeprivationType: { type: String, enum: ['Not Ordered', 'Ordered'], default: 'Not Ordered' },
     priority: { type: String, enum: ['Routine', 'ASAP', 'STAT'], default: 'Routine' },
     status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
-    // dueDate: { type: Date, required: true },
     assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     attachments: [{ type: String }], // URLs to files

@@ -143,7 +143,6 @@ const createTask = async (req, res) => {
       allergyType,
       sleepDeprivationType,
       priority,
-      // dueDate,
       assignedTo,
       attachments,
       todoChecklist,
@@ -161,7 +160,6 @@ const createTask = async (req, res) => {
       allergyType,
       sleepDeprivationType,
       priority,
-      // dueDate,
       assignedTo,
       createdBy: req.user._id,
       todoChecklist,
@@ -190,7 +188,6 @@ const updateTask = async (req, res) => {
     task.allergyType = req.body.allergyType || task.allergyType;
     task.sleepDeprivationType = req.body.sleepDeprivationType || task.sleepDeprivationType;
     task.priority = req.body.priority || task.priority;
-    // task.dueDate = req.body.dueDate || task.dueDate;
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
     task.attachments = req.body.attachments || task.attachments;
 
@@ -321,10 +318,6 @@ const getDashboardData = async (req, res) => {
     const totalTasks = await Task.countDocuments();
     const pendingTasks = await Task.countDocuments({ status: 'Pending' });
     const completedTasks = await Task.countDocuments({ status: 'Completed' });
-    // const overdueTasks = await Task.countDocuments({
-    //   status: { $ne: 'Completed' },
-    //   dueDate: { $lt: new Date() },
-    // });
 
     // Ensure all possible statuses are included
     const taskStatuses = ['Pending', 'In Progress', 'Completed'];
@@ -371,7 +364,6 @@ const getDashboardData = async (req, res) => {
         totalTasks,
         pendingTasks,
         completedTasks,
-        // overdueTasks,
       },
       charts: {
         taskDistribution,
@@ -395,11 +387,6 @@ const getUserDashboardData = async (req, res) => {
     const totalTasks = await Task.countDocuments({ assignedTo: userId });
     const pendingTasks = await Task.countDocuments({ assignedTo: userId, status: 'Pending' });
     const completedTasks = await Task.countDocuments({ assignedTo: userId, status: 'Completed' });
-    // const overdueTasks = await Task.countDocuments({
-    //   assignedTo: userId,
-    //   status: { $ne: 'Completed' },
-    //   dueDate: { $lt: new Date() },
-    // });
 
     // Task distribution by status
     const taskStatuses = ['Pending', 'In Progress', 'Completed'];
@@ -440,7 +427,6 @@ const getUserDashboardData = async (req, res) => {
         totalTasks,
         pendingTasks,
         completedTasks,
-        // overdueTasks,
       },
       charts: {
         taskDistribution,

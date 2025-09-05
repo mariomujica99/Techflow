@@ -30,7 +30,6 @@ const CreateTask = () => {
     allergyType: "None",
     sleepDeprivationType: "Not Ordered",
     priority: "Routine",
-    // dueDate: null,
     assignedTo: [],
     todoChecklist: [],
     attachments: [],
@@ -57,7 +56,6 @@ const CreateTask = () => {
       allergyType: "None",
       sleepDeprivationType: "Not Ordered",
       priority: "Routine",
-      // dueDate: null,
       assignedTo: [],
       todoChecklist: [],
       attachments: [],
@@ -76,7 +74,6 @@ const CreateTask = () => {
 
       const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
-        // dueDate: taskData.dueDate,
         todoChecklist: todolist,
       });
 
@@ -110,7 +107,6 @@ const CreateTask = () => {
         API_PATHS.TASKS.UPDATE_TASK(taskId),
         {
           ...taskData,
-          // dueDate: taskData.dueDate,
           todoChecklist: todolist,
         }
       );
@@ -139,16 +135,6 @@ const CreateTask = () => {
       setError("Order Type is required.");
       return;
     }
-    /*
-    if (!taskData.dueDate) {
-      setError("Due date is required.");
-      return;
-    }
-    if (taskData.assignedTo?.length === 0) {
-      setError("Task not assigned to any member.");
-      return;
-    }
-    */
     if (taskData.todoChecklist?.length === 0) {
       setError("Add at least one todo task.");
       return;
@@ -180,9 +166,6 @@ const CreateTask = () => {
           allergyType: taskInfo.allergyType || "None",
           sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
           priority: taskInfo.priority,
-          // dueDate: taskInfo.dueDate
-          //   ? moment(taskInfo.dueDate).utc().format("YYYY-MM-DD")
-          //   : null,
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           attachments: taskInfo?.attachments || [],
@@ -440,24 +423,6 @@ const CreateTask = () => {
                   placeholder="Select Priority"
                 />
               </div>
-
-              {/*
-              <div className="col-span-6 md:col-span-4">
-                <label className="text-xs font-medium text-slate-600">
-                  Due Date
-                </label>
-
-                <input
-                  placeholder="6820"
-                  className="form-input"
-                  value={taskData.dueDate}
-                  onChange={({ target }) =>
-                    handleValueChange("dueDate", target.value)
-                  }
-                  type="date"
-                />
-              </div>
-              */}
 
               <div className="col-span-12 md:col-span-3">
                 <label className="text-xs font-medium text-slate-600">

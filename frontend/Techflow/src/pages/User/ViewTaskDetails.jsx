@@ -123,7 +123,7 @@ const ViewTaskDetails = () => {
                   <InfoBox label="Order Type" value={task?.orderType} />
                 </div>
 
-                <div className="col-span-4">
+                <div className="col-span-4 ml-4">
                   <InfoBox label="Priority" value={task?.priority} />
                 </div>
 
@@ -137,7 +137,7 @@ const ViewTaskDetails = () => {
                   <InfoBox label="Adhesive Glue" value={task?.adhesiveType || "Collodion"} />
                 </div>
 
-                <div className="col-span-4">
+                <div className="col-span-4 ml-4">
                   <InfoBox label="Allergy" value={task?.allergyType || "None"} />
                 </div>
 
@@ -146,31 +146,20 @@ const ViewTaskDetails = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-12 gap-4 mt-4">              
-                {/*
-                <div className="col-span-6 md:col-span-4">
-                  <InfoBox
-                    label="Due Date"
-                    value={
-                      task?.dueDate
-                        ? moment(task?.dueDate).utc().format("Do MMM YYYY")
-                        : "N/A"
-                    }
-                  />
-                </div>
-                */}
+              <div className="grid grid-cols-12 gap-4 mt-4 mb-4">
+                {task?.assignedTo && task?.assignedTo.length > 0 && (
+                  <div className="col-span-6 md:col-span-4">
+                    <label className="text-xs font-medium text-slate-500">
+                      Assigned To
+                    </label>
 
-                <div className="col-span-6 md:col-span-4">
-                  <label className="text-xs font-medium text-slate-500">
-                    Assigned To
-                  </label>
-
-                  <AvatarGroup 
-                    avatars={task?.assignedTo?.map(item => item?.profileImageUrl) || []} 
-                    users={task?.assignedTo || []}
-                    maxVisible={5}
-                  />
-                </div>
+                    <AvatarGroup 
+                      avatars={task?.assignedTo?.map(item => item?.profileImageUrl) || []} 
+                      users={task?.assignedTo || []}
+                      maxVisible={5}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="mt-2">
