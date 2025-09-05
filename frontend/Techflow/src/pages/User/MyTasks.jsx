@@ -58,15 +58,19 @@ const MyTasks = () => {
     <DashboardLayout activeMenu="My Tasks">
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-          <h2 className="text-xl md:text-xl font-medium">My Tasks</h2>
+          <h2 className="text-xl md:text-xl font-medium text-gray-700">My Tasks</h2>
 
-          {tabs?.[0]?.count > 0 && (
-            <TaskStatusTabs
-              tabs={tabs}
-              activeTab={filterStatus}
-              setActiveTab={setFilterStatus}
-            />
-          )}
+          <div className="min-h-[3.5rem] flex items-end">
+            {tabs?.[0]?.count > 0 ? (
+              <TaskStatusTabs
+                tabs={tabs}
+                activeTab={filterStatus}
+                setActiveTab={setFilterStatus}
+              />
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

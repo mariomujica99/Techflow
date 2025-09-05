@@ -81,7 +81,7 @@ const ManageTasks = () => {
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-xl md:text-xl font-medium">Manage Tasks</h2>
+            <h2 className="text-xl md:text-xl font-medium text-gray-700">Manage Tasks</h2>
 
             {user?.role === 'admin' && (
               <button
@@ -94,22 +94,26 @@ const ManageTasks = () => {
             )}
           </div>
 
-          {tabs?.[0]?.count > 0 && (
-            <div className="flex items-center gap-3">
-              <TaskStatusTabs
-                tabs={tabs}
-                activeTab={filterStatus}
-                setActiveTab={setFilterStatus}
-              />
+          <div className="min-h-[3.5rem] flex items-end">
+            {tabs?.[0]?.count > 0 ? (
+              <div className="flex items-center gap-3">
+                <TaskStatusTabs
+                  tabs={tabs}
+                  activeTab={filterStatus}
+                  setActiveTab={setFilterStatus}
+                />
 
-              {user?.role === 'admin' && (
-                <button className="hidden md:flex download-btn" onClick={handleDownloadReport}>
-                  <LuFileSpreadsheet className="text-lg" />
-                  Download Report
-                </button>
-              )}
-            </div>
-          )}
+                {user?.role === 'admin' && (
+                  <button className="hidden md:flex download-btn" onClick={handleDownloadReport}>
+                    <LuFileSpreadsheet className="text-lg" />
+                    Download Report
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

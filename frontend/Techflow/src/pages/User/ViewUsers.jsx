@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from "react"
+import DashboardLayout from "../../components/layouts/DashboardLayout"
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import { getInitials } from "../../utils/getInitials";
+
+const ViewUsers = () => {
+  const [allUsers, setAllUsers] = useState([]);
+
+  const getAllUsers = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
+      if (response.data?.length > 0) {
+        setAllUsers(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllUsers();
+    return () => {};
+  }, []);
+
+  return (
+    <DashboardLayout activeMenu="Team Members">
+      <div className="mt-5 mb-10">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
+          <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-cyan-50 px-3 py-1 rounded-full border border-primary/50">
+            <span className="text-sm font-semibold text-primary">
+              {allUsers.length}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {allUsers?.map((user) => (
+            <ViewUserCard key={user._id} userInfo={user} />
+          ))}
+        </div>
+      </div>
+    </DashboardLayout>
+  )
+}
+
+export default ViewUsers;
+
+const ViewUserCard = ({userInfo}) => {
+  return (
+    <div className="user-card p-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {userInfo?.profileImageUrl ? (
+            <img
+              src={userInfo?.profileImageUrl}
+              alt={userInfo?.name}
+              className="w-12 h-12 rounded-full border-2 border-white object-cover"
+            />
+          ) : (
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-white font-semibold text-base border-2 border-white">
+              {getInitials(userInfo?.name)}
+            </div>
+          )}
+
+          <div>
+            <p className="text-sm font-medium">{userInfo?.name}</p>
+            <p className="text-xs text-gray-500">{userInfo?.email}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+};

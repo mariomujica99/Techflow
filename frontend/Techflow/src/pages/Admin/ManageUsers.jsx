@@ -10,6 +10,11 @@ import { Navigate } from "react-router-dom";
 const ManageUsers = () => {
   const { user } = useContext(UserContext);
 
+  // Handle user deletion
+  const handleUserDeleted = (deletedUserId) => {
+    setAllUsers(prevUsers => prevUsers.filter(user => user._id !== deletedUserId));
+  };
+  
   // Redirect non-admin users
   if (user?.role !== 'admin') {
     return <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'} />;
@@ -60,7 +65,14 @@ const ManageUsers = () => {
     <DashboardLayout activeMenu="Team Members">
       <div className="mt-5 mb-10">
         <div className="flex md:flex-row md:items-center justify-between">
-          <h2 className="text-xl md:text-xl font-medium">Team Members</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
+            <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-cyan-50 px-3 py-1 rounded-full border border-primary/50">
+              <span className="text-sm font-semibold text-primary">
+                {allUsers.length}
+              </span>
+            </div>
+          </div>
 
           <button className="flex md:flex download-btn" onClick={handleDownloadReport}>
             <LuFileSpreadsheet className="text-lg" />
@@ -70,7 +82,7 @@ const ManageUsers = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (
-            <UserCard key={user._id} userInfo={user} />
+            <UserCard key={user._id} userInfo={user} onUserDeleted={handleUserDeleted} />
           ))}
         </div>
       </div>

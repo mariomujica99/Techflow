@@ -86,6 +86,12 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "06",
+    label: "Team Members",
+    icon: LuUsers,
+    path: "/user/users",
+  },
+  {
+    id: "07",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

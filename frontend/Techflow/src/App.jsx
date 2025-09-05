@@ -18,6 +18,7 @@ import AllTasks from './pages/Admin/AllTasks';
 import UserDashboard from './pages/User/UserDashboard';
 import MyTasks from './pages/User/MyTasks';
 import ViewTaskDetails from './pages/User/ViewTaskDetails';
+import ViewUsers from './pages/User/ViewUsers';
 
 import PrivateRoute from './routes/PrivateRoute';
 import UserProvider, { UserContext } from './context/userContext';
@@ -51,6 +52,7 @@ const App = () => {
               <Route path="/user/manage-tasks" element={<ManageTasks />} />
               <Route path="/user/create-task" element={<CreateTask />} />    
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+              <Route path="/user/users" element={<ViewUsers />} />
             </Route>
 
             {/* Default Route */}

@@ -8,6 +8,6 @@ const router = express.Router();
 router.get('/', protect, getUsers); // Get all users (Admin only)
 router.get('/:id', protect, getUserById); // Get a specific user by ID
 
-// router.delete('/:id', protect, adminOnly, deleteUser); // Delete a user (Admin only)
+router.delete('/:id', protect, adminOnly, deleteUser); // Delete a user (Admin only)
 
 module.exports = router;
