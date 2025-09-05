@@ -1,7 +1,7 @@
 import React from "react";
 import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
-import { LuPaperclip, LuClock, LuLoader, LuCircle } from "react-icons/lu";
+import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2 } from "react-icons/lu";
 import moment from "moment";
 
 const TaskCard = ({
@@ -19,7 +19,9 @@ const TaskCard = ({
   completedTodoCount,
   completedOn,
   todoChecklist,
-  onClick
+  onClick,
+  onDelete,
+  showDeleteButton = false
 }) => {
 
   const getStatusTagColor = () => {
@@ -56,21 +58,36 @@ const TaskCard = ({
   };
   
   return <div
-      className="bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer"
+      className="bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer relative"
       onClick={onClick}
     >
-      <div className="flex items-end gap-3 px-4">
-        <div
-          className={`text-[11px] font-medium ${getStatusTagColor()} px-4 py-0.5 rounded`}
-        >
-          {status}
+      <div className="flex items-center justify-between">
+        <div className="flex items-end gap-3 px-4 min-w-0">
+          <div
+            className={`text-[11px] font-medium ${getStatusTagColor()} px-4 py-0.5 rounded`}
+          >
+            <span className="whitespace-nowrap">{status}</span>
+          </div>
+          <div
+            className={`text-[11px] font-medium ${getPriorityTagColor()} px-4 py-0.5 rounded`}
+          >
+            {priority}
+          </div>
         </div>
-        <div
-          className={`text-[11px] font-medium ${getPriorityTagColor()} px-4 py-0.5 rounded`}
+        
+        {showDeleteButton && (
+        <button
+          className="shrink-0 text-[13px] mr-4 font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            onDelete();
+          }}
         >
-          {priority}
-        </div>
+          <LuTrash2 className="text-base" />
+        </button>
+        )}
       </div>
+
 
       <div
         className={`px-4 border-l-[3px] ${

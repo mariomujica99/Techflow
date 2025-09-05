@@ -30,9 +30,9 @@ const UserCard = ({userInfo, onUserDeleted}) => {
   };
 
   return (
-    <div className="user-card p-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+    <div className="user-card p-4 bg-white rounded-lg shadow-sm">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-3 min-w-0">
           {userInfo?.profileImageUrl ? (
             <img
               src={userInfo?.profileImageUrl}
@@ -45,15 +45,15 @@ const UserCard = ({userInfo, onUserDeleted}) => {
             </div>
           )}
 
-          <div>
-            <p className="text-sm font-medium">{userInfo?.name}</p>
-            <p className="text-xs text-gray-500">{userInfo?.email}</p>
+          <div className="truncate">
+            <p className="text-sm font-medium truncate">{userInfo?.name}</p>
+            <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
         </div>
 
         {/* Delete button */}
         <button
-          className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100 hover:border-rose-300 cursor-pointer"
+          className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
           onClick={() => setOpenDeleteAlert(true)}
         >
           <LuTrash2 className="text-base" />
@@ -71,7 +71,7 @@ const UserCard = ({userInfo, onUserDeleted}) => {
         </Modal>
       </div>
 
-      <div className="flex items-end gap-3 mt-5">
+      <div className="flex flex-wrap items-end gap-4 mt-5">
         <StatCard
           label="Pending"
           count={userInfo?.pendingTasks || 0}
@@ -108,9 +108,10 @@ const StatCard = ({ label, count, status }) => {
 
   return (
     <div
-      className={`flex-1 text-[10px] font-medium ${getStatusTagColor()} px-3 py-0.5 rounded`}
+      className={`flex-1 text-[10px] font-medium ${getStatusTagColor()} px-3 py-0.5 rounded text-center`}
     >
-      <span className="text-[12px] font-semibold">{count}</span> <br /> {label}
+      <span className="text-[12px] font-semibold">{count}</span> <br />
+      <span className="whitespace-nowrap">{label}</span>
     </div>
   )
 }

@@ -7,6 +7,9 @@ import { LuFileSpreadsheet } from "react-icons/lu";
 import TaskStatusTabs from "../../components/TaskStatusTabs";
 import TaskCard from "../../components/Cards/TaskCard";
 import { UserContext } from "../../context/userContext";
+import Modal from "../../components/Modal";
+import DeleteAlert from "../../components/DeleteAlert";
+import toast from "react-hot-toast";
 
 const ManageTasks = () => {
   const { user } = useContext(UserContext);
@@ -15,6 +18,9 @@ const ManageTasks = () => {
 
   const [tabs, setTabs] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
+
+  const [deleteTaskId, setDeleteTaskId] = useState(null);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
   const navigate = useNavigate();
 
@@ -49,6 +55,29 @@ const ManageTasks = () => {
     navigate(`${basePath}/create-task`, { state: { taskId: taskData._id } });
   };
 
+  const handleDeleteClick = (taskId) => {
+    setDeleteTaskId(taskId);
+    setOpenDeleteAlert(true);
+  };
+
+  // Delete Task
+  const deleteTask = async () => {
+    try {
+      await axiosInstance.delete(API_PATHS.TASKS.DELETE_TASK(deleteTaskId));
+
+      setOpenDeleteAlert(false);
+      toast.success("Task details deleted successfully");
+
+      getAllTasks(filterStatus);
+    } catch (error) {
+      console.error(
+        "Error deleting task:",
+        error.response?.data?.message || error.message
+      );
+      toast.error("Failed to delete task. Please try again.");
+    }
+  };
+
   // Download task report
   const handleDownloadReport = async () => {
     try {
@@ -81,11 +110,11 @@ const ManageTasks = () => {
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-xl md:text-xl font-medium text-gray-700">Manage Tasks</h2>
+            <h2 className="text-xl md:text-xl font-medium text-gray-700 whitespace-nowrap">Manage Tasks</h2>
 
             {user?.role === 'admin' && (
               <button
-                className="flex lg:hidden download-btn"
+                className="flex md:hidden download-btn shrink-0"
                 onClick={handleDownloadReport}
               >
                 <LuFileSpreadsheet className="text-lg" />
@@ -104,7 +133,10 @@ const ManageTasks = () => {
                 />
 
                 {user?.role === 'admin' && (
-                  <button className="hidden md:flex download-btn" onClick={handleDownloadReport}>
+                  <button
+                    className="hidden md:flex download-btn shrink-0"
+                    onClick={handleDownloadReport}
+                  >
                     <LuFileSpreadsheet className="text-lg" />
                     Download Report
                   </button>
@@ -116,7 +148,7 @@ const ManageTasks = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allTasks?.map((item, index) => (
             <TaskCard
               key={item._id}
@@ -136,10 +168,23 @@ const ManageTasks = () => {
               onClick={() => {
                 handleClick(item);
               }}
+              onDelete={() => handleDeleteClick(item._id)}
+              showDeleteButton={true}
             />
           ))}
         </div>
       </div>
+
+      <Modal
+        isOpen={openDeleteAlert}
+        onClose={() => setOpenDeleteAlert(false)}
+        title="Delete Task"
+      >
+        <DeleteAlert
+          content="Are you sure you want to delete this task?"
+          onDelete={() => deleteTask()}
+        />
+      </Modal>
     </DashboardLayout>
   );
 };

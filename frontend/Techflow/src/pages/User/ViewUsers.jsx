@@ -35,7 +35,7 @@ const ViewUsers = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (
             <ViewUserCard key={user._id} userInfo={user} />
           ))}
@@ -49,9 +49,9 @@ export default ViewUsers;
 
 const ViewUserCard = ({userInfo}) => {
   return (
-    <div className="user-card p-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+    <div className="user-card p-4 bg-white rounded-lg shadow-sm">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-3 min-w-0">
           {userInfo?.profileImageUrl ? (
             <img
               src={userInfo?.profileImageUrl}
@@ -64,9 +64,9 @@ const ViewUserCard = ({userInfo}) => {
             </div>
           )}
 
-          <div>
-            <p className="text-sm font-medium">{userInfo?.name}</p>
-            <p className="text-xs text-gray-500">{userInfo?.email}</p>
+          <div className="truncate">
+            <p className="text-sm font-medium truncate">{userInfo?.name}</p>
+            <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
         </div>
       </div>
