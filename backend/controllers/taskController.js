@@ -141,6 +141,7 @@ const createTask = async (req, res) => {
       electrodeType,
       adhesiveType,
       allergyType,
+      sleepDeprivationType,
       priority,
       // dueDate,
       assignedTo,
@@ -158,6 +159,7 @@ const createTask = async (req, res) => {
       electrodeType,
       adhesiveType,
       allergyType,
+      sleepDeprivationType,
       priority,
       // dueDate,
       assignedTo,
@@ -186,6 +188,7 @@ const updateTask = async (req, res) => {
     task.electrodeType = req.body.electrodeType || task.electrodeType;
     task.adhesiveType = req.body.adhesiveType || task.adhesiveType;
     task.allergyType = req.body.allergyType || task.allergyType;
+    task.sleepDeprivationType = req.body.sleepDeprivationType || task.sleepDeprivationType;
     task.priority = req.body.priority || task.priority;
     // task.dueDate = req.body.dueDate || task.dueDate;
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist;

@@ -12,9 +12,10 @@ const taskSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     orderType: { type: String },
-    electrodeType: { type: String, enum: ['Regular Leads', 'MRI Leads'], default: 'Regular Leads' },
-    adhesiveType: { type: String, enum: ['Collodion', 'Tensive'], default: 'Collodion' },
-    allergyType: { type: String, enum: ['None', 'Adhesive Allergy'], default: 'None' },
+    electrodeType: { type: String, enum: ['Regular Leads', 'MRI Leads', 'Depth Electrodes'], default: 'Regular Leads' },
+    adhesiveType: { type: String, enum: ['Collodion', 'Tensive', 'None'], default: 'Collodion' },
+    allergyType: { type: String, enum: ['None', 'Adhesive Tape'], default: 'None' },
+    sleepDeprivationType: { type: String, enum: ['Not Ordered', 'Ordered'], default: 'Not Ordered' },
     priority: { type: String, enum: ['Routine', 'ASAP', 'STAT'], default: 'Routine' },
     status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
     // dueDate: { type: Date, required: true },

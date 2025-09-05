@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { PRIORITY_DATA, ORDER_TYPE_DATA, AUTOMATIC_CHECKLIST_ITEMS } from "../../utils/data";
+import { PRIORITY_DATA, ORDER_TYPE_DATA, AUTOMATIC_CHECKLIST_ITEMS, DEFAULT_COMMENTS } from "../../utils/data";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import toast from "react-hot-toast";
@@ -28,6 +28,7 @@ const CreateTask = () => {
     electrodeType: "Regular Leads",
     adhesiveType: "Collodion", 
     allergyType: "None",
+    sleepDeprivationType: "Not Ordered",
     priority: "Routine",
     // dueDate: null,
     assignedTo: [],
@@ -54,6 +55,7 @@ const CreateTask = () => {
       electrodeType: "Regular Leads",
       adhesiveType: "Collodion", 
       allergyType: "None",
+      sleepDeprivationType: "Not Ordered",
       priority: "Routine",
       // dueDate: null,
       assignedTo: [],
@@ -176,6 +178,7 @@ const CreateTask = () => {
           electrodeType: taskInfo.electrodeType || "Regular Leads",
           adhesiveType: taskInfo.adhesiveType || "Collodion",
           allergyType: taskInfo.allergyType || "None",
+          sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
           priority: taskInfo.priority,
           // dueDate: taskInfo.dueDate
           //   ? moment(taskInfo.dueDate).utc().format("YYYY-MM-DD")
@@ -216,7 +219,7 @@ const CreateTask = () => {
         !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
       );
       
-      // Reset procedure-dependent supplies based on order type
+      // Reset procedure-dependent based on order type
       let resetData = {
         todoChecklist: [...automaticItems, ...existingCustomItems]
       };
@@ -227,7 +230,18 @@ const CreateTask = () => {
           ...resetData,
           electrodeType: "Regular Leads",
           adhesiveType: "Collodion",
-          allergyType: "None"
+          allergyType: "None",
+          sleepDeprivationType: "Not Ordered"
+        };
+      }
+
+      // For Continuous SEEG
+      else if (taskData.orderType?.includes("Continuous SEEG")) {
+        resetData = {
+          ...resetData,
+          electrodeType: "Depth Electrodes",
+          adhesiveType: "None",
+          sleepDeprivationType: "Not Ordered"
         };
       }
       // For non-Continuous types (except SEEG), reset only allergy
@@ -237,7 +251,6 @@ const CreateTask = () => {
           allergyType: "None"
         };
       }
-      // For Continuous SEEG, don't show any checkboxes (no reset needed)
       
       setTaskData(prev => ({
         ...prev,
@@ -301,70 +314,115 @@ const CreateTask = () => {
               />
             </div>
 
-            {/* Procedure-Dependent Supplies Section */}
-            {(taskData.orderType?.includes("Continuous EEG") || 
-              (!taskData.orderType?.includes("Continuous SEEG") && !taskData.orderType?.includes("Continuous EEG"))) && (
+            {/* Procedure-Dependent Section */}
+            {(taskData.orderType?.includes("Continuous EEG") || taskData.orderType === "Continuous SEEG" || !taskData.orderType?.includes("Continuous")) && (
               <div className="mt-4">
                 <label className="text-xs font-medium text-slate-600 mb-3 block">
-                  Procedure-Dependent Supplies
+                  Procedure-Dependent
                 </label>
-                
-                {/* Continuous EEG types show all three checkboxes */}
-                {taskData.orderType?.includes("Continuous EEG") && (
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={taskData.electrodeType === "MRI Leads"}
-                        onChange={(e) => handleValueChange("electrodeType", e.target.checked ? "MRI Leads" : "Regular Leads")}
-                        className="w-4 h-4 accent-primary rounded cursor-pointer"
-                      />
-                      <span className="text-sm text-gray-700">MRI Leads</span>
-                    </label>
-                    
+
+                {/* One wrapper for ALL checkboxes */}
+                <div className="space-y-2">
+                  {/* Continuous EEG types show all three checkboxes */}
+                  {taskData.orderType?.includes("Continuous EEG") && (
+                    <>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={taskData.electrodeType === "MRI Leads"}
+                          onChange={(e) =>
+                            handleValueChange("electrodeType", e.target.checked ? "MRI Leads" : "Regular Leads")
+                          }
+                          className="w-4 h-4 accent-primary rounded cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700">MRI Leads</span>
+                      </label>
+
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={taskData.adhesiveType === "Tensive"}
-                        onChange={(e) => handleValueChange("adhesiveType", e.target.checked ? "Tensive" : "Collodion")}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleValueChange("adhesiveType", "Tensive");
+                          } else {
+                            handleValueChange("adhesiveType", "Collodion");
+                          }
+                        }}
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">Tensive</span>
+                      <span className="text-sm text-gray-700">Tensive Glue</span>
                     </label>
                     
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={taskData.allergyType === "Adhesive Allergy"}
-                        onChange={(e) => handleValueChange("allergyType", e.target.checked ? "Adhesive Allergy" : "None")}
+                        checked={taskData.adhesiveType === "None"}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleValueChange("adhesiveType", "None");
+                          } else {
+                            handleValueChange("adhesiveType", "Collodion");
+                          }
+                        }}
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">Adhesive Allergy</span>
+                      <span className="text-sm text-gray-700">No Adhesive Glue Used</span>
                     </label>
-                    
-                    <p className="text-xs text-gray-500 mt-2">
-                      Defaults to Regular Leads | Collodion | No Adhesive Allergy
-                    </p>
-                  </div>
-                )}
-                
-                {/* All other types (except Continuous SEEG) show only Adhesive Allergy */}
-                {!taskData.orderType?.includes("Continuous") && (
-                  <div className="space-y-2">
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={taskData.allergyType === "Adhesive Tape"}
+                          onChange={(e) =>
+                            handleValueChange("allergyType", e.target.checked ? "Adhesive Tape" : "None")
+                          }
+                          className="w-4 h-4 accent-primary rounded cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700">Adhesive Tape Allergy</span>
+                      </label>
+                    </>
+                  )}
+
+                  {/* All other types (except Continuous SEEG) show only Adhesive Tape Allergy */}
+                  {!taskData.orderType?.includes("Continuous") && (
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={taskData.allergyType === "Adhesive Allergy"}
-                        onChange={(e) => handleValueChange("allergyType", e.target.checked ? "Adhesive Allergy" : "None")}
-                        className="w-4 h-4 accent-primary rounded"
+                        checked={taskData.allergyType === "Adhesive Tape"}
+                        onChange={(e) =>
+                          handleValueChange("allergyType", e.target.checked ? "Adhesive Tape" : "None")
+                        }
+                        className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">Adhesive Allergy</span>
+                      <span className="text-sm text-gray-700">Adhesive Tape Allergy</span>
                     </label>
-                    
-                    <p className="text-xs text-gray-500 mt-2">
-                      Defaults to No Adhesive Allergy
-                    </p>
-                  </div>
+                  )}
+
+                  {/* Sleep Deprivation checkbox */}
+                  {(taskData.orderType === "Continuous EEG | LTM" ||
+                    taskData.orderType === "Continuous EEG | EMU" ||
+                    taskData.orderType === "Continuous EEG | Pediatric" ||
+                    taskData.orderType === "Continuous SEEG") && (
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={taskData.sleepDeprivationType === "Ordered"}
+                        onChange={(e) =>
+                          handleValueChange("sleepDeprivationType", e.target.checked ? "Ordered" : "Not Ordered")
+                        }
+                        className="w-4 h-4 accent-primary rounded cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">Sleep Deprivation</span>
+                    </label>
+                  )}
+                </div>
+
+                {/* Default comments */}
+                {DEFAULT_COMMENTS[taskData.orderType] && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    {DEFAULT_COMMENTS[taskData.orderType]}
+                  </p>
                 )}
               </div>
             )}

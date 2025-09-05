@@ -118,29 +118,35 @@ const ViewTaskDetails = () => {
                 </div>
               </div>
 
-              <div className="mt-4">
-                <InfoBox label="Order Type" value={task?.orderType} />
-              </div>
-
               <div className="grid grid-cols-12 gap-4 mt-4">
                 <div className="col-span-4">
-                  <InfoBox label="Electrode Type" value={task?.electrodeType || "Regular Leads"} />
+                  <InfoBox label="Order Type" value={task?.orderType} />
                 </div>
-                
-                <div className="col-span-4">
-                  <InfoBox label="Adhesive Type" value={task?.adhesiveType || "Collodion"} />
-                </div>
-                
-                <div className="col-span-4">
-                  <InfoBox label="Allergy" value={task?.allergyType || "None"} />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-12 gap-4 mt-4">
-                <div className="col-span-6 md:col-span-4">
+                <div className="col-span-4">
                   <InfoBox label="Priority" value={task?.priority} />
                 </div>
 
+                <div className="col-span-4">
+                  <InfoBox label="Electrode Type" value={task?.electrodeType || "Regular Leads"} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 gap-4 mt-4">   
+                <div className="col-span-4">
+                  <InfoBox label="Adhesive Glue" value={task?.adhesiveType || "Collodion"} />
+                </div>
+
+                <div className="col-span-4">
+                  <InfoBox label="Allergy" value={task?.allergyType || "None"} />
+                </div>
+
+                <div className="col-span-4">
+                  <InfoBox label="Sleep Deprivation" value={task?.sleepDeprivationType || "Not Ordered"} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 gap-4 mt-4">              
                 {/*
                 <div className="col-span-6 md:col-span-4">
                   <InfoBox
@@ -158,7 +164,6 @@ const ViewTaskDetails = () => {
                   <label className="text-xs font-medium text-slate-500">
                     Assigned To
                   </label>
-
 
                   <AvatarGroup 
                     avatars={task?.assignedTo?.map(item => item?.profileImageUrl) || []} 

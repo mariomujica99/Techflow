@@ -1,7 +1,7 @@
 import React from "react";
 import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
-import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2 } from "react-icons/lu";
+import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuEyeOff, LuBrain } from "react-icons/lu";
 import moment from "moment";
 
 const TaskCard = ({
@@ -9,6 +9,7 @@ const TaskCard = ({
   orderType,
   electrodeType,
   allergyType,
+  sleepDeprivationType,
   priority,
   status,
   progress,
@@ -58,26 +59,26 @@ const TaskCard = ({
   };
   
   return <div
-      className="bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer relative"
-      onClick={onClick}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-end gap-3 px-4 min-w-0">
-          <div
-            className={`text-[11px] font-medium ${getStatusTagColor()} px-4 py-0.5 rounded`}
-          >
-            <span className="whitespace-nowrap">{status}</span>
-          </div>
-          <div
-            className={`text-[11px] font-medium ${getPriorityTagColor()} px-4 py-0.5 rounded`}
-          >
-            {priority}
-          </div>
-        </div>
-        
-        {showDeleteButton && (
+    className="bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer relative"
+    onClick={onClick}
+  >
+    <div className="flex items-end gap-3 px-4">
+      <div
+        className={`text-[11px] font-medium ${getStatusTagColor()} px-3.5 py-0.5 rounded`}
+      >
+        <span className="whitespace-nowrap">{status}</span>
+      </div>
+      <div
+        className={`text-[11px] font-medium ${getPriorityTagColor()} px-3.5 py-0.5 rounded`}
+      >
+        {priority}
+      </div>
+    </div>
+
+    {showDeleteButton && (
+      <div className="absolute top-3 right-4">
         <button
-          className="shrink-0 text-[13px] mr-4 font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
+          className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation(); // Prevent card click
             onDelete();
@@ -85,8 +86,8 @@ const TaskCard = ({
         >
           <LuTrash2 className="text-base" />
         </button>
-        )}
       </div>
+    )}
 
 
       <div
@@ -123,8 +124,8 @@ const TaskCard = ({
             {orderType}
           </p>
           
-          {/* Allergy - only show if Adhesive Allergy */}
-          {allergyType === "Adhesive Allergy" && (
+          {/* Allergy - only show if Adhesive Tape Allergy */}
+          {allergyType === "Adhesive Tape" && (
             <div className="text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
               Allergy
             </div>
@@ -132,12 +133,21 @@ const TaskCard = ({
         </div>
 
 
-        <p className="text-[13px] text-gray-700/80 font-medium mt-2 mb-2 leading-[18px]">
-          Task Done:{" "}
-          <span className="font-semibold text-gray-700">
-            {completedTodoCount} / {todoChecklist.length || 0}
-          </span>
-        </p>
+        <div className="flex items-center justify-between mt-2.5 mb-2.5">
+          <p className="text-[13px] text-gray-700/80 font-medium leading-[18px]">
+            Task Done:{" "}
+            <span className="font-semibold text-gray-700">
+              {completedTodoCount} / {todoChecklist.length || 0}
+            </span>
+          </p>
+          
+          {sleepDeprivationType === "Ordered" && (
+            <div className="flex items-center gap-1 bg-indigo-50 px-3 py-0.25 rounded-full border border-indigo-200">
+              <LuMoonStar className="text-indigo-600 text-xs" />
+              <span className="text-[11px] text-indigo-700 font-medium">SD</span>
+            </div>
+          )}
+        </div>
 
         <Progress progress={progress} status={status} />
       </div>

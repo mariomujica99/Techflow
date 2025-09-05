@@ -126,7 +126,7 @@ export const ORDER_TYPE_DATA = [
 ];
 
 export const TODO_DROPDOWN_OPTIONS = [
-  { label: "Skin Check", value: "Skin Check" },
+  { label: "Skin Check | Day ", value: "Skin Check | Day " },
   { label: "Fix Electrodes", value: "Fix Electrodes" },
   { label: "Hyperventilation", value: "Hyperventilation" },
   { label: "Photic Stimulation", value: "Photic Stimulation" },
@@ -138,64 +138,83 @@ export const TODO_DROPDOWN_OPTIONS = [
 
 export const AUTOMATIC_CHECKLIST_ITEMS = {
   "Routine EEG | IP": [
-    "1 Hook-Up",
-    "2 Disconnect", 
-    "3 Place Charge & Chart"
+    "Hook-Up",
+    "Disconnect", 
+    "Place Charge & Chart"
   ],
   "Routine EEG | OP": [
-    "1 Hook-Up",
-    "2 Place Charge & Chart",
-    "3 Disconnect"
+    "Hook-Up",
+    "Place Charge & Chart",
+    "Disconnect"
   ],
   "Routine EEG | BMC": [
-    "1 Drive to BMC",
-    "2 Hook-Up",
-    "3 Disconnect",
-    "4 Upload to Server", 
-    "5 Place Charge & Chart"
+    "Travel to BMC",
+    "Hook-Up (Run Study for 1 Hour)",
+    "Disconnect",
+    "Ensure Study is Uploaded to Server", 
+    "Place Charge & Chart"
   ],
   "Routine EEG | Pediatric": [
-    "1 Hook-Up",
-    "2 Disconnect",
-    "3 Place Charge & Chart"
+    "Hook-Up (Run Study for 1 Hour)",
+    "Disconnect",
+    "Place Charge & Chart",
+    "Inform Pediatric Reading Provider"
   ],
   "Routine EEG | Neonate": [
-    "1 Hook-Up",
-    "2 Disconnect",
-    "3 Place Charge & Chart"
+    "Hook-Up (Run Study for 1 Hour)",
+    "Disconnect",
+    "Place Charge & Chart",
+    "Inform Pediatric Reading Provider"
   ],
   "Routine EEG | WADA": [
-    "1 Hook-Up",
-    "2 Disconnect",
-    "3 Place Charge & Chart"
+    "Hook-Up",
+    "Transfer to IR",
+    "Disconnect",
+    "Annotate Study",
+    "Release WADA Order"
   ],
   "Continuous EEG | LTM": [
-    "1 Hook-Up",
-    "2 Place Start Time & Chart",
-    "3 Inform Reading Provider"
+    "Hook-Up",
+    "Place Start Time & Chart",
+    "Inform Reading Provider"
   ],
   "Continuous EEG | EMU": [
-    "1 Hook-Up", 
-    "2 Place Start Time & Chart"
+    "Hook-Up", 
+    "Place Start Time & Chart"
   ],
   "Continuous EEG | Pediatric": [
-    "1 Hook-Up",
-    "2 Place Start Time & Chart",
-    "3 Inform Reading Provider or Neurotech"
+    "Hook-Up",
+    "Place Start Time & Chart",
+    "Inform Reading Provider and/or Neurotech"
   ],
   "Continuous EEG | Neonate": [
-    "1 Hook-Up",
-    "2 Place Start Time & Chart", 
-    "3 Inform Neurotech"
+    "Hook-Up",
+    "Place Start Time & Chart", 
+    "Inform Pediatric Reading Provider and Neurotech"
   ],
   "Continuous SEEG": [
-    "1 Hook-Up",
-    "2 Place Start Time & Chart"
+    "Hook-Up",
+    "Place Start Time & Chart"
   ],
   "Neuropsychiatric EEG": [
-    "1 Hook-Up",
-    "2 Transfer Patient",
-    "3 Disconnect",
-    "4 Place Charge & Chart"
+    "Hook-Up",
+    "Transfer Patient",
+    "Disconnect",
+    "Place Charge & Chart"
   ]
+};
+
+export const DEFAULT_COMMENTS = {
+  "Routine EEG | IP": "Defaults to No Adhesive Tape Allergy",
+  "Routine EEG | OP": "Defaults to No Adhesive Tape Allergy",
+  "Routine EEG | BMC": "Defaults to No Adhesive Tape Allergy",
+  "Routine EEG | Pediatric": "Defaults to No Adhesive Tape Allergy",
+  "Routine EEG | Neonate": "Defaults to No Adhesive Tape Allergy",
+  "Routine EEG | WADA": "Defaults to No Adhesive Tape Allergy",
+  "Continuous EEG | LTM": "Defaults to Regular Leads | Collodion Glue | No Adhesive Tape Allergy | No Sleep Deprivation",
+  "Continuous EEG | EMU": "Defaults to Regular Leads | Collodion Glue | No Adhesive Tape Allergy | No Sleep Deprivation",
+  "Continuous EEG | Pediatric": "Defaults to Regular Leads | Collodion Glue | No Adhesive Tape Allergy | No Sleep Deprivation",
+  "Continuous EEG | Neonate": "Defaults to Regular Leads | Collodion Glue | No Adhesive Tape Allergy",
+  "Continuous SEEG": "Defaults to No Sleep Deprivation",
+  "Neuropsychiatric EEG": "Defaults to No Adhesive Tape Allergy",
 };
