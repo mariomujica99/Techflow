@@ -1,7 +1,8 @@
 import React from "react";
 import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
-import { LuPaperclip, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuShieldAlert, LuBrain, LuBrainCircuit, LuTriangleAlert } from "react-icons/lu";
+import { LuMessageSquareText, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuShieldAlert, LuBrain, LuBrainCircuit, LuTriangleAlert } from "react-icons/lu";
+import { FaComputer } from "react-icons/fa6";
 import moment from "moment";
 
 const TaskCard = ({
@@ -15,7 +16,7 @@ const TaskCard = ({
   progress,
   createdAt,
   assignedTo,
-  attachmentCount,
+  commentCount,
   completedTodoCount,
   completedOn,
   todoChecklist,
@@ -199,11 +200,10 @@ const TaskCard = ({
             users={assignedTo || []}
           />
 
-
-          {attachmentCount > 0 && (
-            <div className="flex items-center gap-2 bg-blue-50 px-2.5 py-1.5 rounded-lg">
-              <LuPaperclip className="text-primary" />{" "}
-              <span className="text-xs text-gray-900">{attachmentCount}</span>
+          {commentCount > 0 && (
+            <div className="flex items-center gap-1.5 bg-blue-50 px-2.5 pb-1.5 pt-1 rounded-lg">
+              <LuMessageSquareText className="text-blue-500 mt-0.75" />
+              <span className="text-xs text-blue-500">{commentCount}</span>
             </div>
           )}
         </div>

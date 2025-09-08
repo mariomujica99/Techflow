@@ -144,7 +144,7 @@ const createTask = async (req, res) => {
       sleepDeprivationType,
       priority,
       assignedTo,
-      attachments,
+      comments,
       todoChecklist,
     } = req.body;
 
@@ -163,7 +163,7 @@ const createTask = async (req, res) => {
       assignedTo,
       createdBy: req.user._id,
       todoChecklist,
-      attachments,
+      comments,
     });
     
     res.status(201).json({ message: 'Task created successfully', task });
@@ -189,7 +189,7 @@ const updateTask = async (req, res) => {
     task.sleepDeprivationType = req.body.sleepDeprivationType || task.sleepDeprivationType;
     task.priority = req.body.priority || task.priority;
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
-    task.attachments = req.body.attachments || task.attachments;
+    task.comments = req.body.comments || task.comments;
 
     if (req.body.assignedTo) {
       if (!Array.isArray(req.body.assignedTo)) {

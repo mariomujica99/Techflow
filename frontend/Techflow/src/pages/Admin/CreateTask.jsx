@@ -10,7 +10,7 @@ import { LuTrash2 } from "react-icons/lu";
 import SelectDropdown from "../../components/Inputs/SelectDropdown";
 import SelectUsers from "../../components/Inputs/SelectUsers";
 import TodoListInput from "../../components/Inputs/TodoListInput";
-import AddAttachmentsInput from "../../components/Inputs/AddAttachmentsInput";
+import AddCommentsInput from "../../components/Inputs/AddCommentsInput";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 import { UserContext } from "../../context/userContext";
@@ -32,7 +32,7 @@ const CreateTask = () => {
     priority: "Routine",
     assignedTo: [],
     todoChecklist: [],
-    attachments: [],
+    comments: [],
   });
 
   const [currentTask, setCurrentTask] =useState(null);
@@ -58,7 +58,7 @@ const CreateTask = () => {
       priority: "Routine",
       assignedTo: [],
       todoChecklist: [],
-      attachments: [],
+      comments: [],
     });
   };
 
@@ -168,7 +168,7 @@ const CreateTask = () => {
           priority: taskInfo.priority,
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
-          attachments: taskInfo?.attachments || [],
+          comments: taskInfo?.comments || [],
         }));
       }
     } catch (error) {
@@ -458,7 +458,7 @@ const CreateTask = () => {
               </div>
             </div>
 
-            <div className="mt-3">
+            <div className="mt-4">
               <label className="text-xs font-medium text-slate-600">
                 Tasks
               </label>
@@ -471,15 +471,15 @@ const CreateTask = () => {
               />
             </div>
 
-            <div className="mt-3">
+            <div className="mt-4">
               <label className="text-xs font-medium text-slate-600">
-                Add Attachments
+                Add Comments
               </label>
 
-              <AddAttachmentsInput
-                attachments={taskData?.attachments}
-                setAttachments={(value) =>
-                  handleValueChange("attachments", value)
+              <AddCommentsInput
+                comments={taskData?.comments}
+                setComments={(value) =>
+                  handleValueChange("comments", value)
                 }
               />
             </div>

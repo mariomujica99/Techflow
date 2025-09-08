@@ -20,7 +20,7 @@ const taskSchema = new mongoose.Schema(
     status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
     assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    attachments: [{ type: String }], // URLs to files
+    comments: [{ type: String }], // Text comments
     todoChecklist: [todoSchema], // Sub-document for todos
     progress: { type: Number, default: 0 }, // Progress percentage
     completedOn: { type: Date, default: null },

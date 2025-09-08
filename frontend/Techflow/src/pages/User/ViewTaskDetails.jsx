@@ -5,7 +5,7 @@ import { API_PATHS } from "../../utils/apiPaths";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import AvatarGroup from "../../components/AvatarGroup";
 import moment from "moment";
-import { LuSquareArrowOutUpRight } from "react-icons/lu";
+import { LuMessageSquareText, LuSquareArrowOutUpRight } from "react-icons/lu";
 
 const ViewTaskDetails = () => {
   const location = useLocation();
@@ -84,14 +84,6 @@ const ViewTaskDetails = () => {
     } catch (error) {
       console.error("Error completing all todos:", error);
     }
-  };
-
-  // Handle attachment link click
-  const handleLinkClick = (link) => {
-    if (!/^https?:\/\//i.test(link)) {
-      link = "https://" + link; // Default to HTTPS
-    }
-    window.open(link, "_blank");
   };
 
   useEffect(() => {
@@ -188,18 +180,20 @@ const ViewTaskDetails = () => {
                 </button>
               )}
 
-              {task?.attachments?.length > 0 && (
+              {task?.comments?.length > 0 && (
                 <div className="mt-4">
-                  <label className="text-xs font-medium text-slate-500">
-                    Attachments
-                  </label>
+                  <div className="flex items-start gap-1.5">
+                    <LuMessageSquareText className="text-gray-400 flex-shrink-0 mt-0.25" />
+                    <label className="text-xs font-medium text-slate-500">
+                      Comments
+                    </label>
+                  </div>
 
-                  {task?.attachments?.map((link, index) => (
-                    <Attachment
-                      key={`link_${index}`}
-                      link={link}
+                  {task?.comments?.map((comment, index) => (
+                    <Comment
+                      key={`comment_${index}`}
+                      comment={comment}
                       index={index}
-                      onClick={() => handleLinkClick(link)}
                     />
                   ))}
                 </div>
@@ -239,19 +233,10 @@ const TodoCheckList = ({ text, isChecked, onChange }) => {
   </div>
 };
 
-const Attachment = ({ link, index, onClick }) => {
-  return <div
-    className="flex justify-between bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2 cursor-pointer"
-    onClick={onClick}
-  >
-    <div className="flex-1 flex items-center gap-3">
-      <span className="text-xs text-gray-400 font-semibold mr-2">
-        {index < 9 ? `0${index + 1}` : index + 1}
-      </span>
-
-      <p className="text-xs text-black">{link}</p>
+const Comment = ({ comment, index }) => {
+  return <div className="bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2">
+    <div className="flex items-start gap-3">
+      <p className="text-xs text-black flex-1">{comment}</p>
     </div>
-
-    <LuSquareArrowOutUpRight className="text-gray-400" />
   </div>
 }

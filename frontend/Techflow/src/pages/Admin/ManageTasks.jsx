@@ -163,7 +163,7 @@ const ManageTasks = () => {
               createdAt={item.createdAt}
               completedOn={item.completedOn}
               assignedTo={item.assignedTo || []}
-              attachmentCount={item.attachments?.length || 0}
+              commentCount={item.comments?.length || 0}
               completedTodoCount={item.completedTodoCount || 0}
               todoChecklist={item.todoChecklist || []}
               onClick={() => {
