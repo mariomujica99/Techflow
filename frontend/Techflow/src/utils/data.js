@@ -126,14 +126,14 @@ export const ORDER_TYPE_DATA = [
 ];
 
 export const TODO_DROPDOWN_OPTIONS = [
-  { label: "Skin Check | Day ", value: "Skin Check | Day " },
-  { label: "Fix Electrodes", value: "Fix Electrodes" },
-  { label: "Hyperventilation", value: "Hyperventilation" },
-  { label: "Photic Stimulation", value: "Photic Stimulation" },
-  { label: "Disconnect & Chart", value: "Disconnect & Chart" },
-  { label: "Transfer Patient to", value: "Transfer Patient to" },
-  { label: "Rehook", value: "Rehook" },
-  { label: "Troubleshoot", value: "Troubleshoot" },
+  { label: "Skin Check", value: "Skin Check | Day " },
+  { label: "Fix Electrodes", value: "Fix Electrodes " },
+  { label: "Hyperventilation", value: "Hyperventilation " },
+  { label: "Photic Stimulation", value: "Photic Stimulation " },
+  { label: "Discontinue CEEG", value: "Disconnect | Place End Time & Chart | Inform Reading Provider" },
+  { label: "Transfer Patient", value: "Transfer Patient to " },
+  { label: "Rehook", value: "Rehook " },
+  { label: "Troubleshoot", value: "Troubleshoot " },
 ];
 
 export const AUTOMATIC_CHECKLIST_ITEMS = {

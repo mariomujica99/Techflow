@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { HiMiniPlus, HiOutlineTrash } from "react-icons/hi2";
 import { LuChevronDown } from "react-icons/lu";
 import { TODO_DROPDOWN_OPTIONS } from "../../utils/data";
@@ -9,6 +9,9 @@ const TodoListInput = ({ todoList, setTodoList }) => {
   const [customText, setCustomText] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showEditableInput, setShowEditableInput] = useState(false);
+
+  const [editableTextRef, setEditableTextRef] = useState(null);
+  const [customTextRef, setCustomTextRef] = useState(null);
 
   // Handle template selection from dropdown
   const handleTemplateSelect = (template) => {
@@ -42,6 +45,19 @@ const TodoListInput = ({ todoList, setTodoList }) => {
     setTodoList(updatedArr);
   };
 
+  const autoResize = (textarea) => {
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  };
+
+  useEffect(() => {
+    if (editableTextRef) {
+      autoResize(editableTextRef);
+    }
+  }, [editableText, editableTextRef]);
+
   return (
     <div>
       {/* Display existing todo items */}
@@ -50,15 +66,17 @@ const TodoListInput = ({ todoList, setTodoList }) => {
           key={item}
           className="flex justify-between bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2"
         >
-          <p className="text-xs text-black">
-            <span className="text-xs text-gray-400 font-semibold mr-2">
-              {index < 9 ? `0${index + 1}` : index + 1}
+          <div className="flex flex-1 mr-3">
+            <span className="text-xs text-gray-400 font-semibold mr-2 flex-shrink-0">
+              {index + 1}
             </span>
-            {item}
-          </p>
-
+            <p className="text-xs text-black flex-1">
+              {item}
+            </p>
+          </div>
+          
           <button
-            className="cursor-pointer"
+            className="cursor-pointer flex-shrink-0"
             onClick={() => handleDeleteOption(index)}
           >
             <HiOutlineTrash className="text-lg text-red-500" />
@@ -71,13 +89,16 @@ const TodoListInput = ({ todoList, setTodoList }) => {
         <label className="text-xs font-medium text-slate-600 mb-2 block">
           Select Task Template
         </label>
-        
+
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-3 py-2 rounded-md flex justify-between items-center"
+            className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center"
           >
-            {selectedTemplate || "Select Task"}
+            {selectedTemplate ? 
+              TODO_DROPDOWN_OPTIONS.find(opt => opt.value === selectedTemplate)?.label || "Select Task"
+              : "Select Task"
+            }
             <LuChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
@@ -87,7 +108,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
                 <div
                   key={option.value}
                   onClick={() => handleTemplateSelect(option.value)}
-                  className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                  className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 text-left"
                 >
                   {option.label}
                 </div>
@@ -98,15 +119,18 @@ const TodoListInput = ({ todoList, setTodoList }) => {
 
         {/* Editable text input when template is selected */}
         {showEditableInput && (
-          <div className="flex items-center gap-3 mt-3">
-            <input
-              type="text"
-              placeholder="Edit template text..."
+          <div className="flex items-start gap-3 mt-3">
+            <textarea
+              ref={(el) => setEditableTextRef(el)}
+              placeholder="Edit template task"
               value={editableText}
               onChange={({ target }) => setEditableText(target.value)}
-              className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md"
+              className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
+              rows="1"
+              onInput={(e) => autoResize(e.target)}
             />
-            <button className="card-btn text-nowrap" onClick={handleAddTemplate}>
+
+            <button className="card-btn text-nowrap flex-shrink-0" onClick={handleAddTemplate}>
               <HiMiniPlus className="text-lg" /> Add
             </button>
           </div>
@@ -115,18 +139,18 @@ const TodoListInput = ({ todoList, setTodoList }) => {
 
       {/* Custom Text Input Section */}
       <div className="mt-4">
-        <label className="text-xs font-medium text-slate-600 mb-2 block">
-          Enter Custom Task
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
+        <div className="flex items-start gap-3">
+          <textarea
+            ref={(el) => setCustomTextRef(el)}
             placeholder="Type a Custom Task"
             value={customText}
             onChange={({ target }) => setCustomText(target.value)}
-            className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md"
+            className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
+            rows="1"
+            onInput={(e) => autoResize(e.target)}
           />
-          <button className="card-btn text-nowrap" onClick={handleAddCustom}>
+          
+          <button className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={handleAddCustom}>
             <HiMiniPlus className="text-lg" /> Add
           </button>
         </div>

@@ -21,7 +21,7 @@ const SelectDropdown = ({ options, value, onChange, placeholder }) => {
 
     {/* Dropdown Menu */}
     {isOpen && (
-      <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10">
+      <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10 max-h-48 overflow-y-auto">
         {options.map((option) => (
           <div
             key={option.value}

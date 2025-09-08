@@ -269,32 +269,34 @@ const CreateTask = () => {
               )}
             </div>
 
-            <div className="mt-4">
-              <label className="text-xs font-medium text-slate-600">
-                Room
-              </label>
+            <div className="grid grid-cols-12 gap-4 mt-4">
+              <div className="col-span-6 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
+                  Room
+                </label>
 
-              <input
-                placeholder="6820"
-                className="form-input"
-                value={taskData.title}
-                onChange={({ target }) =>
-                  handleValueChange("title", target.value)
-                }
-              />
-            </div>
+                <input
+                  placeholder="6820"
+                  className="form-input"
+                  value={taskData.title}
+                  onChange={({ target }) =>
+                    handleValueChange("title", target.value)
+                  }
+                />
+              </div>
 
-            <div className="mt-3">
-              <label className="text-xs font-medium text-slate-600">
-                Order Type
-              </label>
+              <div className="col-span-12 md:col-span-8">
+                <label className="text-xs font-medium text-slate-600">
+                  Order Type
+                </label>
 
-              <SelectDropdown
-                options={ORDER_TYPE_DATA}
-                value={taskData.orderType}
-                onChange={(value) => handleValueChange("orderType", value)}
-                placeholder="Select Order Type"
-              />
+                <SelectDropdown
+                  options={ORDER_TYPE_DATA}
+                  value={taskData.orderType}
+                  onChange={(value) => handleValueChange("orderType", value)}
+                  placeholder="Select Order Type"
+                />
+              </div>
             </div>
 
             {/* Procedure-Dependent Section */}
@@ -309,77 +311,92 @@ const CreateTask = () => {
                   {/* Continuous EEG types show all three checkboxes */}
                   {taskData.orderType?.includes("Continuous EEG") && (
                     <>
-                      <label className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
+                          id="mri-leads"
                           checked={taskData.electrodeType === "MRI Leads"}
                           onChange={(e) =>
                             handleValueChange("electrodeType", e.target.checked ? "MRI Leads" : "Regular Leads")
                           }
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <span className="text-sm text-gray-700">MRI Leads</span>
-                      </label>
+                        <label htmlFor="mri-leads" className="text-sm text-gray-700 cursor-pointer">
+                          MRI Leads
+                        </label>
+                      </div>
 
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={taskData.adhesiveType === "Tensive"}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            handleValueChange("adhesiveType", "Tensive");
-                          } else {
-                            handleValueChange("adhesiveType", "Collodion");
-                          }
-                        }}
-                        className="w-4 h-4 accent-primary rounded cursor-pointer"
-                      />
-                      <span className="text-sm text-gray-700">Tensive Glue</span>
-                    </label>
-                    
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={taskData.adhesiveType === "None"}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            handleValueChange("adhesiveType", "None");
-                          } else {
-                            handleValueChange("adhesiveType", "Collodion");
-                          }
-                        }}
-                        className="w-4 h-4 accent-primary rounded cursor-pointer"
-                      />
-                      <span className="text-sm text-gray-700">No Adhesive Glue Used</span>
-                    </label>
-
-                      <label className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
+                          id="tensive"
+                          checked={taskData.adhesiveType === "Tensive"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              handleValueChange("adhesiveType", "Tensive");
+                            } else {
+                              handleValueChange("adhesiveType", "Collodion");
+                            }
+                          }}
+                          className="w-4 h-4 accent-primary rounded cursor-pointer"
+                        />
+                        <label htmlFor="tensive" className="text-sm text-gray-700 cursor-pointer">
+                          Tensive Glue
+                        </label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="no-adhesive"
+                          checked={taskData.adhesiveType === "None"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              handleValueChange("adhesiveType", "None");
+                            } else {
+                              handleValueChange("adhesiveType", "Collodion");
+                            }
+                          }}
+                          className="w-4 h-4 accent-primary rounded cursor-pointer"
+                        />
+                        <label htmlFor="no-adhesive" className="text-sm text-gray-700 cursor-pointer">
+                          No Adhesive Glue Used
+                        </label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="adhesive-allergy"
                           checked={taskData.allergyType === "Adhesive Tape"}
                           onChange={(e) =>
                             handleValueChange("allergyType", e.target.checked ? "Adhesive Tape" : "None")
                           }
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <span className="text-sm text-gray-700">Adhesive Tape Allergy</span>
-                      </label>
+                        <label htmlFor="adhesive-allergy" className="text-sm text-gray-700 cursor-pointer">
+                          Adhesive Tape Allergy
+                        </label>
+                      </div>
                     </>
                   )}
 
                   {/* All other types (except Continuous SEEG) show only Adhesive Tape Allergy */}
                   {!taskData.orderType?.includes("Continuous") && (
-                    <label className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
+                        id="adhesive-allergy"
                         checked={taskData.allergyType === "Adhesive Tape"}
                         onChange={(e) =>
                           handleValueChange("allergyType", e.target.checked ? "Adhesive Tape" : "None")
                         }
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">Adhesive Tape Allergy</span>
-                    </label>
+                      <label htmlFor="adhesive-allergy" className="text-sm text-gray-700 cursor-pointer">
+                        Adhesive Tape Allergy
+                      </label>
+                    </div>
                   )}
 
                   {/* Sleep Deprivation checkbox */}
@@ -387,17 +404,20 @@ const CreateTask = () => {
                     taskData.orderType === "Continuous EEG | EMU" ||
                     taskData.orderType === "Continuous EEG | Pediatric" ||
                     taskData.orderType === "Continuous SEEG") && (
-                    <label className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
+                        id="sleep-deprivation"
                         checked={taskData.sleepDeprivationType === "Ordered"}
                         onChange={(e) =>
                           handleValueChange("sleepDeprivationType", e.target.checked ? "Ordered" : "Not Ordered")
                         }
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">Sleep Deprivation</span>
-                    </label>
+                      <label htmlFor="sleep-deprivation" className="text-sm text-gray-700 cursor-pointer">
+                        Sleep Deprivation
+                      </label>
+                    </div>
                   )}
                 </div>
 
@@ -410,7 +430,7 @@ const CreateTask = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-12 gap-4 mt-2">
+            <div className="grid grid-cols-12 gap-4 mt-4">
               <div className="col-span-6 md:col-span-4">
                 <label className="text-xs font-medium text-slate-600">
                   Priority
@@ -424,7 +444,7 @@ const CreateTask = () => {
                 />
               </div>
 
-              <div className="col-span-12 md:col-span-3">
+              <div className="col-span-6 md:col-span-4">
                 <label className="text-xs font-medium text-slate-600">
                   Assign To
                 </label>

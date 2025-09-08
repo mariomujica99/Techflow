@@ -42,7 +42,7 @@ const AddAttachmentsInput = ({ attachments, setAttachments }) => {
         </div>
       ))}
 
-      <div className="flex items-center gap-5 mt-4">
+      <div className="flex items-center gap-3 mt-4">
         <div className="flex-1 flex items-center gap-3 border border-gray-100 rounded-md px-3">
           <LuPaperclip className="text-gray-400" />
 
@@ -55,7 +55,7 @@ const AddAttachmentsInput = ({ attachments, setAttachments }) => {
           />
         </div>
 
-        <button className="card-btn text-nowrap" onClick={handleAddOption}>
+        <button className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={handleAddOption}>
           <HiMiniPlus className="text-lg" /> Add
         </button>
       </div>
