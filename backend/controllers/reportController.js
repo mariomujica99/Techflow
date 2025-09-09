@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const User = require('../models/User');
+const ComStation = require('../models/ComStation');
 const excelJS = require('exceljs');
 
 // @desc  Export all tasks as Excel file
@@ -129,7 +130,47 @@ const exportUsersReport = async (req, res) => {
   }
 };
 
+// @desc    Export computer stations report
+// @route   GET /api/com-stations/export
+// @access  Private (Admin)
+const exportComStationsReport = async (req, res) => {
+  try {
+    const comStations = await ComStation.find().sort({ comStation: 1 });
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Computer Stations Report');
+
+    worksheet.columns = [
+      { header: 'Computer Station', key: 'comStation', width: 20 },
+      { header: 'Location', key: 'comStationLocation', width: 15 },
+      { header: 'Type', key: 'comStationType', width: 15 },
+      { header: 'Status', key: 'comStationStatus', width: 15 },
+      { header: 'Graveyard Reason', key: 'graveyardReason', width: 30 },
+    ];
+
+    comStations.forEach(station => {
+      worksheet.addRow({
+        comStation: station.comStation,
+        comStationLocation: station.comStationLocation,
+        comStationType: station.comStationType,
+        comStationStatus: station.comStationStatus,
+        graveyardReason: station.graveyardReason || 'N/A',
+      });
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="computer_stations.xlsx"');
+
+    return workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error exporting computer stations', error: error.message });
+  }
+};
+
 module.exports = {
   exportTasksReport,
   exportUsersReport,
+  exportComStationsReport,
 };

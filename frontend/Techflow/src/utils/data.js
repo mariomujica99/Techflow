@@ -7,6 +7,7 @@ import {
   LuListChecks,
   LuClipboardList,
 } from "react-icons/lu";
+import { FaComputer } from "react-icons/fa6";
 
 export const SIDE_MENU_DATA = [
   {
@@ -41,12 +42,18 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "06",
+    label: "Computer Stations",
+    icon: FaComputer,
+    path: "/admin/com-stations",
+  },
+  {
+    id: "07",
     label: "Team Members",
     icon: LuUsers,
     path: "/admin/users",
   },
   {
-    id: "07",
+    id: "08",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -86,12 +93,18 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "06",
+    label: "Computer Stations",
+    icon: FaComputer,
+    path: "/user/com-stations",
+  },
+  {
+    id: "07",
     label: "Team Members",
     icon: LuUsers,
     path: "/user/users",
   },
   {
-    id: "07",
+    id: "08",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -218,3 +231,9 @@ export const DEFAULT_COMMENTS = {
   "Continuous SEEG": "Defaults to No Sleep Deprivation",
   "Neuropsychiatric EEG": "Defaults to No Adhesive Tape Allergy",
 };
+
+export const COM_STATIONS_DROPDOWN_OPTIONS = [
+  { label: "All Computer Stations", value: "All Computer Stations" },
+  { label: "EMU Stations", value: "EMU Station" },
+  { label: "EEG Carts", value: "EEG Cart" },
+];

@@ -80,6 +80,7 @@ const MyTasks = () => {
               title={item.title}
               orderType={item.orderType}
               electrodeType={item.electrodeType}
+              adhesiveType={item.adhesiveType}
               allergyType={item.allergyType}
               sleepDeprivationType={item.sleepDeprivationType}
               priority={item.priority}

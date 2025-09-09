@@ -26,7 +26,7 @@ const CreateTask = () => {
     title: "",
     orderType: "Routine EEG | IP",
     electrodeType: "Regular Leads",
-    adhesiveType: "Collodion", 
+    adhesiveType: "None", 
     allergyType: "None",
     sleepDeprivationType: "Not Ordered",
     priority: "Routine",
@@ -52,7 +52,7 @@ const CreateTask = () => {
       title: "",
       orderType: "Routine EEG | IP",
       electrodeType: "Regular Leads",
-      adhesiveType: "Collodion", 
+      adhesiveType: "None", 
       allergyType: "None",
       sleepDeprivationType: "Not Ordered",
       priority: "Routine",
@@ -162,7 +162,7 @@ const CreateTask = () => {
           title: taskInfo.title,
           orderType: taskInfo.orderType || "Routine EEG | IP",
           electrodeType: taskInfo.electrodeType || "Regular Leads",
-          adhesiveType: taskInfo.adhesiveType || "Collodion",
+          adhesiveType: taskInfo.adhesiveType || "None",
           allergyType: taskInfo.allergyType || "None",
           sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
           priority: taskInfo.priority,
@@ -207,7 +207,7 @@ const CreateTask = () => {
         todoChecklist: [...automaticItems, ...existingCustomItems]
       };
       
-      // For Continuous EEG types, reset all three fields
+      // For Continuous EEG types
       if (taskData.orderType?.includes("Continuous EEG")) {
         resetData = {
           ...resetData,
@@ -227,10 +227,11 @@ const CreateTask = () => {
           sleepDeprivationType: "Not Ordered"
         };
       }
-      // For non-Continuous types (except SEEG), reset only allergy
-      else if (!taskData.orderType?.includes("Continuous")) {
+      // For all other types
+      else {
         resetData = {
           ...resetData,
+          adhesiveType: "None",
           allergyType: "None"
         };
       }

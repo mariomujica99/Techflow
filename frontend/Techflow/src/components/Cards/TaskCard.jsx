@@ -3,12 +3,14 @@ import Progress from "../Progress";
 import AvatarGroup from "../AvatarGroup";
 import { LuMessageSquareText, LuClock, LuLoader, LuCircle, LuTrash2, LuMoonStar, LuShieldAlert, LuBrain, LuBrainCircuit, LuTriangleAlert } from "react-icons/lu";
 import { FaComputer } from "react-icons/fa6";
+import { PiSyringe } from "react-icons/pi";
 import moment from "moment";
 
 const TaskCard = ({
   title,
   orderType,
   electrodeType,
+  adhesiveType,
   allergyType,
   sleepDeprivationType,
   priority,
@@ -136,11 +138,49 @@ const TaskCard = ({
         </div>
 
 
-        <div className="flex items-center justify-between mt-1.5">
+        <div className="flex items-center justify-between mt-0.75">
           <p className="text-xs text-gray-500 line-clamp-2 leading-[18px]">
             {orderType}
           </p>
           
+          {/* Adhesive Glue Type - only show for Continuous EEG PiSyringeFill, PiSyringeDuotone, PiSyringe*/}
+          {/*adhesiveType: { type: String, enum: ['Collodion', 'Tensive', 'None']*/}
+          {orderType?.includes("Continuous EEG") && (
+            <div
+              className={`flex items-center gap-1 text-[11px] font-medium px-3 py-0.25 rounded-full ring-1 ${
+                adhesiveType === "Collodion"
+                  ? "text-orange-400 bg-orange-50 ring-orange-200"
+                  : adhesiveType === "Tensive"
+                  ? "text-blue-400 bg-blue-50 ring-blue-200"
+                  : "text-gray-600 bg-gray-50 ring-gray-200"
+              }`}
+            >
+              {adhesiveType === "Collodion" ? (
+                <>
+                  <PiSyringe className="text-xs" />
+                  <span>Collodion</span>
+                </>
+              ) : adhesiveType === "Tensive" ? (
+                <>
+                  <PiSyringe className="text-xs" />
+                  <span>Tensive</span>
+                </>
+              ) : (
+                <>
+                  <PiSyringe className="text-xs" />
+                  <span>None</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between mt-1.75">
+          <div className="flex items-center gap-1.5">
+            <FaComputer className="text-gray-500" />
+            <p className="text-xs text-gray-500 line-clamp-2">COM</p>
+          </div>
+
           {/* Allergy - only show if Adhesive Tape Allergy */}
           {allergyType === "Adhesive Tape" && (
             <div className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
@@ -150,8 +190,7 @@ const TaskCard = ({
           )}
         </div>
 
-
-        <div className="flex items-center justify-between mt-2.5 mb-2.5">
+        <div className="flex items-center justify-between mt-1.75 mb-2.5">
           <p className="text-[13px] text-gray-700/80 font-medium leading-[18px]">
             Task Done:{" "}
             <span className="font-semibold text-gray-700">
@@ -160,9 +199,9 @@ const TaskCard = ({
           </p>
           
           {sleepDeprivationType === "Ordered" && (
-            <div className="flex items-center gap-1 bg-indigo-50 px-3 py-0.25 rounded-full border border-indigo-200">
-              <LuMoonStar className="text-indigo-600 text-xs" />
-              <span className="text-[11px] text-indigo-700 font-medium">SD</span>
+            <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-500 bg-indigo-50 ring-1 ring-indigo-200 px-3 py-0.25 rounded-full">
+              <LuMoonStar className="text-xs" />
+              <span>SD</span>
             </div>
           )}
         </div>

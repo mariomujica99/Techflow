@@ -30,9 +30,17 @@ export const API_PATHS = {
     UPDATE_TODO_CHECKLIST: (taskId) => `/api/tasks/${taskId}/todo`, // Update todo checklist
   },
 
+  COM_STATION: {
+    GET_ALL_COM_STATIONS: "/api/com-stations",
+    CREATE_COM_STATION: "/api/com-stations",
+    UPDATE_COM_STATION: (comStationId) => `/api/com-stations/${comStationId}`,
+    DELETE_COM_STATION: (comStationId) => `/api/com-stations/${comStationId}`,
+  },
+
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks", // Download all tasks as an Excel/PDF report
     EXPORT_USERS: "/api/reports/export/users", // Download user-task report
+    EXPORT_COM_STATIONS: "/api/reports/export/com-stations", // Download computer stations report
   },
 
   IMAGE: {

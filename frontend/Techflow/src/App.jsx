@@ -14,6 +14,7 @@ import CreateTask from './pages/Admin/CreateTask';
 import ManageUsers from './pages/Admin/ManageUsers';
 
 import AllTasks from './pages/Admin/AllTasks';
+import ComStations from './pages/Admin/ComStations';
 
 import UserDashboard from './pages/User/UserDashboard';
 import MyTasks from './pages/User/MyTasks';
@@ -42,6 +43,7 @@ const App = () => {
               <Route path="/admin/create-task" element={<CreateTask />} />              
               <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path="/admin/com-stations" element={<ComStations />} />
             </Route>
 
             {/* User Routes */}
@@ -53,6 +55,7 @@ const App = () => {
               <Route path="/user/create-task" element={<CreateTask />} />    
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/user/users" element={<ViewUsers />} />
+              <Route path="/user/com-stations" element={<ComStations />} />
             </Route>
 
             {/* Default Route */}
