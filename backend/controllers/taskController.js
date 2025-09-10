@@ -13,10 +13,9 @@ const getTasks = async (req, res) => {
     }
 
     // Always restrict to current user, even if admin
-    let tasks = await Task.find({ ...filter, assignedTo: req.user._id }).populate(
-      'assignedTo',
-      'name email profileImageUrl'
-    );
+    let tasks = await Task.find({ ...filter, assignedTo: req.user._id })
+    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('comStation', 'comStation comStationStatus')
 
     // Add completed todoChecklist count
     tasks = await Promise.all(
@@ -77,10 +76,9 @@ const getAllTasksForEveryone = async (req, res) => {
     }
 
     // Get all tasks regardless of role
-    const tasks = await Task.find(filter).populate(
-      'assignedTo', 
-      'name email profileImageUrl'
-    );
+    const tasks = await Task.find(filter)
+    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('comStation', 'comStation comStationStatus')
 
     // Add completed todoChecklist count to each task
     const tasksWithCount = await Promise.all(
@@ -117,10 +115,9 @@ const getAllTasksForEveryone = async (req, res) => {
 // @access  Private
 const getTaskById = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id).populate(
-      'assignedTo',
-      'name email profileImageUrl'
-    );
+    const task = await Task.findById(req.params.id)
+    .populate('assignedTo','name email profileImageUrl')
+    .populate('comStation', 'comStation comStationStatus')
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
@@ -143,6 +140,7 @@ const createTask = async (req, res) => {
       allergyType,
       sleepDeprivationType,
       priority,
+      comStation,
       assignedTo,
       comments,
       todoChecklist,
@@ -160,6 +158,7 @@ const createTask = async (req, res) => {
       allergyType,
       sleepDeprivationType,
       priority,
+      comStation,
       assignedTo,
       createdBy: req.user._id,
       todoChecklist,
@@ -188,6 +187,7 @@ const updateTask = async (req, res) => {
     task.allergyType = req.body.allergyType || task.allergyType;
     task.sleepDeprivationType = req.body.sleepDeprivationType || task.sleepDeprivationType;
     task.priority = req.body.priority || task.priority;
+    task.comStation = req.body.comStation || task.comStation;
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
     task.comments = req.body.comments || task.comments;
 
@@ -298,10 +298,9 @@ const updateTaskChecklist = async (req, res) => {
     }
 
     await task.save();
-    const updatedTask = await Task.findById(req.params.id).populate(
-      'assignedTo',
-      'name email profileImageUrl'
-    );
+    const updatedTask = await Task.findById(req.params.id)
+    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('comStation', 'comStation comStationStatus')
 
     res.json({ message: 'Task checklist updated successfully', task:updatedTask });
   } catch (error) {

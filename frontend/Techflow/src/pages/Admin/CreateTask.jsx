@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { PRIORITY_DATA, ORDER_TYPE_DATA, AUTOMATIC_CHECKLIST_ITEMS, DEFAULT_COMMENTS } from "../../utils/data";
+import { PRIORITY_DATA, ORDER_TYPE_DATA, AUTOMATIC_CHECKLIST_ITEMS, DEFAULT_COMMENTS, ROOM_MAPPINGS } from "../../utils/data";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import AddCommentsInput from "../../components/Inputs/AddCommentsInput";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 import { UserContext } from "../../context/userContext";
+import { FaComputer } from "react-icons/fa6";
 
 const CreateTask = () => {
   const { user } = useContext(UserContext);
@@ -30,6 +31,7 @@ const CreateTask = () => {
     allergyType: "None",
     sleepDeprivationType: "Not Ordered",
     priority: "Routine",
+    comStation: "",
     assignedTo: [],
     todoChecklist: [],
     comments: [],
@@ -41,6 +43,9 @@ const CreateTask = () => {
   const [loading, setLoading] =useState(false);
 
   const [openDeleteAlert, setOpenDeleteAlert] =useState(false);
+
+  const [allComStations, setAllComStations] = useState([]);
+  const [showInactiveModal, setShowInactiveModal] = useState(false);
 
   const handleValueChange = (key, value) => {
     setTaskData((prevData) => ({ ...prevData, [key]: value }));
@@ -56,10 +61,30 @@ const CreateTask = () => {
       allergyType: "None",
       sleepDeprivationType: "Not Ordered",
       priority: "Routine",
+      comStation: "",
       assignedTo: [],
       todoChecklist: [],
       comments: [],
     });
+  };
+
+  const getAllComStations = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.COM_STATION.GET_ALL_COM_STATIONS);
+      setAllComStations(response.data || []);
+    } catch (error) {
+      console.error("Error fetching computer stations:", error);
+    }
+  };
+
+  const handleComStationChange = (stationId) => {
+    const selectedStation = allComStations.find(station => station._id === stationId);
+    if (selectedStation && selectedStation.comStationStatus === 'Inactive') {
+      setShowInactiveModal(true);
+      handleValueChange("comStation", null);
+      return;
+    }
+    handleValueChange("comStation", stationId || null);
   };
 
   // Create Task
@@ -75,6 +100,7 @@ const CreateTask = () => {
       const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
         todoChecklist: todolist,
+        comStation: taskData.comStation || null,
       });
 
       toast.success("Task Created Successfully");
@@ -108,6 +134,7 @@ const CreateTask = () => {
         {
           ...taskData,
           todoChecklist: todolist,
+          comStation: taskData.comStation || null,
         }
       );
 
@@ -166,6 +193,7 @@ const CreateTask = () => {
           allergyType: taskInfo.allergyType || "None",
           sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
           priority: taskInfo.priority,
+          comStation: taskInfo?.comStation?._id || "",
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           comments: taskInfo?.comments || [],
@@ -196,7 +224,10 @@ const CreateTask = () => {
 
   // Auto-populate checklist when orderType changes
   useEffect(() => {
-    if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType]) {
+    // Skip if this is an auto-selection from room mapping
+    const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
+    
+    if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType] && !isRoomAutoSelection) {
       const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType];
       const existingCustomItems = taskData.todoChecklist.filter(item => 
         !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
@@ -241,7 +272,43 @@ const CreateTask = () => {
         ...resetData
       }));
     }
-  }, [taskData.orderType]);
+  }, [taskData.orderType, taskData.title]);
+
+  // Auto-select order type and computer station based on room number
+  useEffect(() => {
+    const roomMapping = ROOM_MAPPINGS[taskData.title];
+    if (roomMapping && allComStations.length > 0) {
+      const matchingStation = allComStations.find(station => 
+        station.comStation === roomMapping.comStationName
+      );
+
+      // Only auto-select if current values are defaults (not manually changed)
+      const shouldAutoSelect = !taskId || (
+        taskData.orderType === "Routine EEG | IP" && 
+        !taskData.comStation
+      );
+
+      if (shouldAutoSelect) {
+        // Get the automatic checklist items for EMU
+        const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[roomMapping.orderType] || [];
+        const existingCustomItems = taskData.todoChecklist.filter(item => 
+          !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
+        );
+
+        setTaskData(prev => ({
+          ...prev,
+          orderType: roomMapping.orderType,
+          comStation: matchingStation?._id || "",
+          // Reset procedure-dependent fields for EMU
+          electrodeType: "Regular Leads",
+          adhesiveType: "Collodion",
+          allergyType: "None",
+          sleepDeprivationType: "Not Ordered",
+          todoChecklist: [...automaticItems, ...existingCustomItems]
+        }));
+      }
+    }
+  }, [taskData.title, allComStations, taskId]);
 
   useEffect(() => {
     if (taskId) {
@@ -249,6 +316,10 @@ const CreateTask = () => {
     }
     return () => {};
   }, [taskId]);
+
+  useEffect(() => {
+    getAllComStations();
+  }, []);
 
   return (
     <DashboardLayout activeMenu="Create Task">
@@ -447,6 +518,22 @@ const CreateTask = () => {
 
               <div className="col-span-6 md:col-span-4">
                 <label className="text-xs font-medium text-slate-600">
+                  Computer Station
+                </label>
+
+                <SelectDropdown
+                  options={allComStations.map(station => ({
+                    label: station.comStation,
+                    value: station._id
+                  }))}
+                  value={taskData.comStation}
+                  onChange={handleComStationChange}
+                  placeholder="Select Station"
+                />
+              </div>
+
+              <div className="col-span-6 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
                   Assign To
                 </label>
 
@@ -511,6 +598,19 @@ const CreateTask = () => {
           content="Are you sure you want to delete this task?"
           onDelete={() => deleteTask()}
         />
+      </Modal>
+
+      <Modal
+        isOpen={showInactiveModal}
+        onClose={() => setShowInactiveModal(false)}
+        title="Inactive Computer Station"
+      >
+        <p className="text-sm dark:text-white">The selected computer station is currently inactive. You can change the status under the Computer Stations Tab.</p>
+        <div className="flex justify-end mt-4">
+          <button className="card-btn" onClick={() => setShowInactiveModal(false)}>
+            OK
+          </button>
+        </div>
       </Modal>
     </DashboardLayout>
   )

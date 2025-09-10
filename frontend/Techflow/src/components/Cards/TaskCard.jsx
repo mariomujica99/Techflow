@@ -14,6 +14,7 @@ const TaskCard = ({
   allergyType,
   sleepDeprivationType,
   priority,
+  comStation,
   status,
   progress,
   createdAt,
@@ -178,10 +179,11 @@ const TaskCard = ({
         <div className="flex items-center justify-between mt-1.75">
           <div className="flex items-center gap-1.5">
             <FaComputer className="text-gray-500" />
-            <p className="text-xs text-gray-500 line-clamp-2">COM</p>
+            <p className="text-xs text-gray-500 line-clamp-2">
+              {comStation?.comStation || "COM"}
+            </p>
           </div>
-
-          {/* Allergy - only show if Adhesive Tape Allergy */}
+          
           {allergyType === "Adhesive Tape" && (
             <div className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-3 py-0.25 rounded-full">
               <LuShieldAlert className="text-xs" />

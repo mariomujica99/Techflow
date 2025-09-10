@@ -117,7 +117,7 @@ const ComStationCard = ({
               <div className="relative">
                 <button
                   onClick={() => setDropdownStates(prev => ({ ...prev, type: !prev.type }))}
-                  className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center"
+                  className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"
                 >
                   {formData.comStationType}
                   <LuChevronDown className={`transition-transform ${dropdownStates.type ? 'rotate-180' : ''}`} />
@@ -144,7 +144,7 @@ const ComStationCard = ({
               <div className="relative">
                 <button
                   onClick={() => setDropdownStates(prev => ({ ...prev, location: !prev.location }))}
-                  className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center"
+                  className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"
                 >
                   {formData.comStationLocation}
                   <LuChevronDown className={`transition-transform ${dropdownStates.location ? 'rotate-180' : ''}`} />
@@ -168,12 +168,12 @@ const ComStationCard = ({
 
             {formData.comStationLocation === 'Graveyard' && (
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Graveyard Reason</label>
+                <label className="text-xs text-gray-500 block mb-1">Issue</label>
                 <textarea
-                  placeholder="Enter reason"
+                  placeholder="Enter the current issue"
                   value={formData.graveyardReason}
                   onChange={(e) => setFormData(prev => ({ ...prev, graveyardReason: e.target.value }))}
-                  className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"
+                  className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"
                 />
               </div>
             )}
@@ -181,7 +181,7 @@ const ComStationCard = ({
 
           <button
             onClick={handleSubmit}
-            className="flex items-center justify-center gap-2 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80"
+            className="flex items-center justify-center gap-2 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80 cursor-pointer"
           >
             <LuPlus className="text-sm" />
             Add Station
@@ -222,7 +222,7 @@ const ComStationCard = ({
             <div className="relative">
               <button
                 onClick={() => setDropdownStates(prev => ({ ...prev, type: !prev.type }))}
-                className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center"
+                className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"
               >
                 {formData.comStationType}
                 <LuChevronDown className={`transition-transform ${dropdownStates.type ? 'rotate-180' : ''}`} />
@@ -253,7 +253,7 @@ const ComStationCard = ({
             <div className="relative">
               <button
                 onClick={() => setDropdownStates(prev => ({ ...prev, location: !prev.location }))}
-                className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center"
+                className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"
               >
                 {formData.comStationLocation}
                 <LuChevronDown className={`transition-transform ${dropdownStates.location ? 'rotate-180' : ''}`} />
@@ -280,17 +280,17 @@ const ComStationCard = ({
 
         {(comStationInfo?.comStationLocation === 'Graveyard' || formData.comStationLocation === 'Graveyard') && (
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Graveyard Reason</label>
+            <label className="text-xs text-gray-500 block mb-1">Issue</label>
             {isEditMode ? (
               <textarea
-                placeholder="Enter reason"
+                placeholder="Enter the current issue"
                 value={formData.graveyardReason}
                 onChange={(e) => setFormData(prev => ({ ...prev, graveyardReason: e.target.value }))}
-                className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"          
+                className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"          
               />
             ) : (
               <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                {comStationInfo?.graveyardReason || 'No reason provided'}
+                {comStationInfo?.graveyardReason || 'No issue provided'}
               </p>
             )}
           </div>
@@ -300,7 +300,7 @@ const ComStationCard = ({
       {isEditMode && !isAddCard && (
         <button
           onClick={handleSubmit}
-          className="w-full mt-4 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80"
+          className="w-full mt-4 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80 cursor-pointer"
         >
           Save Changes
         </button>

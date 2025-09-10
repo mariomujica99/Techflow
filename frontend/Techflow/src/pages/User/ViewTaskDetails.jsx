@@ -99,7 +99,7 @@ const ViewTaskDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
             <div className="form-card col-span-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm md:text-xl font-medium">{task?.title}</h2>
+                <h2 className="text-base md:text-xl font-medium">{task?.title}</h2>
 
                 <div
                   className={`text-[11px] md:text-[13px] font-medium ${getStatusTagColor(
@@ -139,8 +139,12 @@ const ViewTaskDetails = () => {
               </div>
 
               <div className="grid grid-cols-12 gap-4 mt-4 mb-4">
+                <div className="col-span-4">
+                  <InfoBox label="Computer Station" value={task?.comStation?.comStation || "Not Selected"} />
+                </div>
+
                 {task?.assignedTo && task?.assignedTo.length > 0 && (
-                  <div className="col-span-6 md:col-span-4">
+                  <div className="col-span-4 ml-4">
                     <label className="text-xs font-medium text-slate-500">
                       Assigned To
                     </label>

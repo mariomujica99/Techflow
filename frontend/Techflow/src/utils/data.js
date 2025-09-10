@@ -237,3 +237,38 @@ export const COM_STATIONS_DROPDOWN_OPTIONS = [
   { label: "EMU Stations", value: "EMU Station" },
   { label: "EEG Carts", value: "EEG Cart" },
 ];
+
+export const ROOM_MAPPINGS = {
+  "6820": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6820"
+  },
+  "6822": {
+    orderType: "Continuous EEG | EMU", 
+    comStationName: "CTXLRM6822"
+  },
+  "6824": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6824"
+  },
+  "6826": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6826"
+  },
+  "6827": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6827"
+  },
+  "6828": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6828"
+  },
+  "6829": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6829"
+  },
+  "6831": {
+    orderType: "Continuous EEG | EMU",
+    comStationName: "CTXLRM6831"
+  }
+};

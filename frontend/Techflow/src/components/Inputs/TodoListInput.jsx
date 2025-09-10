@@ -93,7 +93,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center"
+            className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"
           >
             {selectedTemplate ? 
               TODO_DROPDOWN_OPTIONS.find(opt => opt.value === selectedTemplate)?.label || "Select Task"

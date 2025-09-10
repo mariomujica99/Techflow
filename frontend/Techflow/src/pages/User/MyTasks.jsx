@@ -84,6 +84,7 @@ const MyTasks = () => {
               allergyType={item.allergyType}
               sleepDeprivationType={item.sleepDeprivationType}
               priority={item.priority}
+              comStation={item.comStation}
               status={item.status}
               progress={item.progress}
               createdAt={item.createdAt}
