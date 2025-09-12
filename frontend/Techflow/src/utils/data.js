@@ -1,5 +1,6 @@
 import {
   LuLayoutDashboard,
+  LuUser,
   LuUsers,
   LuClipboardCheck,
   LuSquarePlus,
@@ -54,6 +55,12 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "08",
+    label: "Edit Profile",
+    icon: LuUser,
+    path: "/admin/edit-profile",
+  },
+  {
+    id: "09",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -105,6 +112,12 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "08",
+    label: "Edit Profile",
+    icon: LuUser,
+    path: "/user/edit-profile",
+  },
+  {
+    id: "09",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

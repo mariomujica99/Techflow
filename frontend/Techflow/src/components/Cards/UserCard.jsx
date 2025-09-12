@@ -40,7 +40,8 @@ const UserCard = ({userInfo, onUserDeleted}) => {
               className="w-12 h-12 rounded-full border-2 border-white object-cover"
             />
           ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-white font-semibold text-base border-2 border-white">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-xl"
+                style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}>
               {getInitials(userInfo?.name)}
             </div>
           )}

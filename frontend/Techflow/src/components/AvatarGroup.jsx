@@ -16,12 +16,13 @@ const AvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
             />
           );
         } else {
-          // Show initials when no avatar
           const userName = users?.[index]?.name || "Unknown";
+          const userColor = users?.[index]?.profileColor || "#30b5b2";
           return (
             <div
               key={index}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white text-xs font-medium border-2 border-white -ml-3 first:ml-0"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-white text-xs font-medium border-2 border-white -ml-3 first:ml-0"
+              style={{ backgroundColor: userColor }}
             >
               {getInitials(userName)}
             </div>

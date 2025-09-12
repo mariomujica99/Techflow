@@ -26,45 +26,55 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
     inputRef.current.click();
   };
 
-  return <div className="flex justify-center mb-6">
-    <input
-      type="file"
-      accept="image/*"
-      ref={inputRef}
-      onChange={handleImageChange}
-      className="hidden"
-    />
+  return (
+    <div className="flex flex-col items-center">
+      <input
+        type="file"
+        accept="image/*"
+        ref={inputRef}
+        onChange={handleImageChange}
+        className="hidden"
+      />
 
-    {!image ? (
-      <div className="w-20 h-20 flex items-center justify-center bg-blue-100/50 rounded-full relative">
-        <LuUser className="text-4xl text-primary" />
-
-        <button
-          type="button"
-          className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
-          onClick={onChooseFile}
-        >
-          <LuUpload />
-        </button>
-      </div>
-    ) : (
       <div className="relative">
-        <img
-          src={previewUrl}
-          alt="profile photo"
-          className="w-20 h-20 rounded-full object-cover"
-        />
+        {!image ? (
+          <div 
+            className="w-20 h-20 flex items-center justify-center bg-blue-100/50 rounded-full relative cursor-pointer"
+            onClick={onChooseFile}
+          >
+            <LuUser className="text-4xl text-primary" />
 
-        <button
-          type="button"
-          className="w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
-          onClick={handleRemoveImage}
-        >
-          <LuTrash />
-        </button>
+            <button
+              type="button"
+              className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+              onClick={onChooseFile}
+            >
+              <LuUpload />
+            </button>
+          </div>
+        ) : (
+          <div className="relative">
+            <img
+              src={previewUrl}
+              alt="profile photo"
+              className="w-20 h-20 rounded-full object-cover cursor-pointer"
+              onClick={onChooseFile}
+            />
+
+            <button
+              type="button"
+              className="w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+              onClick={handleRemoveImage}
+            >
+              <LuTrash />
+            </button>
+          </div>
+        )}
       </div>
-    )}
-  </div>
+
+      <p className="text-xs text-gray-500 mt-2 text-center">Profile Photo</p>
+    </div>
+  );
 };
 
 export default ProfilePhotoSelector;

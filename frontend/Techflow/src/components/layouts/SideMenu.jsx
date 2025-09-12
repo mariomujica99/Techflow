@@ -43,7 +43,8 @@ return <div className="w-64 h-[calc(100vh-50px)] sticky top-[64px] z-20 overflow
               className="w-20 h-20 bg-slate-400 rounded-full object-cover"
             />
           ) : (
-            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white font-semibold text-xl">
+            <div className="w-20 h-20 flex items-center justify-center rounded-full text-white font-semibold text-xl"
+                style={{ backgroundColor: user?.profileColor || "#30b5b2" }}>
               {getInitials(user?.name)}
             </div>
           )}

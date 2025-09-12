@@ -94,7 +94,10 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white text-sm font-medium">
+                <div 
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
+                  style={{ backgroundColor: user.profileColor || "#30b5b2" }}
+                >
                   {getInitials(user.name)}
                 </div>
               )}

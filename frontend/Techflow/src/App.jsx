@@ -12,6 +12,7 @@ import SignUp from './pages/Auth/SignUp';
 import ManageTasks from './pages/Admin/ManageTasks';
 import CreateTask from './pages/Admin/CreateTask';
 import ManageUsers from './pages/Admin/ManageUsers';
+import EditProfile from './pages/Admin/EditProfile';
 
 import AllTasks from './pages/Admin/AllTasks';
 import ComStations from './pages/Admin/ComStations';
@@ -44,6 +45,7 @@ const App = () => {
               <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/admin/users" element={<ManageUsers />} />
               <Route path="/admin/com-stations" element={<ComStations />} />
+              <Route path="/admin/edit-profile" element={<EditProfile />} />
             </Route>
 
             {/* User Routes */}
@@ -56,6 +58,7 @@ const App = () => {
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/user/users" element={<ViewUsers />} />
               <Route path="/user/com-stations" element={<ComStations />} />
+              <Route path="/user/edit-profile" element={<EditProfile />} />
             </Route>
 
             {/* Default Route */}

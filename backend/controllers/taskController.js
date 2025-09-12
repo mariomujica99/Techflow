@@ -14,7 +14,7 @@ const getTasks = async (req, res) => {
 
     // Always restrict to current user, even if admin
     let tasks = await Task.find({ ...filter, assignedTo: req.user._id })
-    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
     // Add completed todoChecklist count
@@ -77,7 +77,7 @@ const getAllTasksForEveryone = async (req, res) => {
 
     // Get all tasks regardless of role
     const tasks = await Task.find(filter)
-    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
     // Add completed todoChecklist count to each task
@@ -116,7 +116,7 @@ const getAllTasksForEveryone = async (req, res) => {
 const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
-    .populate('assignedTo','name email profileImageUrl')
+    .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
@@ -299,7 +299,7 @@ const updateTaskChecklist = async (req, res) => {
 
     await task.save();
     const updatedTask = await Task.findById(req.params.id)
-    .populate('assignedTo', 'name email profileImageUrl')
+    .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
     res.json({ message: 'Task checklist updated successfully', task:updatedTask });

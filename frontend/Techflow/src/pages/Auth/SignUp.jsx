@@ -8,6 +8,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { UserContext } from '../../context/userContext';
 import uploadImage from '../../utils/uploadImage';
+import ProfileColorSelector from '../../components/Inputs/ProfileColorSelector';
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -16,16 +17,25 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [adminInviteToken, setAdminInviteToken] = useState('');
 
+  const [selectedColor, setSelectedColor] = useState('#30b5b2');
+
   const [error, setError] = useState(null);
 
   const {updateUser} = useContext(UserContext);
   const navigate = useNavigate();
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    // Clear profile pic when selecting color
+    setProfilePic(null);
+  };
 
   //Handle SignUp Form Submit
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     let profileImageUrl = ''
+    let profileColor = selectedColor || "#30b5b2";
 
     if (!fullName) {
       setError('Please enter your full name.');
@@ -47,16 +57,21 @@ const SignUp = () => {
     // SignUp API Call
     try {
 
-      // Upload image if present
+      // Handle image upload or color selection
       if (profilePic) {
         const imgUploadRes = await uploadImage(profilePic);
         profileImageUrl = imgUploadRes.imageUrl || "";
+        profileColor = null; // If uploading image, clear color
+      } else {
+        profileImageUrl = null; // Use color if no image
       }
+
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         name: fullName,
         email,
         password,
         profileImageUrl,
+        profileColor,
         adminInviteToken
       });
 
@@ -88,9 +103,24 @@ const SignUp = () => {
         <p className="text-xs text-slate-700 mt-[5px] mb-6">
           Join by entering your details below.
         </p>
+        <div className="text-xs text-slate-700 mt-[5px] mb-6">
+          <p>Choose to either upload your profile picture or edit your profile background color</p>
+        </div>
 
         <form onSubmit={handleSignUp}>
-          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
+          <div className="flex items-start justify-center gap-8 mb-6">
+            {/* Upload image */}
+            <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
+            
+            {/* Or Edit Background Color of Initials */}
+            <div className="text-center">
+              <ProfileColorSelector
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                onColorSelect={handleColorSelect}
+              />
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input

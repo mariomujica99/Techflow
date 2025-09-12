@@ -12,7 +12,7 @@ const generateToken = (userId) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl, adminInviteToken } = 
+    const { name, email, password, profileImageUrl, profileColor, adminInviteToken } = 
       req.body;
 
     // Check if user already exists
@@ -40,6 +40,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       profileImageUrl,
+      profileColor,
       role,
     });
 
@@ -50,6 +51,7 @@ const registerUser = async (req, res) => {
       email: user.email,
       role: user.role,
       profileImageUrl: user.profileImageUrl,
+      profileColor: user.profileColor,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -82,6 +84,7 @@ const loginUser = async (req, res) => {
       email: user.email,
       role: user.role,
       profileImageUrl: user.profileImageUrl,
+      profileColor: user.profileColor,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -117,6 +120,13 @@ const updateUserProfile = async (req, res) => {
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    user.profileImageUrl = req.body.profileImageUrl !== undefined ? req.body.profileImageUrl : user.profileImageUrl;
+    user.profileColor = req.body.profileColor !== undefined ? req.body.profileColor : user.profileColor;
+
+    // Handle admin role upgrade
+    if (req.body.adminInviteToken && req.body.adminInviteToken === process.env.ADMIN_INVITE_TOKEN) {
+      user.role = 'admin';
+    }
 
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
@@ -129,7 +139,9 @@ const updateUserProfile = async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      role:updatedUser.role,
+      role: updatedUser.role,
+      profileImageUrl: updatedUser.profileImageUrl,
+      profileColor: updatedUser.profileColor,
       token: generateToken(updatedUser._id),
     });
   } catch (error) {
@@ -137,4 +149,22 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile };
+// @desc Delete current user account
+// @route DELETE /api/auth/profile
+// @access Private
+const deleteUserAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await user.deleteOne();
+    res.json({ message: 'User account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUserAccount };
