@@ -7,11 +7,16 @@ import { getInitials } from "../../utils/getInitials";
 const ViewUsers = () => {
   const [allUsers, setAllUsers] = useState([]);
 
-  const getAllUsers = async () => {
+  const getAllUsersAlphabetically = async () => {
     try {
       const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
       if (response.data?.length > 0) {
-        setAllUsers(response.data);
+        const sortedUsers = response.data.sort((a, b) => {
+          const firstNameA = a.name.split(' ')[0];
+          const firstNameB = b.name.split(' ')[0];
+          return firstNameA.localeCompare(firstNameB);
+        });
+        setAllUsers(sortedUsers);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -19,7 +24,7 @@ const ViewUsers = () => {
   };
 
   useEffect(() => {
-    getAllUsers();
+    getAllUsersAlphabetically();
     return () => {};
   }, []);
 
@@ -37,39 +42,48 @@ const ViewUsers = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (
-            <ViewUserCard key={user._id} userInfo={user} />
+            <ViewUserCard key={user._id} userInfo={user} showAdminBadge={true} />
           ))}
         </div>
       </div>
     </DashboardLayout>
-  )
-}
+  );
+};
 
 export default ViewUsers;
 
-const ViewUserCard = ({userInfo}) => {
+const ViewUserCard = ({userInfo, showAdminBadge = false}) => {
   return (
     <div className="user-card p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3 min-w-0">
-          {userInfo?.profileImageUrl ? (
-            <img
-              src={userInfo?.profileImageUrl}
-              alt={userInfo?.name}
-              className="w-12 h-12 rounded-full border-2 border-white object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-white font-semibold text-base border-2 border-white">
-              {getInitials(userInfo?.name)}
-            </div>
-          )}
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="relative flex-shrink-0">
+            {userInfo?.profileImageUrl ? (
+              <img
+                src={userInfo?.profileImageUrl}
+                alt={userInfo?.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-base"
+              style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}>
+                {getInitials(userInfo?.name)}
+              </div>
+            )}
 
-          <div className="truncate">
+            {showAdminBadge && userInfo?.role === "admin" && (
+              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-[9px] font-medium text-white bg-indigo-500 px-2 py-0.5 rounded">
+                Admin
+              </div>
+            )}
+          </div>
+
+          <div className="truncate min-w-0">
             <p className="text-sm font-medium truncate">{userInfo?.name}</p>
             <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 };

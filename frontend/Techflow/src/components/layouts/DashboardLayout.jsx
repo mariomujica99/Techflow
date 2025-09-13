@@ -10,16 +10,20 @@ const DashboardLayout = ({children, activeMenu}) => {
       <Navbar activeMenu={activeMenu} />
 
       {user && (
-        <div className="flex">
-          <div className="max-[1080px]:hidden">
+        <div className="flex pt-16">
+          {/* Desktop Sidemenu - Always visible on large screens */}
+          <div className="hidden lg:block fixed left-0 top-16 z-20">
             <SideMenu activeMenu={activeMenu} />
           </div>
 
-          <div className="grow mx-5">{children}</div>
+          {/* Main Content */}
+          <div className="flex-1 lg:ml-69 mx-5 py-4">
+            {children}
+          </div>
         </div>
       )}
     </div>
-  )
+  );
 };
 
 export default DashboardLayout;

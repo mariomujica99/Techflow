@@ -22,11 +22,16 @@ const ManageUsers = () => {
 
   const [allUsers, setAllUsers] = useState([]);
 
-  const getAllUsers = async () => {
+  const getAllUsersAlphabetically = async () => {
     try {
       const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
       if (response.data?.length > 0) {
-        setAllUsers(response.data);
+        const sortedUsers = response.data.sort((a, b) => {
+          const firstNameA = a.name.split(' ')[0];
+          const firstNameB = b.name.split(' ')[0];
+          return firstNameA.localeCompare(firstNameB);
+        });
+        setAllUsers(sortedUsers);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -56,7 +61,7 @@ const ManageUsers = () => {
   };
 
   useEffect(() => {
-    getAllUsers();
+    getAllUsersAlphabetically();
 
     return () => {};
   }, []);
@@ -82,12 +87,12 @@ const ManageUsers = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (
-            <UserCard key={user._id} userInfo={user} onUserDeleted={handleUserDeleted} />
+            <UserCard key={user._id} userInfo={user} onUserDeleted={handleUserDeleted} showAdminBadge={true} />
           ))}
         </div>
       </div>
     </DashboardLayout>
-  )
-}
+  );
+};
 
-export default ManageUsers
+export default ManageUsers;

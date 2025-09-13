@@ -3,13 +3,18 @@ import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import SideMenu from "./SideMenu";
 import logo from "../../assets/images/logo.png";
 
-
 const Navbar = ({ activeMenu }) => {
   const [openSideMenu, setOpenSideMenu] = useState(false);
+
   return (
     <div
-      className="flex gap-5 items-center backdrop-blur-[2px] py-4 px-7 sticky top-0 z-30 bg-cover bg-center"
-      style={{ backgroundImage: "url('/bg-nav-image.png')" }}
+      className="flex gap-5 items-center py-4 px-7 fixed top-0 left-0 right-0 z-30"
+      style={{ 
+        backgroundImage: "url('/bg-nav-image.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
       <button
         className="block lg:hidden text-white"
@@ -34,7 +39,7 @@ const Navbar = ({ activeMenu }) => {
       </div>
 
       {openSideMenu && (
-        <div className="fixed top-[64px] -ml-4 bg-white">
+        <div className="fixed top-[64px] left-0 w-64 z-40 lg:hidden">
           <SideMenu activeMenu={activeMenu} />
         </div>
       )}

@@ -7,7 +7,7 @@ import { LuTrash2 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import Modal from "../Modal";
 
-const UserCard = ({userInfo, onUserDeleted}) => {
+const UserCard = ({userInfo, onUserDeleted, showAdminBadge = false}) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
   // Delete User
@@ -32,21 +32,29 @@ const UserCard = ({userInfo, onUserDeleted}) => {
   return (
     <div className="user-card p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3 min-w-0">
-          {userInfo?.profileImageUrl ? (
-            <img
-              src={userInfo?.profileImageUrl}
-              alt={userInfo?.name}
-              className="w-12 h-12 rounded-full border-2 border-white object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-xl"
-                style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}>
-              {getInitials(userInfo?.name)}
-            </div>
-          )}
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="relative flex-shrink-0">
+            {userInfo?.profileImageUrl ? (
+              <img
+                src={userInfo?.profileImageUrl}
+                alt={userInfo?.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-base"
+              style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}>
+                {getInitials(userInfo?.name)}
+              </div>
+            )}
 
-          <div className="truncate">
+            {showAdminBadge && userInfo?.role === "admin" && (
+              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-[9px] font-medium text-white bg-indigo-500 px-2 py-0.5 rounded">
+                Admin
+              </div>
+            )}
+          </div>
+
+          <div className="truncate min-w-0">
             <p className="text-sm font-medium truncate">{userInfo?.name}</p>
             <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
@@ -90,7 +98,7 @@ const UserCard = ({userInfo, onUserDeleted}) => {
         />
       </div>
     </div>
-  )
+  );
 };
 
 export default UserCard;
@@ -114,5 +122,5 @@ const StatCard = ({ label, count, status }) => {
       <span className="text-[12px] font-semibold">{count}</span> <br />
       <span className="whitespace-nowrap">{label}</span>
     </div>
-  )
-}
+  );
+};
