@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const comStationRoutes = require("./routes/comStationRoutes");
+const providerRoutes = require("./routes/providerRoutes");
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/com-stations", comStationRoutes);
+app.use("/api/providers", providerRoutes);
 
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

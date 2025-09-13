@@ -9,6 +9,7 @@ import {
   LuClipboardList,
 } from "react-icons/lu";
 import { FaComputer } from "react-icons/fa6";
+import { FaUserMd } from "react-icons/fa";
 
 export const SIDE_MENU_DATA = [
   {
@@ -55,12 +56,18 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "08",
+    label: "Reading Providers",
+    icon: FaUserMd,
+    path: "/admin/providers",
+  },
+  {
+    id: "09",
     label: "Edit Profile",
     icon: LuUser,
     path: "/admin/edit-profile",
   },
   {
-    id: "09",
+    id: "10",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -112,12 +119,18 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "08",
+    label: "Reading Providers",
+    icon: FaUserMd,
+    path: "/admin/providers",
+  },
+  {
+    id: "09",
     label: "Edit Profile",
     icon: LuUser,
     path: "/user/edit-profile",
   },
   {
-    id: "09",
+    id: "10",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

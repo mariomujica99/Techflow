@@ -17,7 +17,7 @@ const DashboardLayout = ({children, activeMenu}) => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 lg:ml-69 mx-5 py-4">
+          <div className="flex-1 lg:ml-69 mx-5 py-1">
             {children}
           </div>
         </div>

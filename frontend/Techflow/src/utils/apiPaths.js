@@ -37,6 +37,13 @@ export const API_PATHS = {
     DELETE_COM_STATION: (comStationId) => `/api/com-stations/${comStationId}`,
   },
 
+  PROVIDERS: {
+    GET_ALL_PROVIDERS: "/api/providers",
+    CREATE_PROVIDER: "/api/providers",
+    UPDATE_PROVIDER: (providerId) => `/api/providers/${providerId}`,
+    DELETE_PROVIDER: (providerId) => `/api/providers/${providerId}`,
+  },
+
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks", // Download all tasks as an Excel/PDF report
     EXPORT_USERS: "/api/reports/export/users", // Download user-task report

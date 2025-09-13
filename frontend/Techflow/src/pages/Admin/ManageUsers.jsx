@@ -72,8 +72,8 @@ const ManageUsers = () => {
         <div className="flex md:flex-row md:items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-cyan-50 px-3 py-1 rounded-full border border-primary/50">
-              <span className="text-sm font-semibold text-primary">
+            <div className="flex items-center gap-2 bg-primary px-3 py-1 rounded-full">
+              <span className="text-sm font-semibold text-white">
                 {allUsers.length}
               </span>
             </div>

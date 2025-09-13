@@ -104,12 +104,14 @@ const ComStations = () => {
         <div className="flex md:flex-row md:items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-xl md:text-xl font-medium">{getHeaderText()}</h2>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-cyan-50 px-3 py-1.5 rounded-full border border-primary/20">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold text-primary">
-                {getActiveCount()}
-              </span>
-              <span className="text-xs text-primary font-medium">
+            <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-primary">
+                  {getActiveCount()}
+                </span>
+              </div>
+              <span className="text-sm text-primary font-semibold">
                 Active
               </span>
             </div>
@@ -127,7 +129,7 @@ const ComStations = () => {
           <div className="relative w-64">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-3 py-2 rounded-md flex justify-between items-center"
+              className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-3 py-2 rounded-md flex justify-between items-center cursor-pointer"
             >
               {COM_STATIONS_DROPDOWN_OPTIONS.find(option => option.value === selectedFilter)?.label || selectedFilter}
               <LuChevronDown className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />

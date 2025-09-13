@@ -12,6 +12,7 @@ import SignUp from './pages/Auth/SignUp';
 import ManageTasks from './pages/Admin/ManageTasks';
 import CreateTask from './pages/Admin/CreateTask';
 import ManageUsers from './pages/Admin/ManageUsers';
+import Providers from './pages/Admin/Providers';
 import EditProfile from './pages/Admin/EditProfile';
 
 import AllTasks from './pages/Admin/AllTasks';
@@ -42,9 +43,10 @@ const App = () => {
               <Route path="/admin/tasks" element={<MyTasks />} />
               <Route path="/admin/manage-tasks" element={<ManageTasks />} />
               <Route path="/admin/create-task" element={<CreateTask />} />              
-              <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
-              <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />              
               <Route path="/admin/com-stations" element={<ComStations />} />
+              <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path="/admin/providers" element={<Providers />} />
               <Route path="/admin/edit-profile" element={<EditProfile />} />
             </Route>
 
@@ -55,9 +57,10 @@ const App = () => {
               <Route path="/user/tasks" element={<MyTasks />} />
               <Route path="/user/manage-tasks" element={<ManageTasks />} />
               <Route path="/user/create-task" element={<CreateTask />} />    
-              <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
-              <Route path="/user/users" element={<ViewUsers />} />
+              <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />              
               <Route path="/user/com-stations" element={<ComStations />} />
+              <Route path="/user/users" element={<ViewUsers />} />
+              <Route path="/user/providers" element={<Providers />} />
               <Route path="/user/edit-profile" element={<EditProfile />} />
             </Route>
 
