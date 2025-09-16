@@ -31,7 +31,7 @@ const SideMenu = ({activeMenu}) => {
     }
     return () => {};
   }, [user]);
-  
+
   return (
     <div className="w-64 h-[calc(100vh-64px)] bg-cover bg-center relative" 
         style={{ 
@@ -43,8 +43,8 @@ const SideMenu = ({activeMenu}) => {
       <div className="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
       
       <div className="relative z-10 h-full flex flex-col">
-        {/* Fixed Profile Section */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center py-5">
+        {/* Profile Section */}
+        <div className="flex-shrink-0 flex flex-col items-center justify-center pt-5.5 pb-4.5">
           <div className="relative">
             {user?.profileImageUrl ? (
               <img
@@ -72,7 +72,7 @@ const SideMenu = ({activeMenu}) => {
         </div>
 
         {/* Scrollable Menu Section */}
-        <div className="flex-1 overflow-y-auto py-2">
+        <div className="flex-1 overflow-y-auto">
           {sideMenuData.map((item, index) => (
             <button
               key={`menu_${index}`}

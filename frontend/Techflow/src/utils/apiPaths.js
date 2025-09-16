@@ -44,6 +44,11 @@ export const API_PATHS = {
     DELETE_PROVIDER: (providerId) => `/api/providers/${providerId}`,
   },
 
+  WHITEBOARD: {
+    GET_WHITEBOARD: "/api/lab-whiteboard",
+    UPDATE_WHITEBOARD: "/api/lab-whiteboard",
+  },
+
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks", // Download all tasks as an Excel/PDF report
     EXPORT_USERS: "/api/reports/export/users", // Download user-task report

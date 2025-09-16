@@ -52,35 +52,43 @@ const ViewUsers = () => {
 
 export default ViewUsers;
 
-const ViewUserCard = ({userInfo, showAdminBadge = false}) => {
+const ViewUserCard = ({ userInfo, showAdminBadge = false }) => {
   return (
     <div className="user-card p-4 bg-white rounded-lg shadow-sm">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-3 min-w-0">
-          <div className="relative flex-shrink-0">
-            {userInfo?.profileImageUrl ? (
-              <img
-                src={userInfo?.profileImageUrl}
-                alt={userInfo?.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-base"
-              style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}>
-                {getInitials(userInfo?.name)}
-              </div>
-            )}
+      <div className="flex items-start gap-3 min-w-0">
+        {/* Avatar */}
+        <div className="relative flex-shrink-0">
+          {userInfo?.profileImageUrl ? (
+            <img
+              src={userInfo?.profileImageUrl}
+              alt={userInfo?.name}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              className="w-12 h-12 flex items-center justify-center rounded-full text-white font-semibold text-base"
+              style={{ backgroundColor: userInfo?.profileColor || "#30b5b2" }}
+            >
+              {getInitials(userInfo?.name)}
+            </div>
+          )}
+        </div>
 
+        {/* Info + Badge */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            {/* Name + Email stacked */}
+            <div className="min-w-0 mt-1">
+              <p className="text-sm font-medium truncate">{userInfo?.name}</p>
+              <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
+            </div>
+
+            {/* Badge */}
             {showAdminBadge && userInfo?.role === "admin" && (
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-[9px] font-medium text-white bg-indigo-500 px-2 py-0.5 rounded">
+              <div className="flex-shrink-0 ml-2 text-[9px] font-medium text-white bg-indigo-500 px-2.5 py-1 rounded">
                 Admin
               </div>
             )}
-          </div>
-
-          <div className="truncate min-w-0">
-            <p className="text-sm font-medium truncate">{userInfo?.name}</p>
-            <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
         </div>
       </div>

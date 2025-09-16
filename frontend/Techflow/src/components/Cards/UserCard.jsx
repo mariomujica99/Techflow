@@ -48,13 +48,13 @@ const UserCard = ({userInfo, onUserDeleted, showAdminBadge = false}) => {
             )}
 
             {showAdminBadge && userInfo?.role === "admin" && (
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-[9px] font-medium text-white bg-indigo-500 px-2 py-0.5 rounded">
+              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-[9px] font-medium text-white bg-indigo-500 px-2.5 py-0.5 rounded">
                 Admin
               </div>
             )}
           </div>
 
-          <div className="truncate min-w-0">
+          <div className="truncate min-w-0 mt-1">
             <p className="text-sm font-medium truncate">{userInfo?.name}</p>
             <p className="text-xs text-gray-500 truncate">{userInfo?.email}</p>
           </div>
