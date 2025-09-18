@@ -186,8 +186,8 @@ const LabWhiteboard = () => {
               <p className="text-xs font-medium text-gray-700">
                 Whiteboard Last Updated
               </p>
-              <p className="text-xs text-gray-400">
-                {whiteboardData?.updatedAt ? moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A") : "Never"} 
+              <p className="text-xs text-gray-400 truncate">
+                {whiteboardData?.updatedAt ? moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"} 
                 {whiteboardData?.lastUpdatedBy && ` by ${whiteboardData.lastUpdatedBy.name}`}
               </p>
             </div>
@@ -461,7 +461,7 @@ const LabWhiteboard = () => {
             {/* Comments Section */}
             <div className="whiteboard-card">
               <div>
-                <h2 className="text-base md:text-lg mb-4 font-medium text-gray-700">Comments</h2>
+                <h2 className="text-base md:text-lg mb-2 font-medium text-gray-700">Comments</h2>
                 {!isEditMode ? (
                   <>
                     {whiteboardData?.comments?.length > 0 ? (

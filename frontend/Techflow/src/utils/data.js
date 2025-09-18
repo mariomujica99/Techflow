@@ -11,6 +11,7 @@ import {
 import { FaComputer } from "react-icons/fa6";
 import { FaUserMd } from "react-icons/fa";
 import { TbChalkboard } from "react-icons/tb";
+import { MdOutlineSpaceDashboard } from "react-icons/md";
 
 export const SIDE_MENU_DATA = [
   {
@@ -27,54 +28,60 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "03",
+    label: "Floor Whiteboard",
+    icon: MdOutlineSpaceDashboard,
+    path: "/admin/floor-whiteboard",
+  },
+  {
+    id: "04",
     label: "All Tasks",
     icon: LuClipboardList,
     path: "/admin/all-tasks",
   },
   {
-    id: "04",
+    id: "05",
     label: "My Tasks",
     icon: LuClipboardCheck,
     path: "/admin/tasks",
   },
   {
-    id: "05",
+    id: "06",
     label: "Manage Tasks",
     icon: LuListChecks,
     path: "/admin/manage-tasks",
   },
   {
-    id: "06",
+    id: "07",
     label: "Create Task",
     icon: LuSquarePlus,
     path: "/admin/create-task",
   },
   {
-    id: "07",
+    id: "08",
     label: "Computer Stations",
     icon: FaComputer,
     path: "/admin/com-stations",
   },
   {
-    id: "08",
+    id: "09",
     label: "Team Members",
     icon: LuUsers,
     path: "/admin/users",
   },
   {
-    id: "09",
+    id: "10",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/admin/providers",
   },
   {
-    id: "10",
+    id: "11",
     label: "Edit Profile",
     icon: LuUser,
     path: "/admin/edit-profile",
   },
   {
-    id: "11",
+    id: "12",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -96,54 +103,60 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "03",
+    label: "Floor Whiteboard",
+    icon: MdOutlineSpaceDashboard,
+    path: "/user/floor-whiteboard",
+  },
+  {
+    id: "04",
     label: "All Tasks",
     icon: LuClipboardList,
     path: "/user/all-tasks",
   },
   {
-    id: "04",
+    id: "05",
     label: "My Tasks",
     icon: LuClipboardCheck,
     path: "/user/tasks",
   },
   {
-    id: "05",
+    id: "06",
     label: "Manage Tasks",
     icon: LuListChecks,
     path: "/user/manage-tasks",
   },
   {
-    id: "06",
+    id: "07",
     label: "Create Task",
     icon: LuSquarePlus,
     path: "/user/create-task",
   },
   {
-    id: "07",
+    id: "08",
     label: "Computer Stations",
     icon: FaComputer,
     path: "/user/com-stations",
   },
   {
-    id: "08",
+    id: "09",
     label: "Team Members",
     icon: LuUsers,
     path: "/user/users",
   },
   {
-    id: "09",
+    id: "10",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/user/providers",
   },
   {
-    id: "10",
+    id: "11",
     label: "Edit Profile",
     icon: LuUser,
     path: "/user/edit-profile",
   },
   {
-    id: "11",
+    id: "12",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

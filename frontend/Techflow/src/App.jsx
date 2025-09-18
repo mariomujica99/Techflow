@@ -27,6 +27,7 @@ import PrivateRoute from './routes/PrivateRoute';
 import UserProvider, { UserContext } from './context/userContext';
 import { Toaster } from 'react-hot-toast';
 import LabWhiteboard from './pages/Admin/LabWhiteboard';
+import FloorWhiteboard from './pages/Admin/FloorWhiteboard';
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/lab-whiteboard" element={<LabWhiteboard />} />
+              <Route path="/admin/floor-whiteboard" element={<FloorWhiteboard />} />
               <Route path="/admin/all-tasks" element={<AllTasks />} />
               <Route path="/admin/tasks" element={<MyTasks />} />
               <Route path="/admin/manage-tasks" element={<ManageTasks />} />
@@ -56,6 +58,7 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={["user"]} />}>
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/lab-whiteboard" element={<LabWhiteboard />} />
+              <Route path="/user/floor-whiteboard" element={<FloorWhiteboard />} />
               <Route path="/user/all-tasks" element={<AllTasks />} />
               <Route path="/user/tasks" element={<MyTasks />} />
               <Route path="/user/manage-tasks" element={<ManageTasks />} />
