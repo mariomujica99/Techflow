@@ -47,7 +47,24 @@ const ViewTaskDetails = () => {
     const taskId = id;
 
     if (todoChecklist && todoChecklist[index]) {
-      todoChecklist[index].completed = !todoChecklist[index].completed;
+      const todoItem = todoChecklist[index];
+      const wasCompleted = todoItem.completed;
+      todoItem.completed = !todoItem.completed;
+
+      // Check if this is a transfer task and it's being completed
+      if (!wasCompleted && todoItem.completed && todoItem.text.includes("Transfer Patient to ")) {
+        const roomMatch = todoItem.text.match(/Transfer Patient to (\d+)/);
+        if (roomMatch && roomMatch[1]) {
+          const newRoom = roomMatch[1];
+          try {
+            await axiosInstance.put(API_PATHS.TASKS.UPDATE_TASK(taskId), {
+              title: newRoom
+            });
+          } catch (error) {
+            console.error("Error updating room number:", error);
+          }
+        }
+      }
 
       try {
         const response = await axiosInstance.put(
@@ -57,11 +74,10 @@ const ViewTaskDetails = () => {
         if (response.status === 200) {
           setTask(response.data?.task || task);
         } else {
-          // Optionally revert the toggle if the API call fails.
-          todoChecklist[index].completed = !todoChecklist[index].completed;
+          todoItem.completed = !todoItem.completed;
         }
       } catch (error) {
-        todoChecklist[index].completed = !todoChecklist[index].completed;
+        todoItem.completed = !todoItem.completed;
       }
     }
   };

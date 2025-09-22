@@ -195,11 +195,13 @@ export const TODO_DROPDOWN_OPTIONS = [
   { label: "Fix Electrodes", value: "Fix Electrodes " },
   { label: "Hyperventilation", value: "Hyperventilation " },
   { label: "Photic Stimulation", value: "Photic Stimulation " },
-  { label: "Discontinue CEEG", value: "Disconnect | Place End Time & Chart | Inform Reading Provider" },
+  { label: "Discontinue CEEG", value: "Disconnect " },
   { label: "Transfer Patient", value: "Transfer Patient to " },
   { label: "Rehook", value: "Rehook " },
   { label: "Troubleshoot", value: "Troubleshoot " },
 ];
+
+export const TODO_DC_CHART = "Place End Time & Chart | Inform Reading Provider"
 
 export const AUTOMATIC_CHECKLIST_ITEMS = {
   "Routine EEG | IP": [
