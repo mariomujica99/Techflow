@@ -3,45 +3,329 @@ import DashboardLayout from "../../components/layouts/DashboardLayout"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { UserContext } from "../../context/userContext";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import toast from "react-hot-toast";
 import { HiMiniPlus } from "react-icons/hi2";
-import { LuTrash2 } from "react-icons/lu";
+import { LuTrash2, LuChevronDown, LuListChecks, LuArrowRight } from "react-icons/lu";
+import Modal from "../../components/Modal";
+import DeleteAlert from "../../components/DeleteAlert";
 
 const FloorWhiteboard = () => {
   const { user } = useContext(UserContext);
-  const [whiteboardData, setWhiteboardData] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
+  
+  const [tasks, setTasks] = useState({
+    orders: [],
+    skinChecks: [],
+    electrodeFixes: [],
+    disconnects: [],
+    rehooks: [],
+    hyperventilation: [],
+    photic: [],
+    transfers: [],
+    troubleshoots: []
+  });
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [dropdownStates, setDropdownStates] = useState({});
 
-  const getWhiteboardData = async () => {
-    try {
-    } catch (error) {
-      console.error("Error fetching whiteboard data:", error);
-    }
-  };
+  const [deleteOrderId, setDeleteOrderId] = useState(null);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
-  const handleSaveChanges = async () => {
+  // Get all tasks and organize them by categories
+  const getAllTasks = async () => {
     setLoading(true);
     try {
+      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE);
+      const allTasks = response.data?.tasks || [];
+      
+      // Filter tasks to only include those from today or recent (within 7 days)
+      const sevenDaysAgo = moment().subtract(7, 'days').startOf('day');
+      const recentTasks = allTasks.filter(task => {
+        const taskDate = moment(task.createdAt);
+        return taskDate.isAfter(sevenDaysAgo) || task.status !== 'Completed';
+      });
+      
+      // Organize tasks by their todo checklist content - now including completed todos
+      const organizedTasks = {
+        orders: recentTasks.filter(task => 
+          task.status === 'Pending' || 
+          task.status === 'In Progress' || 
+          (task.status === 'Completed' && 
+            task.todoChecklist?.some(todo => 
+              todo.text.toLowerCase().includes("place start time") || 
+              todo.text.toLowerCase().includes("hook-up")
+            ))
+        ),
+        skinChecks: recentTasks.filter(task => 
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("skin check")
+          )
+        ),
+        electrodeFixes: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("fix electrodes")
+          )
+        ),
+        disconnects: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            (todo.text.toLowerCase().includes("disconnect") || 
+            todo.text.toLowerCase().includes("discontinue"))
+          )
+        ),
+        rehooks: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("rehook")
+          )
+        ),
+        hyperventilation: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("hyperventilation")
+          )
+        ),
+        photic: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("photic")
+          )
+        ),
+        transfers: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("transfer patient")
+          )
+        ),
+        troubleshoots: recentTasks.filter(task =>
+          task.todoChecklist?.some(todo => 
+            todo.text.toLowerCase().includes("troubleshoot")
+          )
+        )
+      };
+      
+      setTasks(organizedTasks);
+      
+      // Set last updated time to most recent task update
+      const mostRecent = recentTasks.reduce((latest, task) => 
+        (!latest || new Date(task.updatedAt) > new Date(latest)) ? task.updatedAt : latest, null
+      );
+      setLastUpdated(mostRecent);
+      
     } catch (error) {
-      console.error("Error updating whiteboard:", error);
-      toast.error("Failed to update whiteboard");
+      console.error("Error fetching tasks:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEditModeToggle = () => {
-    if (isEditMode && !loading) {
-      getWhiteboardData();
+  // Get all room numbers for dropdown
+  const getAllRoomNumbers = () => {
+    const allTasksArray = Object.values(tasks).flat();
+    const roomNumbers = [...new Set(allTasksArray.map(task => task.title))].sort();
+    return roomNumbers;
+  };
+
+  // Navigate to create task for orders section
+  const handleAddOrder = () => {
+    const basePath = user?.role === 'admin' ? '/admin' : '/user';
+    navigate(`${basePath}/create-task`, { 
+      state: { 
+        returnTo: 'floor-whiteboard'
+      } 
+    });
+  };
+
+  // Navigate to update task with specific template
+  const handleAddToSection = (sectionType, roomNumber) => {
+    const basePath = user?.role === 'admin' ? '/admin' : '/user';
+    const targetTask = Object.values(tasks).flat().find(task => task.title === roomNumber);
+    
+    if (targetTask) {
+      navigate(`${basePath}/create-task`, { 
+        state: { 
+          taskId: targetTask._id,
+          floorWhiteboardSection: sectionType,
+          returnTo: 'floor-whiteboard'
+        } 
+      });
     }
+  };
+
+  // Navigate to task details
+  const handleTaskClick = (taskId) => {
+    const basePath = user?.role === 'admin' ? '/admin' : '/user';
+    navigate(`${basePath}/task-details/${taskId}`, {
+      state: { from: "Floor Whiteboard" }
+    });
+  };
+
+  // Navigate to update task (for LuListChecks in Orders section)
+  const handleUpdateTask = (taskId) => {
+    const basePath = user?.role === 'admin' ? '/admin' : '/user';
+    navigate(`${basePath}/create-task`, { 
+      state: { 
+        taskId: taskId,
+        returnTo: 'floor-whiteboard'
+      } 
+    });
+  };
+
+  // Handle todo completion
+  const handleTodoComplete = async (taskId, todoType, isCompleted) => {
+    try {
+      const targetTask = Object.values(tasks).flat().find(task => task._id === taskId);
+      if (!targetTask) return;
+
+      const todoChecklist = [...targetTask.todoChecklist];
+      let updated = false;
+      let transferRoomUpdate = null;
+
+      // Find and update the specific todo item
+      todoChecklist.forEach(todo => {
+        if (todoType === 'skinChecks' && todo.text.toLowerCase().includes("skin check")) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'electrodeFixes' && todo.text.toLowerCase().includes("fix electrodes")) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'disconnects' && (todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue"))) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'rehooks' && todo.text.toLowerCase().includes("rehook")) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'hyperventilation' && todo.text.toLowerCase().includes("hyperventilation")) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'photic' && todo.text.toLowerCase().includes("photic")) {
+          todo.completed = isCompleted;
+          updated = true;
+        } else if (todoType === 'transfers' && todo.text.toLowerCase().includes("transfer patient")) {
+          todo.completed = isCompleted;
+          updated = true;
+          
+          if (isCompleted && todo.text.includes("Transfer Patient to ")) {
+            const roomMatch = todo.text.match(/Transfer Patient to (\d+)/);
+            if (roomMatch && roomMatch[1]) {
+              transferRoomUpdate = roomMatch[1];
+            }
+          }
+        } else if (todoType === 'troubleshoots' && todo.text.toLowerCase().includes("troubleshoot")) {
+          todo.completed = isCompleted;
+          updated = true;
+        }
+      });
+
+      // Handle room number update for transfers
+      if (transferRoomUpdate) {
+        try {
+          await axiosInstance.put(API_PATHS.TASKS.UPDATE_TASK(taskId), {
+            title: transferRoomUpdate
+          });
+        } catch (error) {
+          console.error("Error updating room number:", error);
+        }
+      }
+
+      // Special handling for DC section - also complete the "Place End Time & Chart | Inform Reading Provider" todo
+      if (todoType === 'disconnects' && isCompleted) {
+        todoChecklist.forEach(todo => {
+          if (todo.text.toLowerCase().includes("place end time") && 
+              todo.text.toLowerCase().includes("chart") && 
+              todo.text.toLowerCase().includes("inform reading provider")) {
+            todo.completed = isCompleted;
+            updated = true;
+          }
+        });
+      }
+
+      if (updated) {
+        await axiosInstance.put(
+          API_PATHS.TASKS.UPDATE_TODO_CHECKLIST(taskId),
+          { todoChecklist }
+        );
+        
+        // Refresh the floor whiteboard data
+        getAllTasks();
+        
+        // Show success message
+        toast.success(`Task ${isCompleted ? 'completed' : 'unchecked'} successfully`);
+      }
+    } catch (error) {
+      console.error("Error updating todo:", error);
+      toast.error("Failed to update task");
+    }
+  };
+
+  // Handle task deletion
+  const handleDeleteTask = async (taskId, todoType) => {
+    try {
+      const targetTask = Object.values(tasks).flat().find(task => task._id === taskId);
+      if (!targetTask) return;
+
+      const todoChecklist = targetTask.todoChecklist.filter(todo => {
+        if (todoType === 'skinCheck') return !todo.text.toLowerCase().includes("skin check");
+        if (todoType === 'electrodeFixes') return !todo.text.toLowerCase().includes("fix electrodes");
+        if (todoType === 'disconnects') return !(todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue"));
+        if (todoType === 'rehooks') return !todo.text.toLowerCase().includes("rehook");
+        if (todoType === 'hyperventilation') return !todo.text.toLowerCase().includes("hyperventilation");
+        if (todoType === 'photic') return !todo.text.toLowerCase().includes("photic");
+        if (todoType === 'transfers') return !todo.text.toLowerCase().includes("transfer patient");
+        if (todoType === 'troubleshoots') return !todo.text.toLowerCase().includes("troubleshoot");
+        return true;
+      });
+
+      await axiosInstance.put(
+        API_PATHS.TASKS.UPDATE_TODO_CHECKLIST(taskId),
+        { todoChecklist }
+      );
+      getAllTasks();
+      toast.success("Task item deleted successfully");
+    } catch (error) {
+      console.error("Error deleting task item:", error);
+      toast.error("Failed to delete task item");
+    }
+  };
+
+  // Handle order task deletion
+  const handleDeleteOrder = (taskId) => {
+    setDeleteOrderId(taskId);
+    setOpenDeleteAlert(true);
+  };
+
+  const confirmDeleteOrder = async () => {
+    try {
+      await axiosInstance.delete(API_PATHS.TASKS.DELETE_TASK(deleteOrderId));
+      setOpenDeleteAlert(false);
+      setDeleteOrderId(null);
+      getAllTasks();
+      toast.success("Order deleted successfully");
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      toast.error("Failed to delete order");
+    }
+  };
+
+  const handleEditModeToggle = () => {
     setIsEditMode(!isEditMode);
+    setDropdownStates({});
+  };
+
+  const toggleDropdown = (sectionType) => {
+    setDropdownStates(prev => ({
+      ...prev,
+      [sectionType]: !prev[sectionType]
+    }));
   };
 
   useEffect(() => {
-    getWhiteboardData();
+    getAllTasks();
+    
+    // Refresh every 30 seconds to keep data current
+    const interval = setInterval(getAllTasks, 30000);
+    return () => clearInterval(interval);
   }, []);
+
+  const roomNumbers = getAllRoomNumbers();
 
   return (
     <DashboardLayout activeMenu="Floor Whiteboard">
@@ -54,295 +338,499 @@ const FloorWhiteboard = () => {
               </div>
               
               <div className="flex items-center gap-3">
-                {isEditMode && (
-                  <button 
-                    className="card-btn-fill"
-                    onClick={handleSaveChanges}
-                    disabled={loading}
-                  >
-                    {loading ? "Saving" : "Save Changes"}
-                  </button>
-                )}
                 <button 
                   className="card-btn"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
-                  {isEditMode ? "Cancel" : "Edit"}
+                  {isEditMode ? "Done" : "Edit"}
                 </button>
               </div>
             </div>
 
             <div className="whiteboard-card">
               <p className="text-xs font-medium text-gray-700">
-                Whiteboard Last Updated
+                Last Updated
               </p>
               <p className="text-xs text-gray-400 truncate">
-                {whiteboardData?.updatedAt ? moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"} 
-                {whiteboardData?.lastUpdatedBy && ` by ${whiteboardData.lastUpdatedBy.name}`}
+                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "No data available"}
               </p>
             </div>
 
-
-            <div className="grid grid-cols-4 md:grid-cols-4 gap-5 mt-5">
-              {/* Skin Checks Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">Skin Checks</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* Orders Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">Orders</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* HV/Photic Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">HV/Photic</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* Discontinue Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">DCs</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* Transfers Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">Transfers</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* Rehooks Section */}
-              <div className="whiteboard-card col-span-2">
-                <div>
-
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700 mb-1">Rehooks</h2>
-                    {isEditMode ? (
-                    <button className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-0.5 py-0.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
-                      onClick={() => {
-                    }}>
-                      <HiMiniPlus className="text-lg" />
-                    </button>
-                    ) : (
-                        <p></p>
-                      )}
-                  </div>
-
-
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-
-                      <p>6820</p>
-                      {isEditMode ? (
-                        <button
-                          className="trashcan-btn"
-                        >
-                          <LuTrash2 className="text-base" />
-                        </button>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          className="checkbox"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-
+            {/* Orders Section - Full Width */}
+            <div className="grid grid-cols-1 gap-5 mt-5">
+              <OrdersSection 
+                title="Orders"
+                tasks={tasks.orders}
+                isEditMode={isEditMode}
+                onAdd={handleAddOrder}
+                onTaskClick={handleTaskClick}
+                onUpdateTask={handleUpdateTask}
+                onDelete={handleDeleteOrder}
+              />
             </div>
-                  
 
+            {/* Other Sections - 2 per row */}
+            <div className="grid grid-cols-2 gap-5 mt-5">
+              <WhiteboardSection 
+                title="Skin Checks"
+                tasks={tasks.skinChecks}
+                sectionType="skinCheck"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('skinCheck', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'skinChecks', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'skinCheck')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['skinCheck']}
+                onToggleDropdown={() => toggleDropdown('skinCheck')}
+              />
+
+              <WhiteboardSection 
+                title="Electrode Fixes"
+                tasks={tasks.electrodeFixes}
+                sectionType="electrodeFixes"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('electrodeFixes', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'electrodeFixes', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'electrodeFixes')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['electrodeFixes']}
+                onToggleDropdown={() => toggleDropdown('electrodeFixes')}
+              />
+
+              <WhiteboardSection 
+                title="DCs"
+                tasks={tasks.disconnects}
+                sectionType="disconnects"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('disconnects', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'disconnects', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'disconnects')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['disconnects']}
+                onToggleDropdown={() => toggleDropdown('disconnects')}
+              />
+
+              <WhiteboardSection 
+                title="Rehooks"
+                tasks={tasks.rehooks}
+                sectionType="rehooks"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('rehooks', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'rehooks', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'rehooks')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['rehooks']}
+                onToggleDropdown={() => toggleDropdown('rehooks')}
+              />
+
+              <WhiteboardSection 
+                title="HV"
+                tasks={tasks.hyperventilation}
+                sectionType="hyperventilation"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('hyperventilation', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'hyperventilation', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'hyperventilation')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['hyperventilation']}
+                onToggleDropdown={() => toggleDropdown('hyperventilation')}
+              />
+
+              <WhiteboardSection 
+                title="Photic"
+                tasks={tasks.photic}
+                sectionType="photic"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('photic', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'photic', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'photic')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['photic']}
+                onToggleDropdown={() => toggleDropdown('photic')}
+              />
+
+              <WhiteboardSection 
+                title="Transfers"
+                tasks={tasks.transfers}
+                sectionType="transfers"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('transfers', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'transfers', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'transfers')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['transfers']}
+                onToggleDropdown={() => toggleDropdown('transfers')}
+              />
+
+              <WhiteboardSection 
+                title="Troubleshoots"
+                tasks={tasks.troubleshoots}
+                sectionType="troubleshoots"
+                isEditMode={isEditMode}
+                onAdd={(roomNumber) => handleAddToSection('troubleshoots', roomNumber)}
+                onTaskClick={handleTaskClick}
+                onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'troubleshoots', isCompleted)}
+                onDelete={(taskId) => handleDeleteTask(taskId, 'troubleshoots')}
+                roomNumbers={roomNumbers}
+                dropdownOpen={dropdownStates['troubleshoots']}
+                onToggleDropdown={() => toggleDropdown('troubleshoots')}
+              />
+            </div>
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={openDeleteAlert}
+        onClose={() => setOpenDeleteAlert(false)}
+        title="Delete Order"
+      >
+        <DeleteAlert
+          content="Are you sure you want to delete this order? This action cannot be undone."
+          onDelete={confirmDeleteOrder}
+        />
+      </Modal>
     </DashboardLayout>
+  );
+};
+
+// Orders section component (different from other sections)
+const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateTask, onDelete }) => {
+  const getStatusColor = (task) => {
+    // Check for specific todo items to determine status
+    const hasHookUp = task.todoChecklist?.some(todo => 
+      todo.text.toLowerCase().includes("hook-up") && todo.completed
+    );
+    const hasStartTime = task.todoChecklist?.some(todo => 
+      todo.text.toLowerCase().includes("place start time") && todo.completed
+    );
+
+    if (hasStartTime) return 'bg-green-500';
+    if (hasHookUp) return 'bg-cyan-500';
+    return 'bg-violet-500';
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'STAT': return 'text-red-500';
+      case 'ASAP': return 'text-orange-500';
+      default: return 'text-lime-500';
+    }
+  };
+
+  const formatOrderDisplay = (task) => {
+    const orderType = task.orderType || '';
+    const roomNumber = task.title || '';
+    
+    // Get the first letter prefix based on order type
+    let prefix = '';
+    let remainingType = orderType;
+    
+    if (orderType.startsWith('Routine EEG')) {
+      prefix = 'R';
+      remainingType = orderType.replace('Routine EEG | ', '');
+    } else if (orderType.startsWith('Continuous EEG')) {
+      prefix = 'C';
+      remainingType = orderType.replace('Continuous EEG | ', '');
+    } else if (orderType === 'Continuous SEEG') {
+      prefix = 'C';
+      remainingType = 'SEEG';
+    } else if (orderType === 'Neuropsychiatric EEG') {
+      prefix = 'R';
+      remainingType = 'NP';
+    }
+    
+    return {
+      roomWithPrefix: `${prefix} ${roomNumber}`,
+      orderTypeShort: remainingType
+    };
+  };
+
+  return (
+    <div className="whiteboard-card">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-base md:text-lg font-medium text-gray-700">{title}</h2>
+        {isEditMode && (
+          <button 
+            className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            onClick={onAdd}
+          >
+            <HiMiniPlus className="text-base md:text-lg" />
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {tasks.map((task) => {
+          const { roomWithPrefix, orderTypeShort } = formatOrderDisplay(task);
+          
+          return (
+            <div 
+              key={task._id}
+              className="flex justify-between items-center py-2 px-5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onTaskClick(task._id)}
+            >
+              <div className="flex items-center gap-2 flex-1">
+                <div className={`w-2 h-2 rounded-full ${getStatusColor(task)}`}></div>
+                <span className="text-xs md:text-sm text-gray-700 font-medium">{roomWithPrefix}</span>
+                <span className="text-xs text-gray-500">| {orderTypeShort} |</span>
+                <span className={`text-xs ${getPriorityColor(task.priority)}`}>
+                  {task.priority}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {!isEditMode && (
+                  <LuListChecks 
+                    className="text-gray-400 hover:text-primary cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdateTask(task._id);
+                    }}
+                  />
+                )}
+                {isEditMode && (
+                  <LuTrash2 
+                    className="text-red-500 hover:text-red-300 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(task._id);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })}
+        
+        {tasks.length === 0 && (
+          <p className="text-xs md:text-sm text-gray-400">No orders</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Regular section component
+const WhiteboardSection = ({ 
+  title, 
+  tasks, 
+  sectionType, 
+  isEditMode, 
+  onAdd, 
+  onTaskClick, 
+  onTodoComplete, 
+  onDelete,
+  roomNumbers,
+  dropdownOpen,
+  onToggleDropdown
+}) => {
+  
+  const getRelevantTodoText = (task, sectionType) => {
+    const relevantTodo = task.todoChecklist?.find(todo => {
+      switch (sectionType) {
+        case 'skinCheck':
+          return todo.text.toLowerCase().includes("skin check");
+        case 'electrodeFixes':
+          return todo.text.toLowerCase().includes("fix electrodes");
+        case 'disconnects':
+          return todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue");
+        case 'rehooks':
+          return todo.text.toLowerCase().includes("rehook");
+        case 'hyperventilation':
+          return todo.text.toLowerCase().includes("hyperventilation");
+        case 'photic':
+          return todo.text.toLowerCase().includes("photic");
+        case 'transfers':
+          return todo.text.toLowerCase().includes("transfer patient");
+        case 'troubleshoots':
+          return todo.text.toLowerCase().includes("troubleshoot");
+        default:
+          return false;
+      }
+    });
+    return relevantTodo?.text || '';
+  };
+
+  const formatDisplayText = (task, sectionType) => {
+    const todoText = getRelevantTodoText(task, sectionType);
+    const roomNumber = task.title;
+    
+    switch (sectionType) {
+      case 'skinCheck':
+        const dayMatch = todoText.match(/Day (\d+)/i);
+        return (
+          <span className="whitespace-normal break-words">
+            {roomNumber}
+            {dayMatch && (
+              <>
+                <span className="text-primary"> | </span>
+                Day {dayMatch[1]}
+              </>
+            )}
+          </span>
+        );
+      
+      case 'transfers':
+        const transferMatch = todoText.match(/Transfer Patient to (.+?)(?:\s*\|\s*(.+))?$/i);
+        if (transferMatch) {
+          const newRoom = transferMatch[1];
+          const comment = transferMatch[2];
+          return (
+            <span className="flex flex-wrap items-center gap-1">
+              {roomNumber}
+              <LuArrowRight className="text-xs md:text-sm flex-shrink-0" />
+              {newRoom}
+              {comment && (
+                <span className="whitespace-normal break-words">
+                  <span className="text-primary">| </span>
+                  {comment}
+                </span>
+              )}
+            </span>
+          );
+        }
+        return `${roomNumber}`;
+      
+      case 'electrodeFixes':
+      case 'rehooks':  
+      case 'hyperventilation':
+      case 'photic':
+      case 'disconnects':
+      case 'troubleshoots':
+        const commentMatch = todoText.match(/\|\s*(.+)$/);
+        return (
+          <span className="flex flex-wrap items-center gap-1">
+            {roomNumber}
+            {commentMatch && (
+              <span className="whitespace-normal break-words">
+                <span className="text-primary">| </span>
+                {commentMatch[1]}
+              </span>
+            )}
+          </span>
+        );
+      default:
+        return roomNumber;
+    }
+  };
+
+  return (
+    <div className="whiteboard-card">
+      <h2 className="text-base md:text-lg font-medium text-gray-700 mb-3">{title}</h2>
+      {isEditMode && (
+        <div className="relative mb-3">
+          <button 
+            className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            onClick={onToggleDropdown}
+          >
+            <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {dropdownOpen && roomNumbers.length > 0 && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-24">
+              {roomNumbers.map(roomNumber => (
+                <button
+                  key={roomNumber}
+                  className="block w-full text-left px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    onAdd(roomNumber);
+                    onToggleDropdown();
+                  }}
+                >
+                  {roomNumber}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {tasks.map((task) => {
+          const relevantTodo = task.todoChecklist?.find(todo => {
+            switch (sectionType) {
+              case 'skinCheck':
+                return todo.text.toLowerCase().includes("skin check");
+              case 'electrodeFixes':
+                return todo.text.toLowerCase().includes("fix electrodes");
+              case 'disconnects':
+                return todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue");
+              case 'rehooks':
+                return todo.text.toLowerCase().includes("rehook");
+              case 'hyperventilation':
+                return todo.text.toLowerCase().includes("hyperventilation");
+              case 'photic':
+                return todo.text.toLowerCase().includes("photic");
+              case 'transfers':
+                return todo.text.toLowerCase().includes("transfer patient");
+              case 'troubleshoots':
+                return todo.text.toLowerCase().includes("troubleshoot");
+              default:
+                return false;
+            }
+          });
+
+          return (
+            <div 
+              key={task._id}
+              className={`flex justify-between items-center py-2 px-3 rounded cursor-pointer transition-colors ${
+                relevantTodo?.completed 
+                  ? 'bg-green-50 hover:bg-green-100' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+              onClick={() => onTaskClick(task._id)}
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className={`text-xs md:text-sm font-medium ${
+                  relevantTodo?.completed 
+                    ? 'text-green-700' 
+                    : 'text-gray-700'
+                }`}>
+                  {formatDisplayText(task, sectionType)}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {!isEditMode && relevantTodo && (
+                  <input
+                    type="checkbox"
+                    checked={relevantTodo.completed}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      onTodoComplete(task._id, !relevantTodo.completed);
+                    }}
+                    readOnly
+                    className="w-4 h-4 ml-1 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
+                  />
+                )}
+                {isEditMode && (
+                  <LuTrash2 
+                    className="text-red-500 hover:text-red-300 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(task._id);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })}
+        
+        {tasks.length === 0 && (
+          <p className="text-xs md:text-sm text-gray-400">No tasks</p>
+        )}
+      </div>
+    </div>
   );
 };
 

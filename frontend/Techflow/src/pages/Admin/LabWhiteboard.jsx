@@ -16,7 +16,6 @@ const LabWhiteboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Local state for editing
   const [editData, setEditData] = useState({
     coverage: {
       onCall: [],
@@ -45,7 +44,6 @@ const LabWhiteboard = () => {
       const response = await axiosInstance.get(API_PATHS.WHITEBOARD.GET_WHITEBOARD);
       setWhiteboardData(response.data);
       
-      // Initialize edit data with current values (arrays)
       setEditData({
         coverage: {
           onCall: response.data?.coverage?.onCall?.map(user => user._id) || [],
@@ -471,7 +469,7 @@ const LabWhiteboard = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400">No Comments Today</p>
+                      <p className="text-sm text-gray-400">No comments for today</p>
                     )}
                   </>
                 ) : (

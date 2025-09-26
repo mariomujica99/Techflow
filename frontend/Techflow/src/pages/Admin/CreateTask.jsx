@@ -105,7 +105,15 @@ const CreateTask = () => {
 
       toast.success("Task Created Successfully");
 
-      clearData();
+      // Handle navigation based on returnTo parameter
+      const returnTo = location.state?.returnTo;
+      const basePath = user?.role === 'admin' ? '/admin' : '/user';
+      
+      if (returnTo === 'floor-whiteboard') {
+        navigate(`${basePath}/floor-whiteboard`);
+      } else {
+        clearData();
+      }
     } catch (error) {
       console.error("Error creating task:", error);
       setLoading(false);
@@ -140,10 +148,17 @@ const CreateTask = () => {
 
       toast.success("Task Updated Successfully");
 
+      // Handle navigation based on returnTo parameter
+      const returnTo = location.state?.returnTo;
       const basePath = user?.role === 'admin' ? '/admin' : '/user';
-      navigate(`${basePath}/manage-tasks`);
+      
+      if (returnTo === 'floor-whiteboard') {
+        navigate(`${basePath}/floor-whiteboard`);
+      } else {
+        navigate(`${basePath}/manage-tasks`);
+      }
     } catch (error) {
-      console.error("Error creating task:", error);
+      console.error("Error updating task:", error);
       setLoading(false);
     } finally {
       setLoading(false);
@@ -219,6 +234,30 @@ const CreateTask = () => {
         "Error deleting task:",
         error.response?.data?.message || error.message
       );
+    }
+  };
+
+  // Handle pre-population based on whiteboard section
+  const getPrefilledTodoItems = (sectionType) => {
+    switch (sectionType) {
+      case 'skinCheck':
+        return ["Skin Check | Day "];
+      case 'electrodeFixes':
+        return ["Fix Electrodes "];
+      case 'hyperventilation':
+        return ["Hyperventilation "];
+      case 'photic':
+        return ["Photic Stimulation "];
+      case 'disconnects':
+        return ["Disconnect "];
+      case 'rehooks':
+        return ["Rehook "];
+      case 'transfers':
+        return ["Transfer Patient to "];
+      case 'troubleshoots':
+        return ["Troubleshoot "];
+      default:
+        return [];
     }
   };
 
@@ -309,6 +348,22 @@ const CreateTask = () => {
       }
     }
   }, [taskData.title, allComStations, taskId]);
+
+  // Handle floor whiteboard section pre-population
+  useEffect(() => {
+    if (location.state?.floorWhiteboardSection && taskId) {
+      const sectionType = location.state.floorWhiteboardSection;
+      const prefilledItems = getPrefilledTodoItems(sectionType);
+      
+      if (prefilledItems.length > 0) {
+        // Add the prefilled items to existing todo list without replacing it
+        setTaskData(prev => ({
+          ...prev,
+          todoChecklist: [...prev.todoChecklist, ...prefilledItems]
+        }));
+      }
+    }
+  }, [location.state?.floorWhiteboardSection, taskId]);
 
   useEffect(() => {
     if (taskId) {

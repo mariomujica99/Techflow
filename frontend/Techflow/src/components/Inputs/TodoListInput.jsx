@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HiMiniPlus, HiOutlineTrash } from "react-icons/hi2";
 import { LuChevronDown } from "react-icons/lu";
+import { useLocation } from "react-router-dom";
 import { TODO_DROPDOWN_OPTIONS, TODO_DC_CHART } from "../../utils/data";
 
 const TodoListInput = ({ todoList, setTodoList }) => {
+  const location = useLocation();
+
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [editableText, setEditableText] = useState("");
   const [customText, setCustomText] = useState("");
@@ -69,12 +72,17 @@ const TodoListInput = ({ todoList, setTodoList }) => {
       case "Fix Electrodes ":
       case "Photic Stimulation ":
       case "Hyperventilation ":
-      case "Disconnect ":
       case "Rehook ":
         return { 
           showComment: true,
           commentLabel: "Comment",
           commentPlaceholder: getCommentPlaceholder(template)
+        };
+      case "Disconnect ":
+        return { 
+          showComment: true,
+          commentLabel: "Comment",
+          commentPlaceholder: "Ex: @2:00pm"
         };
       default:
         return {};
@@ -178,6 +186,30 @@ const TodoListInput = ({ todoList, setTodoList }) => {
       autoResize(editableTextRef);
     }
   }, [editableText, editableTextRef]);
+
+  useEffect(() => {
+    // Auto-select template when coming from floor whiteboard
+    const floorWhiteboardSection = location.state?.floorWhiteboardSection;
+    
+    if (floorWhiteboardSection && !selectedTemplate) {
+      const templateMap = {
+        'skinCheck': 'Skin Check | Day ',
+        'electrodeFixes': 'Fix Electrodes ',
+        'hyperventilation': 'Hyperventilation ',
+        'photic': 'Photic Stimulation ',
+        'disconnects': 'Disconnect ',
+        'rehooks': 'Rehook ',
+        'transfers': 'Transfer Patient to ',
+        'troubleshoots': 'Troubleshoot '
+      };
+      
+      const templateValue = templateMap[floorWhiteboardSection];
+      if (templateValue) {
+        setSelectedTemplate(templateValue);
+        setShowTemplateInputs(true);
+      }
+    }
+  }, [location.state?.floorWhiteboardSection, selectedTemplate]);
 
   return (
     <div>
