@@ -155,7 +155,7 @@ const LabWhiteboard = () => {
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
-            <div className="flex md:flex-row md:items-center justify-between mb-5">
+            <div className="flex md:flex-row md:items-center justify-between mb-0.5">
               <div className="flex items-center gap-3">
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Lab Whiteboard</h2>
               </div>
@@ -179,6 +179,8 @@ const LabWhiteboard = () => {
                 </button>
               </div>
             </div>
+
+            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
 
             <div className="whiteboard-card">
               <p className="text-xs font-medium text-gray-700">

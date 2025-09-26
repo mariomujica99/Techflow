@@ -78,7 +78,8 @@ const UserDashboard = () => {
         <div>
           <div className="col-span-3">
             <h2 className="text-xl md:text-2xl">Hello {user?.name?.split(" ")[0]}</h2>
-            <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
+            <h1 className="text-base md:text-lg text-gray-400 mt-0.5">Neurophysiology Department</h1>
+            <p className="text-xs md:text-sm text-gray-400 mt-1.5">
               {moment().format("dddd Do MMM YYYY")}
             </p>
           </div>

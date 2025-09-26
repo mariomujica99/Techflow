@@ -92,7 +92,7 @@ const FloorWhiteboard = () => {
         ),
         transfers: recentTasks.filter(task =>
           task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("transfer patient")
+            todo.text.toLowerCase().includes("transfer patient from")
           )
         ),
         troubleshoots: recentTasks.filter(task =>
@@ -203,8 +203,8 @@ const FloorWhiteboard = () => {
           todo.completed = isCompleted;
           updated = true;
           
-          if (isCompleted && todo.text.includes("Transfer Patient to ")) {
-            const roomMatch = todo.text.match(/Transfer Patient to (\d+)/);
+          if (isCompleted && todo.text.includes("Transfer Patient from ")) {
+            const roomMatch = todo.text.match(/Transfer Patient from .+? to (\d+)/);
             if (roomMatch && roomMatch[1]) {
               transferRoomUpdate = roomMatch[1];
             }
@@ -332,7 +332,7 @@ const FloorWhiteboard = () => {
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
-            <div className="flex md:flex-row md:items-center justify-between mb-5">
+            <div className="flex md:flex-row md:items-center justify-between mb-0.5">
               <div className="flex items-center gap-3">
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Floor Whiteboard</h2>
               </div>
@@ -347,6 +347,8 @@ const FloorWhiteboard = () => {
                 </button>
               </div>
             </div>
+
+            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
 
             <div className="whiteboard-card">
               <p className="text-xs font-medium text-gray-700">
@@ -679,15 +681,16 @@ const WhiteboardSection = ({
         );
       
       case 'transfers':
-        const transferMatch = todoText.match(/Transfer Patient to (.+?)(?:\s*\|\s*(.+))?$/i);
+        const transferMatch = todoText.match(/Transfer Patient from\s+(.+?)\s+to\s+(\S+)(?:\s*\|\s*(.+))?/i);
         if (transferMatch) {
-          const newRoom = transferMatch[1];
-          const comment = transferMatch[2];
+          const fromRoom = transferMatch[1];
+          const toRoom = transferMatch[2];
+          const comment = transferMatch[3];
           return (
             <span className="flex flex-wrap items-center gap-1">
-              {roomNumber}
+              {fromRoom}
               <LuArrowRight className="text-xs md:text-sm flex-shrink-0" />
-              {newRoom}
+              {toRoom}
               {comment && (
                 <span className="whitespace-normal break-words">
                   <span className="text-primary">| </span>

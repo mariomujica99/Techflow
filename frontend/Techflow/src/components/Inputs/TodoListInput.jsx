@@ -4,7 +4,7 @@ import { LuChevronDown } from "react-icons/lu";
 import { useLocation } from "react-router-dom";
 import { TODO_DROPDOWN_OPTIONS, TODO_DC_CHART } from "../../utils/data";
 
-const TodoListInput = ({ todoList, setTodoList }) => {
+const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
   const location = useLocation();
 
   const [selectedTemplate, setSelectedTemplate] = useState("");
@@ -54,7 +54,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
           commentLabel: "Comment",
           commentPlaceholder: "Ex: Fz Cz Pz"
         };
-      case "Transfer Patient to ":
+      case "Transfer Patient from ":
         return { 
           showRoom: true, 
           roomRequired: true,
@@ -140,7 +140,12 @@ const TodoListInput = ({ todoList, setTodoList }) => {
     }
     
     if (config.showRoom && templateInputs.room.trim()) {
-      finalText = finalText.replace("to ", `to ${templateInputs.room.trim()}`);
+      if (selectedTemplate === "Transfer Patient from ") {
+        const fromRoom = currentRoom || 'Current Room';
+        finalText = `Transfer Patient from ${fromRoom} to ${templateInputs.room.trim()}`;
+      } else {
+        finalText = finalText.replace("to ", `to ${templateInputs.room.trim()}`);
+      }
     }
     
     if (config.showComment && templateInputs.comment.trim()) {
@@ -199,7 +204,7 @@ const TodoListInput = ({ todoList, setTodoList }) => {
         'photic': 'Photic Stimulation ',
         'disconnects': 'Disconnect ',
         'rehooks': 'Rehook ',
-        'transfers': 'Transfer Patient to ',
+        'transfers': 'Transfer Patient from ',
         'troubleshoots': 'Troubleshoot '
       };
       
@@ -363,15 +368,29 @@ const TodoListInput = ({ todoList, setTodoList }) => {
                 <div className="text-sm text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-md">
                   {(() => {
                     let preview = selectedTemplate;
-                    if (config.showDay && templateInputs.day.trim()) {
-                      preview = preview.replace("Day ", `Day ${templateInputs.day.trim()}`);
+                    
+                    if (selectedTemplate === "Transfer Patient from ") {
+                      // Special handling for transfer preview
+                      const fromRoom = currentRoom || 'Current Room';
+                      const toRoom = templateInputs.room.trim() || 'New Room';
+                      preview = `Transfer Patient from ${fromRoom} to ${toRoom}`;
+                      
+                      if (templateInputs.comment.trim()) {
+                        preview += ` | ${templateInputs.comment.trim()}`;
+                      }
+                    } else {
+                      // Existing preview logic for other templates
+                      if (config.showDay && templateInputs.day.trim()) {
+                        preview = preview.replace("Day ", `Day ${templateInputs.day.trim()}`);
+                      }
+                      if (config.showRoom && templateInputs.room.trim() && selectedTemplate !== "Transfer Patient from ") {
+                        preview = preview.replace("to ", `to ${templateInputs.room.trim()}`);
+                      }
+                      if (config.showComment && templateInputs.comment.trim()) {
+                        preview += ` | ${templateInputs.comment.trim()}`;
+                      }
                     }
-                    if (config.showRoom && templateInputs.room.trim()) {
-                      preview = preview.replace("to ", `to ${templateInputs.room.trim()}`);
-                    }
-                    if (config.showComment && templateInputs.comment.trim()) {
-                      preview += ` | ${templateInputs.comment.trim()}`;
-                    }
+                    
                     return preview;
                   })()}
                 </div>

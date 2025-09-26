@@ -19,7 +19,7 @@ import AllTasks from './pages/Admin/AllTasks';
 import ComStations from './pages/Admin/ComStations';
 
 import UserDashboard from './pages/User/UserDashboard';
-import MyTasks from './pages/User/MyTasks';
+import WorkedOnTasks from './pages/User/WorkedOnTasks';
 import ViewTaskDetails from './pages/User/ViewTaskDetails';
 import ViewUsers from './pages/User/ViewUsers';
 
@@ -44,7 +44,7 @@ const App = () => {
               <Route path="/admin/lab-whiteboard" element={<LabWhiteboard />} />
               <Route path="/admin/floor-whiteboard" element={<FloorWhiteboard />} />
               <Route path="/admin/all-tasks" element={<AllTasks />} />
-              <Route path="/admin/tasks" element={<MyTasks />} />
+              <Route path="/admin/tasks" element={<WorkedOnTasks />} />
               <Route path="/admin/manage-tasks" element={<ManageTasks />} />
               <Route path="/admin/create-task" element={<CreateTask />} />              
               <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />              
@@ -60,7 +60,7 @@ const App = () => {
               <Route path="/user/lab-whiteboard" element={<LabWhiteboard />} />
               <Route path="/user/floor-whiteboard" element={<FloorWhiteboard />} />
               <Route path="/user/all-tasks" element={<AllTasks />} />
-              <Route path="/user/tasks" element={<MyTasks />} />
+              <Route path="/user/tasks" element={<WorkedOnTasks />} />
               <Route path="/user/manage-tasks" element={<ManageTasks />} />
               <Route path="/user/create-task" element={<CreateTask />} />    
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />              

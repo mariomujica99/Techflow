@@ -40,7 +40,7 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "05",
-    label: "My Tasks",
+    label: "Worked-On Tasks",
     icon: LuClipboardCheck,
     path: "/admin/tasks",
   },
@@ -115,7 +115,7 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "05",
-    label: "My Tasks",
+    label: "Worked-On Tasks",
     icon: LuClipboardCheck,
     path: "/user/tasks",
   },
@@ -196,7 +196,7 @@ export const TODO_DROPDOWN_OPTIONS = [
   { label: "Hyperventilation", value: "Hyperventilation " },
   { label: "Photic Stimulation", value: "Photic Stimulation " },
   { label: "Discontinue CEEG", value: "Disconnect " },
-  { label: "Transfer Patient", value: "Transfer Patient to " },
+  { label: "Transfer Patient", value: "Transfer Patient from " },
   { label: "Rehook", value: "Rehook " },
   { label: "Troubleshoot", value: "Troubleshoot " },
 ];

@@ -253,7 +253,7 @@ const CreateTask = () => {
       case 'rehooks':
         return ["Rehook "];
       case 'transfers':
-        return ["Transfer Patient to "];
+        return [`Transfer Patient from ${taskData.title || '[room]'} to `];
       case 'troubleshoots':
         return ["Troubleshoot "];
       default:
@@ -611,6 +611,7 @@ const CreateTask = () => {
                 setTodoList={(value) =>
                   handleValueChange("todoChecklist", value)
                 }
+                currentRoom={taskData.title}
               />
             </div>
 

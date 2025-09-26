@@ -9,7 +9,7 @@ import { LuMessageSquareText, LuSquareArrowOutUpRight } from "react-icons/lu";
 
 const ViewTaskDetails = () => {
   const location = useLocation();
-  const activeMenu = location.state?.from || "My Tasks";
+  const activeMenu = location.state?.from || "Worked-On Tasks";
 
   const { id } = useParams(null);
   const [task, setTask] = useState(null);

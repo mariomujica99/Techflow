@@ -8,7 +8,7 @@ import TaskStatusTabs from "../../components/TaskStatusTabs";
 import TaskCard from "../../components/Cards/TaskCard";
 import { UserContext } from "../../context/userContext";
 
-const MyTasks = () => {
+const WorkedOnTasks = () => {
   const { user } = useContext(UserContext);
 
   const [allTasks, setAllTasks] = useState([]);
@@ -46,7 +46,7 @@ const MyTasks = () => {
 
   const handleClick = (taskId) => {
     const basePath = user?.role === 'admin' ? 'admin' : 'user';
-    navigate(`/${basePath}/task-details/${taskId}`, { state: { from: "My Tasks" } });
+    navigate(`/${basePath}/task-details/${taskId}`, { state: { from: "Worked-On Tasks" } });
   };
 
   useEffect(() => {
@@ -55,10 +55,10 @@ const MyTasks = () => {
   }, [filterStatus]);
 
   return (
-    <DashboardLayout activeMenu="My Tasks">
+    <DashboardLayout activeMenu="Worked-On Tasks">
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-          <h2 className="text-xl md:text-xl font-medium text-gray-700">My Tasks</h2>
+          <h2 className="text-xl md:text-xl font-medium text-gray-700">Worked-On Tasks</h2>
 
           <div className="min-h-[3.5rem] flex items-end">
             {tabs?.[0]?.count > 0 ? (
@@ -104,4 +104,4 @@ const MyTasks = () => {
   );
 };
 
-export default MyTasks;
+export default WorkedOnTasks;
