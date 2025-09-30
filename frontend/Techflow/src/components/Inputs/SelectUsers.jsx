@@ -61,8 +61,8 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   return (
     <div className="space-y-4 mt-2">
       {selectedUserAvatars.length === 0 && (
-        <button className="w-full flex items-center justify-center gap-3 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-3.25 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
-          <LuUsers className="flex-shrink-0 text-sm" /> Add Members
+        <button className="w-10 h-10 flex items-center justify-center gap-3 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-2.5 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
+          <LuUsers className="flex-shrink-0 text-base" />
         </button>
       )}
 
@@ -81,7 +81,7 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
         onClose={() => setIsModalOpen(false)}
         title="Select Member"
       >
-        <div className="space-y-4 h-[60vh] overflow-y-auto pr-4 pl-4">
+        <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
           {allUsers.map((user) => (
             <div
               key={user._id}
@@ -101,9 +101,9 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
                   {getInitials(user.name)}
                 </div>
               )}
-              <div className="flex-1">
-                <p className="font-medium text-gray-800 dark:text-white">{user.name}</p>
-                <p className="text-[13px] text-gray-500">{user.email}</p>
+              <div className="flex-1 truncate">
+                <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
+                <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
               </div>
 
               <input

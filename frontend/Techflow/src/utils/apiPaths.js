@@ -49,10 +49,16 @@ export const API_PATHS = {
     UPDATE_WHITEBOARD: "/api/lab-whiteboard",
   },
 
+  SUPPLIES: {
+    GET_ALL_SUPPLIES: "/api/supplies",
+    UPDATE_SUPPLIES: (department) => `/api/supplies/${department}`,
+  },
+
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks", // Download all tasks as an Excel/PDF report
     EXPORT_USERS: "/api/reports/export/users", // Download user-task report
     EXPORT_COM_STATIONS: "/api/reports/export/com-stations", // Download computer stations report
+    EXPORT_SUPPLIES: "/api/reports/export/supplies", // Download supplies report
   },
 
   IMAGE: {

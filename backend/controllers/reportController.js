@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
 const User = require('../models/User');
 const ComStation = require('../models/ComStation');
+const Supply = require('../models/Supply')
 const excelJS = require('exceljs');
 
 // @desc  Export all tasks as Excel file
@@ -169,8 +170,81 @@ const exportComStationsReport = async (req, res) => {
   }
 };
 
+// @desc    Export supplies report
+// @route   GET /api/reports/export/supplies
+// @access  Private (Admin)
+const exportSuppliesReport = async (req, res) => {
+  try {
+    const supplies = await Supply.find().sort({ storageRoom: 1 });
+
+    // Organize by storage room
+    const storageRoomMap = {};
+    supplies.forEach(supply => {
+      storageRoomMap[supply.storageRoom] = supply.items || [];
+    });
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Needed Supplies Report');
+
+    // Define columns - each storage room as a column
+    const storageRooms = ['Department', 'Outpatient Rooms', '2nd Floor Storage', '6th Floor Storage', '8th Floor Storage'];
+    
+    worksheet.columns = storageRooms.map(room => ({
+      header: room,
+      key: room.replace(/\s+/g, '_'),
+      width: 30
+    }));
+
+    // Find the maximum number of items in any storage room
+    const maxItems = Math.max(
+      ...storageRooms.map(room => (storageRoomMap[room] || []).length),
+      0
+    );
+
+    // Add rows - each row contains items at the same index from each storage room
+    for (let i = 0; i < maxItems; i++) {
+      const row = {};
+      storageRooms.forEach(room => {
+        const roomItems = storageRoomMap[room] || [];
+        row[room.replace(/\s+/g, '_')] = roomItems[i] || '';
+      });
+      worksheet.addRow(row);
+    }
+
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' }
+    };
+
+    // Add borders to all cells
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="needed_supplies.xlsx"');
+
+    return workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error exporting supplies', error: error.message });
+  }
+};
+
 module.exports = {
   exportTasksReport,
   exportUsersReport,
   exportComStationsReport,
+  exportSuppliesReport,
 };

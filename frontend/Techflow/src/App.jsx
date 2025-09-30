@@ -28,6 +28,7 @@ import UserProvider, { UserContext } from './context/userContext';
 import { Toaster } from 'react-hot-toast';
 import LabWhiteboard from './pages/Admin/LabWhiteboard';
 import FloorWhiteboard from './pages/Admin/FloorWhiteboard';
+import Supplies from './pages/Admin/Supplies';
 
 const App = () => {
   return (
@@ -46,8 +47,9 @@ const App = () => {
               <Route path="/admin/all-tasks" element={<AllTasks />} />
               <Route path="/admin/tasks" element={<WorkedOnTasks />} />
               <Route path="/admin/manage-tasks" element={<ManageTasks />} />
-              <Route path="/admin/create-task" element={<CreateTask />} />              
-              <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />              
+              <Route path="/admin/create-task" element={<CreateTask />} />
+              <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
+              <Route path="/admin/supplies" element={<Supplies />} />
               <Route path="/admin/com-stations" element={<ComStations />} />
               <Route path="/admin/users" element={<ManageUsers />} />
               <Route path="/admin/providers" element={<Providers />} />
@@ -62,8 +64,9 @@ const App = () => {
               <Route path="/user/all-tasks" element={<AllTasks />} />
               <Route path="/user/tasks" element={<WorkedOnTasks />} />
               <Route path="/user/manage-tasks" element={<ManageTasks />} />
-              <Route path="/user/create-task" element={<CreateTask />} />    
-              <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />              
+              <Route path="/user/create-task" element={<CreateTask />} />
+              <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+              <Route path="/user/supplies" element={<Supplies />} />
               <Route path="/user/com-stations" element={<ComStations />} />
               <Route path="/user/users" element={<ViewUsers />} />
               <Route path="/user/providers" element={<Providers />} />

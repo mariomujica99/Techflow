@@ -41,7 +41,7 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
       {!selectedProvider && (
         <div>
         <button 
-          className="w-10 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" 
+          className="w-8 h-8 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" 
           onClick={() => setIsModalOpen(true)}
         >
           <FaUserMd className="flex-shrink-0 text-xs" />

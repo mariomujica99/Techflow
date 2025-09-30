@@ -11,6 +11,7 @@ const reportRoutes = require("./routes/reportRoutes");
 const comStationRoutes = require("./routes/comStationRoutes");
 const providerRoutes = require("./routes/providerRoutes");
 const whiteboardRoutes = require("./routes/whiteboardRoutes");
+const supplyRoutes = require("./routes/supplyRoutes");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/com-stations", comStationRoutes);
 app.use("/api/providers", providerRoutes);
 app.use("/api/lab-whiteboard", whiteboardRoutes);
+app.use("/api/supplies", supplyRoutes);
 
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

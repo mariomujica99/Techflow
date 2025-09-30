@@ -85,6 +85,10 @@ const ManageUsers = () => {
           </button>
         </div>
 
+        <h1 className="text-base md:text-lg text-gray-400 my-2">
+          Neurophysiology Department
+        </h1>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (
             <UserCard key={user._id} userInfo={user} onUserDeleted={handleUserDeleted} showAdminBadge={true} />

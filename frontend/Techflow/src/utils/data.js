@@ -12,6 +12,7 @@ import { FaComputer } from "react-icons/fa6";
 import { FaUserMd } from "react-icons/fa";
 import { TbChalkboard } from "react-icons/tb";
 import { MdOutlineSpaceDashboard } from "react-icons/md";
+import { BsCartPlus } from "react-icons/bs";
 
 export const SIDE_MENU_DATA = [
   {
@@ -58,30 +59,36 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "08",
+    label: "Needed Supplies",
+    icon: BsCartPlus,
+    path: "/admin/supplies",
+  },
+  {
+    id: "09",
     label: "Computer Stations",
     icon: FaComputer,
     path: "/admin/com-stations",
   },
   {
-    id: "09",
+    id: "10",
     label: "Team Members",
     icon: LuUsers,
     path: "/admin/users",
   },
   {
-    id: "10",
+    id: "11",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/admin/providers",
   },
   {
-    id: "11",
+    id: "12",
     label: "Edit Profile",
     icon: LuUser,
     path: "/admin/edit-profile",
   },
   {
-    id: "12",
+    id: "13",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -133,30 +140,36 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "08",
+    label: "Needed Supplies",
+    icon: BsCartPlus,
+    path: "/user/supplies",
+  },
+  {
+    id: "09",
     label: "Computer Stations",
     icon: FaComputer,
     path: "/user/com-stations",
   },
   {
-    id: "09",
+    id: "10",
     label: "Team Members",
     icon: LuUsers,
     path: "/user/users",
   },
   {
-    id: "10",
+    id: "11",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/user/providers",
   },
   {
-    id: "11",
+    id: "12",
     label: "Edit Profile",
     icon: LuUser,
     path: "/user/edit-profile",
   },
   {
-    id: "12",
+    id: "13",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -326,3 +339,40 @@ export const ROOM_MAPPINGS = {
     comStationName: "CTXLRM6831"
   }
 };
+
+export const SUPPLIES = [
+  { label: "Acetone", value: "Acetone" },
+  { label: "Air Hose", value: "Air Hose" },
+  { label: "Alarm Button", value: "Alarm Button" },
+  { label: "Bags", value: "Bags" },
+  { label: "Blankets", value: "Blankets" },
+  { label: "Cleaning Wipes", value: "Cleaning Wipes" },
+  { label: "Coban", value: "Coban" },
+  { label: "Collodion", value: "Collodion" },
+  { label: "Collodion Remover", value: "Collodion Remover" },
+  { label: "Conductive Paste", value: "Conductive Paste" },
+  { label: "Cotton Balls", value: "Cotton Balls" },
+  { label: "Cotton Tips", value: "Cotton Tips" },
+  { label: "Floor Tape", value: "Floor Tape" },
+  { label: "Fitted Sheets", value: "Fitted Sheets" },
+  { label: "Gauze Squares", value: "Gauze Squares" },
+  { label: "Glue/Remover Cups", value: "Glue/Remover Cups" },
+  { label: "Gray Cord", value: "Gray Cord" },
+  { label: "Hair Ties", value: "Hair Ties" },
+  { label: "Head Wraps", value: "Head Wraps" },
+  { label: "Long Towels", value: "Long Towels" },
+  { label: "Medipore", value: "Medipore" },
+  { label: "Micropore", value: "Micropore" },
+  { label: "MRI Leads", value: "MRI Leads" },
+  { label: "Pillowcases", value: "Pillowcases" },
+  { label: "Prep/Paste Cups", value: "Prep/Paste Cups" },
+  { label: "Red Cord", value: "Red Cord" },
+  { label: "Regular Leads", value: "Regular Leads" },
+  { label: "Skin Prep", value: "Skin Prep" },
+  { label: "Square Towels", value: "Square Towels" },
+  { label: "Syringes", value: "Syringes" },
+  { label: "Tensive", value: "Tensive" },
+  { label: "Tongue Depressors", value: "Tongue Depressors" },
+  { label: "Top Sheets", value: "Top Sheets" },
+  { label: "Transpore", value: "Transpore" },
+];

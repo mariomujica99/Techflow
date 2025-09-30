@@ -591,13 +591,15 @@ const CreateTask = () => {
                 <label className="text-xs font-medium text-slate-600">
                   Assign To
                 </label>
-
-                <SelectUsers
-                  selectedUsers={taskData.assignedTo}
-                  setSelectedUsers={(value) => {
-                    handleValueChange("assignedTo", value);
-                  }}
-                />
+                
+                <div className="pt-1">
+                  <SelectUsers
+                    selectedUsers={taskData.assignedTo}
+                    setSelectedUsers={(value) => {
+                      handleValueChange("assignedTo", value);
+                    }}
+                  />
+                </div>
               </div>
             </div>
 

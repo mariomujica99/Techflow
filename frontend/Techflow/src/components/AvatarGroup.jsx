@@ -12,7 +12,7 @@ const AvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
               key={index}
               src={avatar}
               alt={`Avatar ${index}`}
-              className="w-9 h-9 rounded-full border-2 border-white -ml-3 first:ml-0 object-cover"
+              className="w-10 h-10 rounded-full border-2 border-white -ml-3 first:ml-0 object-cover"
             />
           );
         } else {
@@ -21,7 +21,7 @@ const AvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
           return (
             <div
               key={index}
-              className="w-9 h-9 flex items-center justify-center rounded-full text-white text-xs font-medium border-2 border-white -ml-3 first:ml-0"
+              className="w-10 h-10 flex items-center justify-center rounded-full text-white text-xs font-medium border-2 border-white -ml-3 first:ml-0"
               style={{ backgroundColor: userColor }}
             >
               {getInitials(userName)}
@@ -30,7 +30,7 @@ const AvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
         }
       })}
       {avatars.length > maxVisible && (
-        <div className="w-9 h-9 flex items-center justify-center bg-blue-50 text-sm font-medium rounded-full border-2 border-white -ml-3">
+        <div className="w-10 h-10 flex items-center justify-center bg-blue-50 text-sm font-medium rounded-full border-2 border-white -ml-3">
           +{avatars.length - maxVisible}
         </div>
       )}

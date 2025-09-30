@@ -65,7 +65,7 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
   return (
     <div className="flex space-y-4 justify-end">
       {selectedUserAvatars.length === 0 && (
-        <button className="w-10 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
+        <button className="w-8 h-8 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
           <LuUsers className="flex-shrink-0 text-xs" />
         </button>
       )}
@@ -85,7 +85,7 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
         onClose={() => setIsModalOpen(false)}
         title="Select Member"
       >
-        <div className="space-y-4 h-[60vh] overflow-y-auto pr-4 pl-4">
+        <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
           {allUsers.map((user) => (
             <div
               key={user._id}
@@ -105,9 +105,9 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
                   {getInitials(user.name)}
                 </div>
               )}
-              <div className="flex-1">
-                <p className="font-medium text-gray-800 dark:text-white">{user.name}</p>
-                <p className="text-[13px] text-gray-500">{user.email}</p>
+              <div className="flex-1 truncate">
+                <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
+                <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
               </div>
 
               <input
@@ -121,7 +121,7 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
         </div>
 
         <div className="flex justify-between gap-4 pt-4 pr-4">
-          <button className="card-btn" onClick={handleClear}>
+          <button className="card-btn ml-4" onClick={handleClear}>
             CLEAR ALL
           </button>
           <div className="flex gap-2">

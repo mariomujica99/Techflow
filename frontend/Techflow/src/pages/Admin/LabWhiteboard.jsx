@@ -95,10 +95,11 @@ const LabWhiteboard = () => {
   };
 
   const handleEditModeToggle = () => {
-    if (isEditMode && !loading) {
-      getWhiteboardData();
+    if (isEditMode) {
+      handleSaveChanges();
+    } else {
+      setIsEditMode(true);
     }
-    setIsEditMode(!isEditMode);
   };
 
   const renderUserDisplay = (userDataArray) => {
@@ -161,21 +162,12 @@ const LabWhiteboard = () => {
               </div>
               
               <div className="flex items-center gap-3">
-                {isEditMode && (
-                  <button 
-                    className="card-btn-fill"
-                    onClick={handleSaveChanges}
-                    disabled={loading}
-                  >
-                    {loading ? "Saving" : "Save Changes"}
-                  </button>
-                )}
                 <button 
                   className="card-btn"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
-                  {isEditMode ? "Cancel" : "Edit"}
+                  {isEditMode ? (loading ? "Saving" : "Done") : "Edit"}
                 </button>
               </div>
             </div>

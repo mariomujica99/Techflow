@@ -513,8 +513,11 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     const hasStartTime = task.todoChecklist?.some(todo => 
       todo.text.toLowerCase().includes("place start time") && todo.completed
     );
+    const hasCharge = task.todoChecklist?.some(todo => 
+      todo.text.toLowerCase().includes("place charge") && todo.completed
+    );
 
-    if (hasStartTime) return 'bg-green-500';
+    if (hasStartTime || hasCharge) return 'bg-green-500';
     if (hasHookUp) return 'bg-cyan-500';
     return 'bg-violet-500';
   };
