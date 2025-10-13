@@ -250,7 +250,7 @@ export const AUTOMATIC_CHECKLIST_ITEMS = {
     "Hook-Up",
     "Transfer to IR",
     "Disconnect",
-    "Annotate Study",
+    "Review & Annotate Study",
     "Release WADA Order"
   ],
   "Continuous EEG | LTM": [
@@ -279,8 +279,8 @@ export const AUTOMATIC_CHECKLIST_ITEMS = {
   "Neuropsychiatric EEG": [
     "Hook-Up",
     "Transfer Patient",
-    "Disconnect",
-    "Place Charge & Chart"
+    "Place Charge & Chart",
+    "Disconnect"
   ]
 };
 

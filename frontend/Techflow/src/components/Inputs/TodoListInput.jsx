@@ -29,6 +29,8 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
     comment: ''
   });
 
+  const [hasUserCanceled, setHasUserCanceled] = useState(false);
+
   // Handle template selection from dropdown
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template);
@@ -196,7 +198,8 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
     // Auto-select template when coming from floor whiteboard
     const floorWhiteboardSection = location.state?.floorWhiteboardSection;
     
-    if (floorWhiteboardSection && !selectedTemplate) {
+    // Only auto-open if user hasn't manually canceled
+    if (floorWhiteboardSection && !selectedTemplate && !hasUserCanceled) {
       const templateMap = {
         'skinCheck': 'Skin Check | Day ',
         'electrodeFixes': 'Fix Electrodes ',
@@ -214,14 +217,14 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
         setShowTemplateInputs(true);
       }
     }
-  }, [location.state?.floorWhiteboardSection, selectedTemplate]);
+  }, [location.state?.floorWhiteboardSection, selectedTemplate, hasUserCanceled]);
 
   return (
     <div>
       {/* Display existing todo items */}
       {todoList.map((item, index) => (
         <div
-          key={item}
+          key={`todo-${index}`}
           className="flex justify-between bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2"
         >
           <div className="flex flex-1 mr-3">
@@ -404,6 +407,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                     setSelectedTemplate("");
                     setTemplateInputs({ day: '', room: '', comment: '' });
                     setTemplateErrors({ day: '', room: '', comment: '' });
+                    setHasUserCanceled(true);
                   }}
                 >
                   Cancel

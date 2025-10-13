@@ -5,6 +5,11 @@ import Modal from "../Modal";
 import { getInitials } from "../../utils/getInitials";
 import { FaUserMd } from "react-icons/fa";
 
+// Cache providers at module level to avoid repeated fetches
+let cachedProviders = null;
+let providerCacheTimestamp = null;
+const CACHE_DURATION = 60000; // 1 minute
+
 const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "Select Provider", label }) => {
   const [allProviders, setAllProviders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,9 +17,16 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
   const selectedProvider = allProviders.find(provider => provider._id === selectedProviderId);
 
   const getAllProviders = async () => {
+    if (cachedProviders && providerCacheTimestamp && (Date.now() - providerCacheTimestamp < CACHE_DURATION)) {
+      setAllProviders(cachedProviders);
+      return;
+    }
+
     try {
       const response = await axiosInstance.get(API_PATHS.PROVIDERS.GET_ALL_PROVIDERS);
       if (response.data?.length > 0) {
+        cachedProviders = response.data;
+        providerCacheTimestamp = Date.now();
         setAllProviders(response.data);
       }
     } catch (error) {
@@ -41,10 +53,10 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
       {!selectedProvider && (
         <div>
         <button 
-          className="w-8 h-8 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" 
+          className="w-8 h-8 flex items-center justify-center gap-1 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" 
           onClick={() => setIsModalOpen(true)}
         >
-          <FaUserMd className="flex-shrink-0 text-xs" />
+          <FaUserMd className="flex-shrink-0 text-sm" />
         </button>
         </div>
       )}

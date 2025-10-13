@@ -6,19 +6,39 @@ import Modal from "../Modal";
 import AvatarGroup from "../AvatarGroup";
 import { getInitials } from "../../utils/getInitials";
 
+// Cache users at module level to avoid repeated fetches
+let cachedUsers = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 60000; // 1 minute
+
 const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempSelectedUsers, setTempSelectedUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getAllUsers = async () => {
+    // Check if cache is still valid
+    if (cachedUsers && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+      setAllUsers(cachedUsers);
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
       if (response.data?.length > 0) {
-        setAllUsers(response.data);
+        const sortedUsers = response.data.sort((a, b) => 
+          a.name.localeCompare(b.name)
+        );
+        cachedUsers = sortedUsers;
+        cacheTimestamp = Date.now();
+        setAllUsers(sortedUsers);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,15 +78,16 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
     if (selectedUsers.length === 0) {
       setTempSelectedUsers([]);
     }
-
-    return () => {};
   }, [selectedUsers]);
 
   return (
     <div className="flex space-y-4 justify-end">
       {selectedUserAvatars.length === 0 && (
-        <button className="w-8 h-8 py-2 flex items-center justify-center gap-1 text-xs text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
-          <LuUsers className="flex-shrink-0 text-xs" />
+        <button 
+          className="w-8 h-8 p-2 flex items-center justify-center gap-1 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" 
+          onClick={() => setIsModalOpen(true)}
+        >
+          <LuUsers className="flex-shrink-0 text-sm" />
         </button>
       )}
 
@@ -85,39 +106,43 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
         onClose={() => setIsModalOpen(false)}
         title="Select Member"
       >
-        <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
-          {allUsers.map((user) => (
-            <div
-              key={user._id}
-              className="flex items-center gap-4 p-3 border-b border-gray-200"
-            >
-              {user.profileImageUrl ? (
-                <img
-                  src={user.profileImageUrl}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              ) : (
-                <div 
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
-                  style={{ backgroundColor: user.profileColor || "#30b5b2" }}
-                >
-                  {getInitials(user.name)}
+        <div className="space-y-4 h-[60vh] overflow-y-auto pr-4 pl-4">
+          {loading ? (
+            <p className="text-center text-gray-500">Loading users...</p>
+          ) : (
+            allUsers.map((user) => (
+              <div
+                key={user._id}
+                className="flex items-center gap-4 p-3 border-b border-gray-200"
+              >
+                {user.profileImageUrl ? (
+                  <img
+                    src={user.profileImageUrl}
+                    alt={user.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div 
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
+                    style={{ backgroundColor: user.profileColor || "#30b5b2" }}
+                  >
+                    {getInitials(user.name)}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800 dark:text-white">{user.name}</p>
+                  <p className="text-[13px] text-gray-500">{user.email}</p>
                 </div>
-              )}
-              <div className="flex-1 truncate">
-                <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
-                <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
-              </div>
 
-              <input
-                type="checkbox"
-                checked={tempSelectedUsers.includes(user._id)}
-                onChange={() => toggleUserSelection(user._id)}
-                className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
-              />
-            </div>
-          ))}
+                <input
+                  type="checkbox"
+                  checked={tempSelectedUsers.includes(user._id)}
+                  onChange={() => toggleUserSelection(user._id)}
+                  className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
+                />
+              </div>
+            ))
+          )}
         </div>
 
         <div className="flex justify-between gap-4 pt-4 pr-4">
@@ -151,7 +176,7 @@ const CoverageAvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
               key={index}
               src={avatar}
               alt={`Avatar ${index}`}
-              className="w-8 h-8 rounded-full border-2 border-white -ml-3 first:ml-0 object-cover"
+              className="w-8 h-8 rounded-full object-cover ml-1"
             />
           );
         } else {
@@ -160,7 +185,7 @@ const CoverageAvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
           return (
             <div
               key={index}
-              className="w-8 h-8 flex items-center justify-center rounded-full text-white text-xs font-medium border-2 border-white -ml-3 first:ml-0"
+              className="w-8 h-8 flex items-center justify-center rounded-full text-white text-xs font-medium ml-1"
               style={{ backgroundColor: userColor }}
             >
               {getInitials(userName)}
@@ -169,7 +194,7 @@ const CoverageAvatarGroup = ({ avatars, users, maxVisible = 3 }) => {
         }
       })}
       {avatars.length > maxVisible && (
-        <div className="w-8 h-8 flex items-center justify-center bg-blue-50 text-xs font-medium rounded-full border-2 border-white -ml-3">
+        <div className="w-8 h-8 flex items-center justify-center bg-blue-50 text-xs font-medium rounded-full ml-1">
           +{avatars.length - maxVisible}
         </div>
       )}

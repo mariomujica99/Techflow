@@ -35,6 +35,10 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
     setIsModalOpen(false);
   };
 
+  const handleClear = () => {
+    setTempSelectedUsers([]);
+  };
+
   const selectedUserData = allUsers
     .filter((user) => selectedUsers.includes(user._id));
 
@@ -61,8 +65,8 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   return (
     <div className="space-y-4 mt-2">
       {selectedUserAvatars.length === 0 && (
-        <button className="w-10 h-10 flex items-center justify-center gap-3 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-2.5 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
-          <LuUsers className="flex-shrink-0 text-base" />
+        <button className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center gap-3 text-sm text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-2.5 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={() => setIsModalOpen(true)}>
+          <LuUsers className="flex-shrink-0 text-sm md:text-base" />
         </button>
       )}
 
@@ -116,13 +120,18 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
           ))}
         </div>
 
-        <div className="flex justify-end gap-4 pt-4 pr-4">
-          <button className="card-btn" onClick={() => setIsModalOpen(false)}>
-            CANCEL
+        <div className="flex justify-between gap-4 pt-4 pr-4">
+          <button className="card-btn ml-4" onClick={handleClear}>
+            CLEAR ALL
           </button>
-          <button className="card-btn-fill" onClick={handleAssign}>
-            DONE
-          </button>
+          <div className="flex gap-2">
+            <button className="card-btn" onClick={() => setIsModalOpen(false)}>
+              CANCEL
+            </button>
+            <button className="card-btn-fill" onClick={handleAssign}>
+              DONE
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

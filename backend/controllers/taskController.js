@@ -188,8 +188,28 @@ const updateTask = async (req, res) => {
     task.sleepDeprivationType = req.body.sleepDeprivationType || task.sleepDeprivationType;
     task.priority = req.body.priority || task.priority;
     task.comStation = req.body.comStation || task.comStation;
-    task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
     task.comments = req.body.comments || task.comments;
+
+    // Handle todoChecklist - preserve timestamps for existing todos
+    if (req.body.todoChecklist) {
+      const prevTodoChecklist = task.todoChecklist || [];
+      
+      task.todoChecklist = req.body.todoChecklist.map((item) => {
+        const itemText = typeof item === 'string' ? item : item.text;
+        const matchedTask = prevTodoChecklist.find((todo) => todo.text === itemText);
+        
+        if (matchedTask) {
+          // Preserve existing todo with its timestamps
+          return matchedTask;
+        } else {
+          // Return new todo - Mongoose will add timestamps on save
+          return {
+            text: itemText,
+            completed: false,
+          };
+        }
+      });
+    }
 
     if (req.body.assignedTo) {
       if (!Array.isArray(req.body.assignedTo)) {

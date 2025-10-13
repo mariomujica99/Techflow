@@ -160,7 +160,7 @@ const ViewTaskDetails = () => {
                 </div>
 
                 {task?.assignedTo && task?.assignedTo.length > 0 && (
-                  <div className="col-span-4 ml-4">
+                  <div className="col-span-8 ml-4">
                     <label className="text-xs font-medium text-slate-500">
                       Assigned To
                     </label>

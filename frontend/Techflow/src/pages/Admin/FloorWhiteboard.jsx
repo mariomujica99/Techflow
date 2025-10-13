@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import DashboardLayout from "../../components/layouts/DashboardLayout"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
+import { AUTOMATIC_CHECKLIST_ITEMS } from "../../utils/data";
 import { UserContext } from "../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -34,82 +35,121 @@ const FloorWhiteboard = () => {
   const [deleteOrderId, setDeleteOrderId] = useState(null);
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
-  // Get all tasks and organize them by categories
-  const getAllTasks = async () => {
+  const [allRoomNumbers, setAllRoomNumbers] = useState([]);
+
+  const [clearedSections, setClearedSections] = useState({
+    orders: false,
+    skinChecks: false,
+    electrodeFixes: false,
+    disconnects: false,
+    rehooks: false,
+    hyperventilation: false,
+    photic: false,
+    transfers: false,
+    troubleshoots: false
+  });
+
+  const getAllTasks = async (currentClearedSections = clearedSections) => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE);
       const allTasks = response.data?.tasks || [];
       
-      // Filter tasks to only include those from today or recent (within 7 days)
-      const sevenDaysAgo = moment().subtract(7, 'days').startOf('day');
-      const recentTasks = allTasks.filter(task => {
-        const taskDate = moment(task.createdAt);
-        return taskDate.isAfter(sevenDaysAgo) || task.status !== 'Completed';
-      });
-      
-      // Organize tasks by their todo checklist content - now including completed todos
+      const todayStart = moment().startOf('day');
+
+      // Helper function to check if a todo was created today
+      const isTodoCreatedToday = (todo) => {
+        const todoDate = moment(todo.createdAt);
+        return todoDate.isSameOrAfter(todayStart);
+      };
+
+      // Organize tasks by their todo checklist content - filter by todo creation date
       const organizedTasks = {
-        orders: recentTasks.filter(task => 
-          task.status === 'Pending' || 
-          task.status === 'In Progress' || 
-          (task.status === 'Completed' && 
-            task.todoChecklist?.some(todo => 
-              todo.text.toLowerCase().includes("place start time") || 
-              todo.text.toLowerCase().includes("hook-up")
-            ))
-        ),
-        skinChecks: recentTasks.filter(task => 
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("skin check")
+        orders: currentClearedSections.orders ? [] : (() => {
+          // For orders, show if task was created today
+          const orderTasks = allTasks.filter(task => {
+            const taskDate = moment(task.createdAt);
+            return taskDate.isSameOrAfter(todayStart);
+          });
+          
+          // Sort by order type (Continuous first, then Routine), then by creation date
+          return orderTasks.sort((a, b) => {
+            const aIsContinuous = a.orderType?.startsWith("Continuous");
+            const bIsContinuous = b.orderType?.startsWith("Continuous");
+            
+            if (aIsContinuous && !bIsContinuous) return -1;
+            if (!aIsContinuous && bIsContinuous) return 1;
+            
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          });
+        })(),
+        
+        skinChecks: currentClearedSections.skinChecks ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("skin check") && isTodoCreatedToday(todo)
           )
         ),
-        electrodeFixes: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("fix electrodes")
+        
+        electrodeFixes: currentClearedSections.electrodeFixes ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("fix electrodes") && isTodoCreatedToday(todo)
           )
         ),
-        disconnects: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            (todo.text.toLowerCase().includes("disconnect") || 
-            todo.text.toLowerCase().includes("discontinue"))
+        
+        disconnects: currentClearedSections.disconnects ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo => {
+            const isDisconnectTodo = todo.text.toLowerCase().includes("disconnect") || 
+                                    todo.text.toLowerCase().includes("discontinue");
+            
+            // Exclude disconnects from Routine EEG orders (except Neuropsychiatric)
+            if (isDisconnectTodo && task.orderType?.startsWith("Routine EEG") && 
+                task.orderType !== "Neuropsychiatric EEG") {
+              return false;
+            }
+            
+            return isDisconnectTodo && isTodoCreatedToday(todo);
+          })
+        ),
+        
+        rehooks: currentClearedSections.rehooks ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("rehook") && isTodoCreatedToday(todo)
           )
         ),
-        rehooks: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("rehook")
+        
+        hyperventilation: currentClearedSections.hyperventilation ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("hyperventilation") && isTodoCreatedToday(todo)
           )
         ),
-        hyperventilation: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("hyperventilation")
+        
+        photic: currentClearedSections.photic ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("photic") && isTodoCreatedToday(todo)
           )
         ),
-        photic: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("photic")
+        
+        transfers: currentClearedSections.transfers ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("transfer patient from") && isTodoCreatedToday(todo)
           )
         ),
-        transfers: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("transfer patient from")
-          )
-        ),
-        troubleshoots: recentTasks.filter(task =>
-          task.todoChecklist?.some(todo => 
-            todo.text.toLowerCase().includes("troubleshoot")
+        
+        troubleshoots: currentClearedSections.troubleshoots ? [] : allTasks.filter(task =>
+          task.todoChecklist?.some(todo =>
+            todo.text.toLowerCase().includes("troubleshoot") && isTodoCreatedToday(todo)
           )
         )
       };
-      
+
       setTasks(organizedTasks);
-      
-      // Set last updated time to most recent task update
-      const mostRecent = recentTasks.reduce((latest, task) => 
-        (!latest || new Date(task.updatedAt) > new Date(latest)) ? task.updatedAt : latest, null
-      );
+
+      // Set last updated time to most recent task or todo update
+      const mostRecent = allTasks.reduce((latest, task) => {
+        const taskUpdate = new Date(task.updatedAt);
+        return (!latest || taskUpdate > new Date(latest)) ? task.updatedAt : latest;
+      }, null);
       setLastUpdated(mostRecent);
-      
     } catch (error) {
       console.error("Error fetching tasks:", error);
     } finally {
@@ -117,11 +157,18 @@ const FloorWhiteboard = () => {
     }
   };
 
-  // Get all room numbers for dropdown
-  const getAllRoomNumbers = () => {
-    const allTasksArray = Object.values(tasks).flat();
-    const roomNumbers = [...new Set(allTasksArray.map(task => task.title))].sort();
-    return roomNumbers;
+  // Get all room numbers from ALL tasks (not just today's)
+  const getAllRoomNumbers = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE);
+      const allTasks = response.data?.tasks || [];
+      
+      // Extract unique room numbers and sort them
+      const roomNumbers = [...new Set(allTasks.map(task => task.title))].sort();
+      setAllRoomNumbers(roomNumbers);
+    } catch (error) {
+      console.error("Error fetching all room numbers:", error);
+    }
   };
 
   // Navigate to create task for orders section
@@ -135,9 +182,24 @@ const FloorWhiteboard = () => {
   };
 
   // Navigate to update task with specific template
-  const handleAddToSection = (sectionType, roomNumber) => {
+  const handleAddToSection = async (sectionType, roomNumber) => {
     const basePath = user?.role === 'admin' ? '/admin' : '/user';
-    const targetTask = Object.values(tasks).flat().find(task => task.title === roomNumber);
+    
+    // First try to find in current Floor Whiteboard tasks
+    let targetTask = Object.values(tasks).flat().find(task => task.title === roomNumber);
+    
+    // If not found in Floor Whiteboard, fetch from all tasks
+    if (!targetTask) {
+      try {
+        const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE);
+        const allTasks = response.data?.tasks || [];
+        targetTask = allTasks.find(task => task.title === roomNumber);
+      } catch (error) {
+        console.error("Error fetching task for room:", error);
+        toast.error("Could not find task for this room");
+        return;
+      }
+    }
     
     if (targetTask) {
       navigate(`${basePath}/create-task`, { 
@@ -147,6 +209,8 @@ const FloorWhiteboard = () => {
           returnTo: 'floor-whiteboard'
         } 
       });
+    } else {
+      toast.error("No task found for this room");
     }
   };
 
@@ -318,14 +382,20 @@ const FloorWhiteboard = () => {
   };
 
   useEffect(() => {
-    getAllTasks();
+    getAllTasks(clearedSections);
+    getAllRoomNumbers();
     
-    // Refresh every 30 seconds to keep data current
-    const interval = setInterval(getAllTasks, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        getAllTasks(clearedSections);
+        getAllRoomNumbers();
+      }
+    }, 30000);
 
-  const roomNumbers = getAllRoomNumbers();
+    return () => clearInterval(interval);
+  }, [clearedSections]);
+
+  const roomNumbers = allRoomNumbers;
 
   return (
     <DashboardLayout activeMenu="Floor Whiteboard">
@@ -336,6 +406,19 @@ const FloorWhiteboard = () => {
               <div className="flex items-center gap-3">
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Floor Whiteboard</h2>
               </div>
+            </div>
+
+            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
+
+            <div className="whiteboard-card">              
+              <p className="text-sm text-gray-700 font-medium">
+                {moment().format("dddd Do MMMM YYYY")}
+              </p>
+              
+              <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
+              <p className="text-xs text-gray-400 truncate mb-3">
+                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"}
+              </p>
               
               <div className="flex items-center gap-3">
                 <button 
@@ -346,17 +429,6 @@ const FloorWhiteboard = () => {
                   {isEditMode ? "Done" : "Edit"}
                 </button>
               </div>
-            </div>
-
-            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
-
-            <div className="whiteboard-card">
-              <p className="text-xs font-medium text-gray-700">
-                Last Updated
-              </p>
-              <p className="text-xs text-gray-400 truncate">
-                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "No data available"}
-              </p>
             </div>
 
             {/* Orders Section - Full Width */}
@@ -372,7 +444,7 @@ const FloorWhiteboard = () => {
               />
             </div>
 
-            {/* Other Sections - 2 per row */}
+            {/* Other Sections */}
             <div className="grid grid-cols-2 gap-5 mt-5">
               <WhiteboardSection 
                 title="Skin Checks"
@@ -506,20 +578,32 @@ const FloorWhiteboard = () => {
 // Orders section component (different from other sections)
 const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateTask, onDelete }) => {
   const getStatusColor = (task) => {
-    // Check for specific todo items to determine status
-    const hasHookUp = task.todoChecklist?.some(todo => 
-      todo.text.toLowerCase().includes("hook-up") && todo.completed
-    );
-    const hasStartTime = task.todoChecklist?.some(todo => 
-      todo.text.toLowerCase().includes("place start time") && todo.completed
-    );
-    const hasCharge = task.todoChecklist?.some(todo => 
-      todo.text.toLowerCase().includes("place charge") && todo.completed
-    );
-
-    if (hasStartTime || hasCharge) return 'bg-green-500';
-    if (hasHookUp) return 'bg-cyan-500';
-    return 'bg-violet-500';
+    const orderType = task.orderType;
+    const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[orderType];
+    
+    if (!automaticItems || automaticItems.length === 0) {
+      return 'bg-violet-500'; // Default to pending
+    }
+    
+    // Count how many automatic checklist items are completed
+    let completedCount = 0;
+    automaticItems.forEach(itemText => {
+      const matchingTodo = task.todoChecklist?.find(todo => 
+        todo.text === itemText && todo.completed
+      );
+      if (matchingTodo) {
+        completedCount++;
+      }
+    });
+    
+    // Determine status based on completion
+    if (completedCount === 0) {
+      return 'bg-violet-500'; // Pending
+    } else if (completedCount === automaticItems.length) {
+      return 'bg-green-500'; // Completed
+    } else {
+      return 'bg-cyan-500'; // In Progress
+    }
   };
 
   const getPriorityColor = (priority) => {
@@ -534,7 +618,6 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     const orderType = task.orderType || '';
     const roomNumber = task.title || '';
     
-    // Get the first letter prefix based on order type
     let prefix = '';
     let remainingType = orderType;
     
@@ -548,7 +631,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
       prefix = 'C';
       remainingType = 'SEEG';
     } else if (orderType === 'Neuropsychiatric EEG') {
-      prefix = 'R';
+      prefix = 'C';
       remainingType = 'NP';
     }
     
@@ -562,14 +645,14 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     <div className="whiteboard-card">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-base md:text-lg font-medium text-gray-700">{title}</h2>
-        {isEditMode && (
+        <div className="flex items-center gap-2">
           <button 
-            className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex items-center gap-1 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onAdd}
           >
-            <HiMiniPlus className="text-base md:text-lg" />
+            New <HiMiniPlus className="text-base md:text-lg" />
           </button>
-        )}
+        </div>
       </div>
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -594,7 +677,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
               <div className="flex items-center gap-2">
                 {!isEditMode && (
                   <LuListChecks 
-                    className="text-gray-400 hover:text-primary cursor-pointer"
+                    className="text-lg md:text-xl text-gray-400 hover:text-primary cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
                       onUpdateTask(task._id);
@@ -728,20 +811,57 @@ const WhiteboardSection = ({
     }
   };
 
+  // Sort tasks by room number
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (sectionType === 'transfers') {
+      // For transfers, extract the "from" room number
+      const getFromRoom = (task) => {
+        const relevantTodo = task.todoChecklist?.find(todo =>
+          todo.text.toLowerCase().includes("transfer patient from")
+        );
+        if (relevantTodo) {
+          const match = relevantTodo.text.match(/Transfer Patient from\s+([\d-]+)/i);
+          return match ? match[1] : '';
+        }
+        return '';
+      };
+      const roomA = getFromRoom(a);
+      const roomB = getFromRoom(b);
+      
+      // Natural sort (treats "8826-1" and "8826-2" correctly)
+      return roomA.localeCompare(roomB, undefined, { numeric: true, sensitivity: 'base' });
+    } else {
+      // For all other sections, sort by room number (task.title)
+      const roomA = a.title || '';
+      const roomB = b.title || '';
+      
+      // Natural sort (treats "8826-1" and "8826-2" correctly)
+      return roomA.localeCompare(roomB, undefined, { numeric: true, sensitivity: 'base' });
+    }
+  });
+
   return (
     <div className="whiteboard-card">
-      <h2 className="text-base md:text-lg font-medium text-gray-700 mb-3">{title}</h2>
-      {isEditMode && (
-        <div className="relative mb-3">
+      <h2 className="text-base md:text-lg font-medium text-gray-700 mb-2">
+        {title === "Troubleshoots" ? (
+          <>
+            Trouble<wbr />shoots
+          </>
+        ) : (
+          title
+        )}
+      </h2>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="relative flex-1">
           <button 
-            className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex items-center gap-1 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onToggleDropdown}
           >
-            <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            Add <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           
           {dropdownOpen && roomNumbers.length > 0 && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-24">
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-24 max-h-48 overflow-y-auto">
               {roomNumbers.map(roomNumber => (
                 <button
                   key={roomNumber}
@@ -757,10 +877,10 @@ const WhiteboardSection = ({
             </div>
           )}
         </div>
-      )}
+      </div>
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
-        {tasks.map((task) => {
+        {sortedTasks.map((task) => {
           const relevantTodo = task.todoChecklist?.find(todo => {
             switch (sectionType) {
               case 'skinCheck':
@@ -832,7 +952,7 @@ const WhiteboardSection = ({
           );
         })}
         
-        {tasks.length === 0 && (
+        {sortedTasks.length === 0 && (
           <p className="text-xs md:text-sm text-gray-400">No tasks</p>
         )}
       </div>

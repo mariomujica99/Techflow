@@ -71,6 +71,15 @@ const LabWhiteboard = () => {
     }
   };
 
+  const preloadUsers = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
+      // This just primes the cache in SelectCoverageUser
+    } catch (error) {
+      console.error("Error preloading users:", error);
+    }
+  };
+
   const handleSaveChanges = async () => {
     setLoading(true);
     try {
@@ -102,12 +111,54 @@ const LabWhiteboard = () => {
     }
   };
 
+  const handleClearReadingProviders = () => {
+    setEditData(prev => ({
+      ...prev,
+      readingProviders: {
+        emu: null,
+        ltm: null,
+        routine: null,
+      }
+    }));
+  };
+
+  const handleClearOutpatients = () => {
+    setEditData(prev => ({
+      ...prev,
+      outpatients: {
+        op8am1: [],
+        op8am2: [],
+        op10am: [],
+        op12pm: [],
+        op2pm: [],
+      }
+    }));
+  };
+
+  const handleClearCoverage = () => {
+    setEditData(prev => ({
+      ...prev,
+      coverage: {
+        onCall: [],
+        surgCall: [],
+        scanning: [],
+        surgicals: [],
+        wada: [],
+      }
+    }));
+  };
+
   const renderUserDisplay = (userDataArray) => {
     if (!userDataArray || userDataArray.length === 0) return <span className="text-gray-400">—</span>;
     
+    // Sort alphabetically by name
+    const sortedUsers = [...userDataArray].sort((a, b) => 
+      a.name.localeCompare(b.name)
+    );
+    
     return (
       <div className="flex items-center gap-1 flex-wrap justify-end">
-        {userDataArray.map((userData, index) => (
+        {sortedUsers.map((userData, index) => (
           <div key={userData._id || index} className="flex items-center">
             {userData.profileImageUrl ? (
               <img
@@ -116,7 +167,7 @@ const LabWhiteboard = () => {
                 className="w-8 h-8 rounded-full object-cover"
               />
             ) : (
-              <div 
+              <div
                 className="w-8 h-8 flex items-center justify-center rounded-full text-white text-xs font-medium"
                 style={{ backgroundColor: userData.profileColor || "#30b5b2" }}
               >
@@ -149,6 +200,7 @@ const LabWhiteboard = () => {
 
   useEffect(() => {
     getWhiteboardData();
+    preloadUsers();
   }, []);
 
   return (
@@ -188,7 +240,17 @@ const LabWhiteboard = () => {
               {/* Reading Providers Section */}
               <div className="whiteboard-card col-span-4">
                 <div>
-                  <h2 className="text-base md:text-lg mb-2 font-medium text-gray-700">Reading Providers</h2>
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-base md:text-lg font-medium text-gray-700">Reading Providers</h2>
+                    {isEditMode && (
+                      <button
+                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        onClick={handleClearReadingProviders}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-400 space-y-2">
                     <div className="flex justify-between items-center">
                       <p>EMU</p>
@@ -252,7 +314,17 @@ const LabWhiteboard = () => {
               {/* Outpatients Section */}
               <div className="whiteboard-card col-span-4 md:col-span-2">
                 <div>
-                  <h2 className="text-base md:text-lg mb-2 font-medium text-gray-700">Outpatients</h2>
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-base md:text-lg font-medium text-gray-700">Outpatients</h2>
+                    {isEditMode && (
+                      <button
+                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        onClick={handleClearOutpatients}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-400 space-y-2">
                     <div className="flex justify-between items-center">
                       <p className="whitespace-nowrap">8 AM</p>
@@ -357,7 +429,17 @@ const LabWhiteboard = () => {
               {/* Coverage Section */}
               <div className="whiteboard-card col-span-4 md:col-span-2">
                 <div>
-                  <h2 className="text-base md:text-lg mb-2 font-medium text-gray-700">Coverage</h2>
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-base md:text-lg font-medium text-gray-700">Coverage</h2>
+                    {isEditMode && (
+                      <button
+                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        onClick={handleClearCoverage}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-400 space-y-2">
                     <div className="flex justify-between items-center">
                       <p className="whitespace-nowrap">ON CALL</p>
