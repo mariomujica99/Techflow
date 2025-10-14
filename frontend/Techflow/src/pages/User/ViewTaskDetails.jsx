@@ -181,14 +181,47 @@ const ViewTaskDetails = () => {
                   </label>                  
                 </div>
                 <div className="mb-2">
-                  {task?.todoChecklist?.map((item, index) => (
-                    <TodoCheckList
-                      key={`todo_${index}`}
-                      text={item.text}
-                      isChecked={item?.completed}
-                      onChange={() => updateTodoChecklist(index)}
-                    />
-                  ))}
+                  {(() => {
+                    // Group todos by creation date
+                    const todosByDate = {};
+                    
+                    task?.todoChecklist?.forEach((todo) => {
+                      const createdDate = todo.createdAt 
+                        ? moment(todo.createdAt).format('dddd Do MMM YYYY')
+                        : 'Unknown Date';
+                      
+                      if (!todosByDate[createdDate]) {
+                        todosByDate[createdDate] = [];
+                      }
+                      todosByDate[createdDate].push(todo);
+                    });
+
+                    // Sort dates (most recent first)
+                    const sortedDates = Object.keys(todosByDate).sort((a, b) => {
+                      if (a === 'Unknown Date') return 1;
+                      if (b === 'Unknown Date') return -1;
+                      return moment(b, 'dddd Do MMM YYYY').valueOf() - moment(a, 'dddd Do MMM YYYY').valueOf();
+                    });
+
+                    return sortedDates.map((date) => (
+                      <div key={date} className="mb-4">
+                        <p className="text-xs font-medium text-gray-500 mb-2">
+                          Added {date}
+                        </p>
+                        {todosByDate[date].map((todo, index) => (
+                          <TodoCheckList
+                            key={`${date}-${index}`}
+                            text={todo.text}
+                            isChecked={todo.completed}
+                            onChange={() => {
+                              const todoIndex = task.todoChecklist.findIndex(t => t._id === todo._id);
+                              updateTodoChecklist(todoIndex);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
               {task?.todoChecklist?.some(item => !item.completed) && (
@@ -241,16 +274,30 @@ const InfoBox = ({ label, value }) => {
 };
 
 const TodoCheckList = ({ text, isChecked, onChange }) => {
-  return <div className="flex items-start gap-3 p-1">
-    <input
-      type="checkbox"
-      checked={isChecked}
-      onChange={onChange}
-      className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer flex-shrink-0 mt-0.5"
-    />
-    
-    <p className="text-[13px] text-gray-800">{text}</p>
-  </div>
+  // Extract timestamp if it exists
+  const timestampMatch = text.match(/\((\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M)\)$/);
+  const timestamp = timestampMatch ? timestampMatch[1] : null;
+  const textWithoutTimestamp = text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+  
+  return (
+    <div className="flex items-start gap-3 p-1">
+      <input
+        type="checkbox"
+        checked={isChecked}
+        onChange={onChange}
+        className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer flex-shrink-0 mt-0.5"
+      />
+      
+      <p className="text-[13px] text-gray-800 break-words flex-1 min-w-0">
+        {textWithoutTimestamp}{' '}
+        {timestamp && (
+          <span className="text-xs text-gray-400 whitespace-nowrap inline-block">
+            ({timestamp})
+          </span>
+        )}
+      </p>
+    </div>
+  );
 };
 
 const Comment = ({ comment, index }) => {

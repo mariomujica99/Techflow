@@ -245,35 +245,37 @@ const FloorWhiteboard = () => {
 
       // Find and update the specific todo item
       todoChecklist.forEach(todo => {
-        if (todoType === 'skinChecks' && todo.text.toLowerCase().includes("skin check")) {
+        const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+        
+        if (todoType === 'skinChecks' && textWithoutTimestamp.toLowerCase().includes("skin check")) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'electrodeFixes' && todo.text.toLowerCase().includes("fix electrodes")) {
+        } else if (todoType === 'electrodeFixes' && textWithoutTimestamp.toLowerCase().includes("fix electrodes")) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'disconnects' && (todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue"))) {
+        } else if (todoType === 'disconnects' && (textWithoutTimestamp.toLowerCase().includes("disconnect") || textWithoutTimestamp.toLowerCase().includes("discontinue"))) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'rehooks' && todo.text.toLowerCase().includes("rehook")) {
+        } else if (todoType === 'rehooks' && textWithoutTimestamp.toLowerCase().includes("rehook")) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'hyperventilation' && todo.text.toLowerCase().includes("hyperventilation")) {
+        } else if (todoType === 'hyperventilation' && textWithoutTimestamp.toLowerCase().includes("hyperventilation")) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'photic' && todo.text.toLowerCase().includes("photic")) {
+        } else if (todoType === 'photic' && textWithoutTimestamp.toLowerCase().includes("photic")) {
           todo.completed = isCompleted;
           updated = true;
-        } else if (todoType === 'transfers' && todo.text.toLowerCase().includes("transfer patient")) {
+        } else if (todoType === 'transfers' && textWithoutTimestamp.toLowerCase().includes("transfer patient")) {
           todo.completed = isCompleted;
           updated = true;
           
-          if (isCompleted && todo.text.includes("Transfer Patient from ")) {
-            const roomMatch = todo.text.match(/Transfer Patient from .+? to (\d+)/);
+          if (isCompleted && textWithoutTimestamp.includes("Transfer Patient from ")) {
+            const roomMatch = textWithoutTimestamp.match(/Transfer Patient from .+? to (\d+)/);
             if (roomMatch && roomMatch[1]) {
               transferRoomUpdate = roomMatch[1];
             }
           }
-        } else if (todoType === 'troubleshoots' && todo.text.toLowerCase().includes("troubleshoot")) {
+        } else if (todoType === 'troubleshoots' && textWithoutTimestamp.toLowerCase().includes("troubleshoot")) {
           todo.completed = isCompleted;
           updated = true;
         }
@@ -293,9 +295,10 @@ const FloorWhiteboard = () => {
       // Special handling for DC section - also complete the "Place End Time & Chart | Inform Reading Provider" todo
       if (todoType === 'disconnects' && isCompleted) {
         todoChecklist.forEach(todo => {
-          if (todo.text.toLowerCase().includes("place end time") && 
-              todo.text.toLowerCase().includes("chart") && 
-              todo.text.toLowerCase().includes("inform reading provider")) {
+          const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+          if (textWithoutTimestamp.toLowerCase().includes("place end time") && 
+              textWithoutTimestamp.toLowerCase().includes("chart") && 
+              textWithoutTimestamp.toLowerCase().includes("inform reading provider")) {
             todo.completed = isCompleted;
             updated = true;
           }
@@ -327,14 +330,16 @@ const FloorWhiteboard = () => {
       if (!targetTask) return;
 
       const todoChecklist = targetTask.todoChecklist.filter(todo => {
-        if (todoType === 'skinCheck') return !todo.text.toLowerCase().includes("skin check");
-        if (todoType === 'electrodeFixes') return !todo.text.toLowerCase().includes("fix electrodes");
-        if (todoType === 'disconnects') return !(todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue"));
-        if (todoType === 'rehooks') return !todo.text.toLowerCase().includes("rehook");
-        if (todoType === 'hyperventilation') return !todo.text.toLowerCase().includes("hyperventilation");
-        if (todoType === 'photic') return !todo.text.toLowerCase().includes("photic");
-        if (todoType === 'transfers') return !todo.text.toLowerCase().includes("transfer patient");
-        if (todoType === 'troubleshoots') return !todo.text.toLowerCase().includes("troubleshoot");
+        const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+        
+        if (todoType === 'skinCheck') return !textWithoutTimestamp.toLowerCase().includes("skin check");
+        if (todoType === 'electrodeFixes') return !textWithoutTimestamp.toLowerCase().includes("fix electrodes");
+        if (todoType === 'disconnects') return !(textWithoutTimestamp.toLowerCase().includes("disconnect") || textWithoutTimestamp.toLowerCase().includes("discontinue"));
+        if (todoType === 'rehooks') return !textWithoutTimestamp.toLowerCase().includes("rehook");
+        if (todoType === 'hyperventilation') return !textWithoutTimestamp.toLowerCase().includes("hyperventilation");
+        if (todoType === 'photic') return !textWithoutTimestamp.toLowerCase().includes("photic");
+        if (todoType === 'transfers') return !textWithoutTimestamp.toLowerCase().includes("transfer patient");
+        if (todoType === 'troubleshoots') return !textWithoutTimestamp.toLowerCase().includes("troubleshoot");
         return true;
       });
 
@@ -406,20 +411,7 @@ const FloorWhiteboard = () => {
               <div className="flex items-center gap-3">
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Floor Whiteboard</h2>
               </div>
-            </div>
 
-            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
-
-            <div className="whiteboard-card">              
-              <p className="text-sm text-gray-700 font-medium">
-                {moment().format("dddd Do MMMM YYYY")}
-              </p>
-              
-              <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
-              <p className="text-xs text-gray-400 truncate mb-3">
-                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"}
-              </p>
-              
               <div className="flex items-center gap-3">
                 <button 
                   className="card-btn"
@@ -429,6 +421,19 @@ const FloorWhiteboard = () => {
                   {isEditMode ? "Done" : "Edit"}
                 </button>
               </div>
+            </div>
+
+            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
+
+            <div className="whiteboard-card">
+              <p className="text-sm md:text-base text-gray-700 font-medium">
+                {moment().format("dddd Do MMMM YYYY")}
+              </p>
+              
+              <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
+              <p className="text-xs text-gray-400 truncate">
+                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"}
+              </p>
             </div>
 
             {/* Orders Section - Full Width */}
@@ -588,9 +593,11 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     // Count how many automatic checklist items are completed
     let completedCount = 0;
     automaticItems.forEach(itemText => {
-      const matchingTodo = task.todoChecklist?.find(todo => 
-        todo.text === itemText && todo.completed
-      );
+      const matchingTodo = task.todoChecklist?.find(todo => {
+        // Strip timestamp from todo text before comparing
+        const todoTextWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+        return todoTextWithoutTimestamp === itemText && todo.completed;
+      });
       if (matchingTodo) {
         completedCount++;
       }
@@ -723,23 +730,26 @@ const WhiteboardSection = ({
   
   const getRelevantTodoText = (task, sectionType) => {
     const relevantTodo = task.todoChecklist?.find(todo => {
+      // Remove timestamp from comparison
+      const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+      
       switch (sectionType) {
         case 'skinCheck':
-          return todo.text.toLowerCase().includes("skin check");
+          return textWithoutTimestamp.toLowerCase().includes("skin check");
         case 'electrodeFixes':
-          return todo.text.toLowerCase().includes("fix electrodes");
+          return textWithoutTimestamp.toLowerCase().includes("fix electrodes");
         case 'disconnects':
-          return todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue");
+          return textWithoutTimestamp.toLowerCase().includes("disconnect") || textWithoutTimestamp.toLowerCase().includes("discontinue");
         case 'rehooks':
-          return todo.text.toLowerCase().includes("rehook");
+          return textWithoutTimestamp.toLowerCase().includes("rehook");
         case 'hyperventilation':
-          return todo.text.toLowerCase().includes("hyperventilation");
+          return textWithoutTimestamp.toLowerCase().includes("hyperventilation");
         case 'photic':
-          return todo.text.toLowerCase().includes("photic");
+          return textWithoutTimestamp.toLowerCase().includes("photic");
         case 'transfers':
-          return todo.text.toLowerCase().includes("transfer patient");
+          return textWithoutTimestamp.toLowerCase().includes("transfer patient");
         case 'troubleshoots':
-          return todo.text.toLowerCase().includes("troubleshoot");
+          return textWithoutTimestamp.toLowerCase().includes("troubleshoot");
         default:
           return false;
       }
@@ -751,9 +761,12 @@ const WhiteboardSection = ({
     const todoText = getRelevantTodoText(task, sectionType);
     const roomNumber = task.title;
     
+    // Remove timestamp from display completely for FloorWhiteboard
+    const textWithoutTimestamp = todoText.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+    
     switch (sectionType) {
       case 'skinCheck':
-        const dayMatch = todoText.match(/Day (\d+)/i);
+        const dayMatch = textWithoutTimestamp.match(/Day (\d+)/i);
         return (
           <span className="whitespace-normal break-words">
             {roomNumber}
@@ -767,7 +780,7 @@ const WhiteboardSection = ({
         );
       
       case 'transfers':
-        const transferMatch = todoText.match(/Transfer Patient from\s+(.+?)\s+to\s+(\S+)(?:\s*\|\s*(.+))?/i);
+        const transferMatch = textWithoutTimestamp.match(/Transfer Patient from\s+(.+?)\s+to\s+(\S+)(?:\s*\|\s*(.+))?/i);
         if (transferMatch) {
           const fromRoom = transferMatch[1];
           const toRoom = transferMatch[2];
@@ -794,7 +807,7 @@ const WhiteboardSection = ({
       case 'photic':
       case 'disconnects':
       case 'troubleshoots':
-        const commentMatch = todoText.match(/\|\s*(.+)$/);
+        const commentMatch = textWithoutTimestamp.match(/\|\s*(.+)$/);
         return (
           <span className="flex flex-wrap items-center gap-1">
             {roomNumber}

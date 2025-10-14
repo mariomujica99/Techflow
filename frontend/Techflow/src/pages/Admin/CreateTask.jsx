@@ -16,6 +16,10 @@ import DeleteAlert from "../../components/DeleteAlert";
 import { UserContext } from "../../context/userContext";
 import { FaComputer } from "react-icons/fa6";
 
+const formatTimestamp = () => {
+  return moment().format('(M/D/YY [at] h:mm A)');
+};
+
 const CreateTask = () => {
   const { user } = useContext(UserContext);
 
@@ -267,9 +271,10 @@ const CreateTask = () => {
     const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
     
     if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType] && !isRoomAutoSelection) {
-      const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType];
+      const timestamp = formatTimestamp();
+      const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType].map(item => `${item} ${timestamp}`);
       const existingCustomItems = taskData.todoChecklist.filter(item => 
-        !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
+        !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().some(autoItem => item.startsWith(autoItem))
       );
       
       // Reset procedure-dependent based on order type
@@ -329,9 +334,10 @@ const CreateTask = () => {
 
       if (shouldAutoSelect) {
         // Get the automatic checklist items for EMU
-        const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[roomMapping.orderType] || [];
+        const timestamp = formatTimestamp();
+        const automaticItems = (AUTOMATIC_CHECKLIST_ITEMS[roomMapping.orderType] || []).map(item => `${item} ${timestamp}`);
         const existingCustomItems = taskData.todoChecklist.filter(item => 
-          !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().includes(item)
+          !Object.values(AUTOMATIC_CHECKLIST_ITEMS).flat().some(autoItem => item.startsWith(autoItem))
         );
 
         setTaskData(prev => ({
@@ -353,7 +359,8 @@ const CreateTask = () => {
   useEffect(() => {
     if (location.state?.floorWhiteboardSection && taskId) {
       const sectionType = location.state.floorWhiteboardSection;
-      const prefilledItems = getPrefilledTodoItems(sectionType);
+      const timestamp = formatTimestamp();
+      const prefilledItems = getPrefilledTodoItems(sectionType).map(item => `${item} ${timestamp}`);
       
       if (prefilledItems.length > 0) {
         // Add the prefilled items to existing todo list without replacing it

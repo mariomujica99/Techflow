@@ -227,9 +227,11 @@ const LabWhiteboard = () => {
             <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
 
             <div className="whiteboard-card">
-              <p className="text-xs font-medium text-gray-700">
-                Whiteboard Last Updated
+              <p className="text-sm md:text-base text-gray-700 font-medium">
+                {moment().format("dddd Do MMMM YYYY")}
               </p>
+
+              <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
               <p className="text-xs text-gray-400 truncate">
                 {whiteboardData?.updatedAt ? moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"} 
                 {whiteboardData?.lastUpdatedBy && ` by ${whiteboardData.lastUpdatedBy.name}`}

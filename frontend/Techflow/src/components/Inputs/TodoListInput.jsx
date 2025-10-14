@@ -3,6 +3,11 @@ import { HiMiniPlus, HiOutlineTrash } from "react-icons/hi2";
 import { LuChevronDown } from "react-icons/lu";
 import { useLocation } from "react-router-dom";
 import { TODO_DROPDOWN_OPTIONS, TODO_DC_CHART } from "../../utils/data";
+import moment from "moment";
+
+const formatTimestamp = () => {
+  return moment().format('(M/D/YY [at] h:mm A)');
+};
 
 const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
   const location = useLocation();
@@ -154,8 +159,12 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
       finalText += ` | ${templateInputs.comment.trim()}`;
     }
 
+    // Append timestamp to make each todo unique
+    const timestamp = formatTimestamp();
+    finalText += ` ${timestamp}`;
+
     if (selectedTemplate === "Disconnect ") {
-      setTodoList([...todoList, finalText, TODO_DC_CHART]);
+      setTodoList([...todoList, finalText, `${TODO_DC_CHART} ${timestamp}`]);
     } else {
       setTodoList([...todoList, finalText]);
     }
@@ -170,7 +179,8 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
   // Handle adding custom item
   const handleAddCustom = () => {
     if (customText.trim()) {
-      setTodoList([...todoList, customText.trim()]);
+      const timestamp = formatTimestamp();
+      setTodoList([...todoList, `${customText.trim()} ${timestamp}`]);
       setCustomText("");
     }
   };
@@ -232,7 +242,8 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
               {index + 1}
             </span>
             <p className="text-xs text-black flex-1">
-              {item}
+              {/* Remove timestamp from display */}
+              {item.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim()}
             </p>
           </div>
           
