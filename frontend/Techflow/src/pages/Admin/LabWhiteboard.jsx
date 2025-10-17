@@ -9,12 +9,17 @@ import SelectProvider from "../../components/Inputs/SelectProvider";
 import { getInitials } from "../../utils/getInitials";
 import toast from "react-hot-toast";
 import AddCommentsInput from "../../components/Inputs/AddCommentsInput";
+import Modal from "../../components/Modal";
+import { CiSaveDown1 } from "react-icons/ci";
+import { LiaEdit } from "react-icons/lia";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 const LabWhiteboard = () => {
   const { user } = useContext(UserContext);
   const [whiteboardData, setWhiteboardData] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showValidationModal, setShowValidationModal] = useState(false);
 
   const [editData, setEditData] = useState({
     coverage: {
@@ -25,6 +30,7 @@ const LabWhiteboard = () => {
       wada: [],
     },
     outpatients: {
+      np8am: [],
       op8am1: [],
       op8am2: [],
       op10am: [],
@@ -53,6 +59,7 @@ const LabWhiteboard = () => {
           wada: response.data?.coverage?.wada?.map(user => user._id) || [],
         },
         outpatients: {
+          np8am: response.data?.outpatients?.np8am?.map(user => user._id) || [],
           op8am1: response.data?.outpatients?.op8am1?.map(user => user._id) || [],
           op8am2: response.data?.outpatients?.op8am2?.map(user => user._id) || [],
           op10am: response.data?.outpatients?.op10am?.map(user => user._id) || [],
@@ -80,7 +87,26 @@ const LabWhiteboard = () => {
     }
   };
 
+  const validateOutpatientSlots = () => {
+    const { np8am, op8am1, op8am2 } = editData.outpatients;
+    
+    // Count how many 8am slots have users assigned
+    let assignedCount = 0;
+    if (np8am && np8am.length > 0) assignedCount++;
+    if (op8am1 && op8am1.length > 0) assignedCount++;
+    if (op8am2 && op8am2.length > 0) assignedCount++;
+    
+    // If more than 2 slots are assigned, return false
+    return assignedCount <= 2;
+  };
+
   const handleSaveChanges = async () => {
+    // Validate before saving
+    if (!validateOutpatientSlots()) {
+      setShowValidationModal(true);
+      return;
+    }
+    
     setLoading(true);
     try {
       const updatePayload = {
@@ -126,6 +152,7 @@ const LabWhiteboard = () => {
     setEditData(prev => ({
       ...prev,
       outpatients: {
+        np8am: [],
         op8am1: [],
         op8am2: [],
         op10am: [],
@@ -208,23 +235,39 @@ const LabWhiteboard = () => {
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
-            <div className="flex md:flex-row md:items-center justify-between mb-0.5">
-              <div className="flex items-center gap-3">
+            <div className="flex md:flex-row justify-between mb-2">
+              <div>
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Lab Whiteboard</h2>
+
+                <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
               
-              <div className="flex items-center gap-3">
+              <div>
                 <button 
-                  className="card-btn"
+                  className="edit-btn flex items-center gap-2"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
-                  {isEditMode ? (loading ? "Saving" : "Done") : "Edit"}
+                  {isEditMode ? (
+                    loading ? (
+                      <>
+                        <CiSaveDown1 />
+                      </>
+                    ) : (
+                      <>
+                        <IoMdCheckmarkCircleOutline />
+                      </>
+                    )
+                  ) : (
+                    <>
+                      <LiaEdit />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
 
-            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
+            
 
             <div className="whiteboard-card">
               <p className="text-sm md:text-base text-gray-700 font-medium">
@@ -328,100 +371,151 @@ const LabWhiteboard = () => {
                     )}
                   </div>
                   <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">8 AM</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.outpatients.op8am1}
-                            setSelectedUsers={(userIds) => {
-                              setEditData(prev => ({
-                                ...prev,
-                                outpatients: { ...prev.outpatients, op8am1: userIds }
-                              }));
-                            }}
-                          />
+                    {/* In Edit Mode: Show all three 8am slots */}
+                    {isEditMode && (
+                      <>
+                        {/* NP 8am - Always visible in edit mode */}
+                        <div className="flex justify-between items-center">
+                          <p className="whitespace-nowrap">8 AM | NP</p>
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.np8am}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, np8am: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
                         </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.outpatients?.op8am1)
-                      )}
-                    </div>
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">8 AM</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.outpatients.op8am2}
-                            setSelectedUsers={(userIds) => {
-                              setEditData(prev => ({
-                                ...prev,
-                                outpatients: { ...prev.outpatients, op8am2: userIds }
-                              }));
-                            }}
-                          />
+                        {/* First 8am */}
+                        <div className="flex justify-between items-center">
+                          <p className="whitespace-nowrap">8 AM</p>
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.op8am1}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, op8am1: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
                         </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.outpatients?.op8am2)
-                      )}
-                    </div>
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">10 AM</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.outpatients.op10am}
-                            setSelectedUsers={(userIds) => {
-                              setEditData(prev => ({
-                                ...prev,
-                                outpatients: { ...prev.outpatients, op10am: userIds }
-                              }));
-                            }}
-                          />
+                        {/* Second 8am */}
+                        <div className="flex justify-between items-center">
+                          <p className="whitespace-nowrap">8 AM</p>
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.op8am2}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, op8am2: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
                         </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.outpatients?.op10am)
-                      )}
-                    </div>
+                      </>
+                    )}
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">12 PM</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.outpatients.op12pm}
-                            setSelectedUsers={(userIds) => {
-                              setEditData(prev => ({
-                                ...prev,
-                                outpatients: { ...prev.outpatients, op12pm: userIds }
-                              }));
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.outpatients?.op12pm)
-                      )}
-                    </div>
+                    {/* In View Mode: Show only assigned slots, NP first if assigned */}
+                    {!isEditMode && (
+                      <>
+                        {/* NP 8am - Show first if assigned */}
+                        {whiteboardData?.outpatients?.np8am?.length > 0 && (
+                          <div className="flex justify-between items-center">
+                            <p className="whitespace-nowrap">8 AM | NP</p>
+                            {renderUserDisplay(whiteboardData?.outpatients?.np8am)}
+                          </div>
+                        )}
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">2 PM</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.outpatients.op2pm}
-                            setSelectedUsers={(userIds) => {
-                              setEditData(prev => ({
-                                ...prev,
-                                outpatients: { ...prev.outpatients, op2pm: userIds }
-                              }));
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.outpatients?.op2pm)
-                      )}
-                    </div>
+                        {/* First 8am - Show if assigned */}
+                        {whiteboardData?.outpatients?.op8am1?.length > 0 && (
+                          <div className="flex justify-between items-center">
+                            <p className="whitespace-nowrap">8 AM</p>
+                            {renderUserDisplay(whiteboardData?.outpatients?.op8am1)}
+                          </div>
+                        )}
+
+                        {/* Second 8am - Show if assigned */}
+                        {whiteboardData?.outpatients?.op8am2?.length > 0 && (
+                          <div className="flex justify-between items-center">
+                            <p className="whitespace-nowrap">8 AM</p>
+                            {renderUserDisplay(whiteboardData?.outpatients?.op8am2)}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* Rest of the slots - visible in both modes if assigned in view mode */}
+                    {(isEditMode || whiteboardData?.outpatients?.op10am?.length > 0) && (
+                      <div className="flex justify-between items-center">
+                        <p className="whitespace-nowrap">10 AM</p>
+                        {isEditMode ? (
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.op10am}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, op10am: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          renderUserDisplay(whiteboardData?.outpatients?.op10am)
+                        )}
+                      </div>
+                    )}
+
+                    {(isEditMode || whiteboardData?.outpatients?.op12pm?.length > 0) && (
+                      <div className="flex justify-between items-center">
+                        <p className="whitespace-nowrap">12 PM</p>
+                        {isEditMode ? (
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.op12pm}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, op12pm: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          renderUserDisplay(whiteboardData?.outpatients?.op12pm)
+                        )}
+                      </div>
+                    )}
+
+                    {(isEditMode || whiteboardData?.outpatients?.op2pm?.length > 0) && (
+                      <div className="flex justify-between items-center">
+                        <p className="whitespace-nowrap">2 PM</p>
+                        {isEditMode ? (
+                          <div className="w-32">
+                            <SelectCoverageUser
+                              selectedUsers={editData.outpatients.op2pm}
+                              setSelectedUsers={(userIds) => {
+                                setEditData(prev => ({
+                                  ...prev,
+                                  outpatients: { ...prev.outpatients, op2pm: userIds }
+                                }));
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          renderUserDisplay(whiteboardData?.outpatients?.op2pm)
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -565,6 +659,25 @@ const LabWhiteboard = () => {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={showValidationModal}
+        onClose={() => setShowValidationModal(false)}
+        title="8 AM Slot Limit Reached"
+      >
+        <div>
+          <p className="text-sm dark:text-white mb-4">
+            Cannot select more than two 8 AM slots. Please clear users from one of the 8 AM slots, then try again.
+          </p>
+          <div className="flex justify-end">
+            <button 
+              className="card-btn" 
+              onClick={() => setShowValidationModal(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </Modal>      
     </DashboardLayout>
   );
 };

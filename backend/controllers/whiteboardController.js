@@ -11,6 +11,7 @@ const getWhiteboard = async (req, res) => {
       .populate('coverage.scanning', 'name profileImageUrl profileColor')
       .populate('coverage.surgicals', 'name profileImageUrl profileColor')
       .populate('coverage.wada', 'name profileImageUrl profileColor')
+      .populate('outpatients.np8am', 'name profileImageUrl profileColor')
       .populate('outpatients.op8am1', 'name profileImageUrl profileColor')
       .populate('outpatients.op8am2', 'name profileImageUrl profileColor')
       .populate('outpatients.op10am', 'name profileImageUrl profileColor')
@@ -21,11 +22,13 @@ const getWhiteboard = async (req, res) => {
       .populate('readingProviders.routine', 'name profileColor')
       .populate('lastUpdatedBy', 'name');
 
-    // If no whiteboard exists, create a default one
+    // If no whiteboard exists, create a default one with np8am
     if (!whiteboard) {
       whiteboard = await Whiteboard.create({
         coverage: {},
-        outpatients: {},
+        outpatients: {
+          np8am: [],
+        },
         readingProviders: {},
         lastUpdatedBy: req.user._id,
         comments: [],
@@ -61,6 +64,7 @@ const updateWhiteboard = async (req, res) => {
           wada: (coverage && coverage.wada) || [],
         },
         outpatients: {
+          np8am: (outpatients && outpatients.np8am) || [],
           op8am1: (outpatients && outpatients.op8am1) || [],
           op8am2: (outpatients && outpatients.op8am2) || [],
           op10am: (outpatients && outpatients.op10am) || [],
@@ -86,6 +90,7 @@ const updateWhiteboard = async (req, res) => {
       // Update outpatient arrays if provided
       if (outpatients) {
         whiteboard.outpatients = {
+          np8am: outpatients.np8am || [],
           op8am1: outpatients.op8am1 || [],
           op8am2: outpatients.op8am2 || [],
           op10am: outpatients.op10am || [],
@@ -101,6 +106,14 @@ const updateWhiteboard = async (req, res) => {
       whiteboard.comments = req.body.comments || whiteboard.comments;
 
       await whiteboard.save();
+
+      // Handle NP task AFTER whiteboard is saved
+      if (outpatients && outpatients.np8am !== undefined) {
+        // Don't await - let it run asynchronously
+        handleNPTask(outpatients.np8am, req.user._id).catch(err => {
+          console.error('Failed to create/update NP task:', err);
+        });
+      }      
     }
 
     // Populate the response
@@ -110,6 +123,7 @@ const updateWhiteboard = async (req, res) => {
       .populate('coverage.scanning', 'name profileImageUrl profileColor')
       .populate('coverage.surgicals', 'name profileImageUrl profileColor')
       .populate('coverage.wada', 'name profileImageUrl profileColor')
+      .populate('outpatients.np8am', 'name profileImageUrl profileColor')
       .populate('outpatients.op8am1', 'name profileImageUrl profileColor')
       .populate('outpatients.op8am2', 'name profileImageUrl profileColor')
       .populate('outpatients.op10am', 'name profileImageUrl profileColor')
@@ -123,6 +137,74 @@ const updateWhiteboard = async (req, res) => {
     res.json({ message: 'Whiteboard updated successfully', whiteboard: updatedWhiteboard });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Helper function to create or update NP task
+const handleNPTask = async (np8amUsers, userId) => {
+  try {
+    const Task = require('../models/Task');
+    
+    // Check if users are assigned to NP slot
+    if (np8amUsers && np8amUsers.length > 0) {
+      // Check if NP task exists for today
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+      
+      let npTask = await Task.findOne({
+        title: 'NP',
+        createdAt: { $gte: todayStart, $lte: todayEnd }
+      });
+      
+      const formatTimestamp = () => {
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        const year = now.getFullYear().toString().slice(-2);
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        
+        return `(${month}/${day}/${year} at ${hours}:${minutes} ${ampm})`;
+      };
+      
+      // If NP task doesn't exist, create it
+      if (!npTask) {
+        const timestamp = formatTimestamp();
+        const todoChecklist = [
+          { text: `Hook-Up ${timestamp}`, completed: true },
+          { text: `Transfer Patient ${timestamp}`, completed: true },
+          { text: `Place Charge & Chart ${timestamp}`, completed: true },
+          { text: `Disconnect ${timestamp}`, completed: false }
+        ];
+        
+        await Task.create({
+          title: 'NP',
+          orderType: 'Neuropsychiatric EEG',
+          electrodeType: 'Regular Leads',
+          adhesiveType: 'None',
+          allergyType: 'None',
+          sleepDeprivationType: 'Not Ordered',
+          priority: 'Routine',
+          comStation: null,
+          assignedTo: np8amUsers,
+          createdBy: userId,
+          todoChecklist: todoChecklist,
+          comments: null,
+          status: 'In Progress',
+          progress: 75 // 3 out of 4 items completed
+        });
+      } else {
+        // Update assigned users if task exists
+        npTask.assignedTo = np8amUsers;
+        await npTask.save();
+      }
+    }
+  } catch (error) {
+    console.error('Error handling NP task:', error);
+    // Don't throw the error - just log it so whiteboard update can continue
   }
 };
 

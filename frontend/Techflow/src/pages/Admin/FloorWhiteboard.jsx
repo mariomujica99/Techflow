@@ -11,6 +11,8 @@ import { HiMiniPlus } from "react-icons/hi2";
 import { LuTrash2, LuChevronDown, LuListChecks, LuArrowRight } from "react-icons/lu";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
+import { LiaEdit } from "react-icons/lia";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 const FloorWhiteboard = () => {
   const { user } = useContext(UserContext);
@@ -407,23 +409,31 @@ const FloorWhiteboard = () => {
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
-            <div className="flex md:flex-row md:items-center justify-between mb-0.5">
-              <div className="flex items-center gap-3">
+            <div className="flex md:flex-row  justify-between mb-2">
+              <div>
                 <h2 className="text-xl md:text-xl font-medium text-gray-700">Floor Whiteboard</h2>
+
+                <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div>
                 <button 
-                  className="card-btn"
+                  className="edit-btn flex items-center gap-2"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
-                  {isEditMode ? "Done" : "Edit"}
+                  {isEditMode ? (
+                    <>
+                      <IoMdCheckmarkCircleOutline />
+                    </>
+                  ) : (
+                    <>
+                      <LiaEdit />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
-
-            <h1 className="text-base md:text-lg text-gray-400 mb-2">Neurophysiology Department</h1>
 
             <div className="whiteboard-card">
               <p className="text-sm md:text-base text-gray-700 font-medium">
@@ -729,8 +739,8 @@ const WhiteboardSection = ({
 }) => {
   
   const getRelevantTodoText = (task, sectionType) => {
-    const relevantTodo = task.todoChecklist?.find(todo => {
-      // Remove timestamp from comparison
+    // Find ALL matching todos
+    const allMatchingTodos = task.todoChecklist?.filter(todo => {
       const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
       
       switch (sectionType) {
@@ -754,6 +764,12 @@ const WhiteboardSection = ({
           return false;
       }
     });
+    
+    // Get the most recent todo (last one in the array)
+    const relevantTodo = allMatchingTodos && allMatchingTodos.length > 0 
+      ? allMatchingTodos[allMatchingTodos.length - 1] 
+      : null;
+      
     return relevantTodo?.text || '';
   };
 
@@ -894,28 +910,36 @@ const WhiteboardSection = ({
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
         {sortedTasks.map((task) => {
-          const relevantTodo = task.todoChecklist?.find(todo => {
+          // Find ALL matching todos, then get the most recent one (last in array)
+          const allMatchingTodos = task.todoChecklist?.filter(todo => {
+            const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+            
             switch (sectionType) {
               case 'skinCheck':
-                return todo.text.toLowerCase().includes("skin check");
+                return textWithoutTimestamp.toLowerCase().includes("skin check");
               case 'electrodeFixes':
-                return todo.text.toLowerCase().includes("fix electrodes");
+                return textWithoutTimestamp.toLowerCase().includes("fix electrodes");
               case 'disconnects':
-                return todo.text.toLowerCase().includes("disconnect") || todo.text.toLowerCase().includes("discontinue");
+                return textWithoutTimestamp.toLowerCase().includes("disconnect") || textWithoutTimestamp.toLowerCase().includes("discontinue");
               case 'rehooks':
-                return todo.text.toLowerCase().includes("rehook");
+                return textWithoutTimestamp.toLowerCase().includes("rehook");
               case 'hyperventilation':
-                return todo.text.toLowerCase().includes("hyperventilation");
+                return textWithoutTimestamp.toLowerCase().includes("hyperventilation");
               case 'photic':
-                return todo.text.toLowerCase().includes("photic");
+                return textWithoutTimestamp.toLowerCase().includes("photic");
               case 'transfers':
-                return todo.text.toLowerCase().includes("transfer patient");
+                return textWithoutTimestamp.toLowerCase().includes("transfer patient");
               case 'troubleshoots':
-                return todo.text.toLowerCase().includes("troubleshoot");
+                return textWithoutTimestamp.toLowerCase().includes("troubleshoot");
               default:
                 return false;
             }
           });
+          
+          // Get the most recent todo (last one in the array since todos are added to the end)
+          const relevantTodo = allMatchingTodos && allMatchingTodos.length > 0 
+            ? allMatchingTodos[allMatchingTodos.length - 1] 
+            : null;
 
           return (
             <div 

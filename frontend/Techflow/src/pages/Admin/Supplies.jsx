@@ -9,6 +9,9 @@ import { HiMiniPlus, HiOutlineTrash } from "react-icons/hi2";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import Modal from "../../components/Modal";
 import SelectSupplies from "../../components/Inputs/SelectSupplies";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { LiaEdit } from "react-icons/lia";
+import { MdChecklistRtl } from "react-icons/md";
 
 const STORAGE_ROOMS = [
   "Department",
@@ -178,27 +181,31 @@ const Supplies = () => {
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
-            <div className="flex md:flex-row md:items-center justify-between mb-0.5">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl md:text-xl font-medium text-gray-700">
-                  Needed Supplies
-                </h2>
+            <div className="flex md:flex-row  justify-between mb-2">
+              <div>
+                <h2 className="text-xl md:text-xl font-medium text-gray-700">Needed Supplies</h2>
+
+                <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  className="card-btn"
+              <div>
+                <button 
+                  className="edit-btn flex items-center gap-2"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
-                  {isEditMode ? "Done" : "Edit"}
+                  {isEditMode ? (
+                    <>
+                      <IoMdCheckmarkCircleOutline />
+                    </>
+                  ) : (
+                    <>
+                      <LiaEdit />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
-
-            <h1 className="text-base md:text-lg text-gray-400 mb-2">
-              Neurophysiology Department
-            </h1>
 
             {user?.role === "admin" && (
               <div className="flex items-center gap-3 mb-3">
@@ -277,18 +284,18 @@ const StorageRoomSection = ({
         </h2>
         {isEditMode ? (
           <button
-            className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex items-center text-[12px] gap-1 font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onAddClick}
           >
-            <HiMiniPlus className="text-base md:text-lg" />
+            Add <HiMiniPlus className="text-base md:text-lg" />
           </button>
         ) : (
           items.length > 0 && (
             <button
-              className="flex items-center text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+              className="flex items-center text-[12px] gap-1 font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
               onClick={onCheckAll}
             >
-              Check All
+              Check All <MdChecklistRtl className="text-sm md:text-base" />
             </button>
           )
         )}

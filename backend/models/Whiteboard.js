@@ -10,6 +10,7 @@ const whiteboardSchema = new mongoose.Schema(
       wada: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     },
     outpatients: {
+      np8am: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
       op8am1: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
       op8am2: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
       op10am: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

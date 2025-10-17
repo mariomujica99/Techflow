@@ -69,25 +69,31 @@ const ManageUsers = () => {
   return (
     <DashboardLayout activeMenu="Team Members">
       <div className="mt-5 mb-10">
-        <div className="flex md:flex-row md:items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
-            <div className="flex items-center gap-2 bg-primary px-3 py-1 rounded-full">
-              <span className="text-sm font-semibold text-white">
-                {allUsers.length}
-              </span>
+        <div className="flex flex-col md:flex-row md:justify-between mb-2 gap-3">
+
+          <div>
+            <div className="flex items-center gap-3 mt-1">
+              <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
+              <div className="flex items-center gap-2 bg-primary px-3 py-1 rounded-full">
+                <span className="text-sm font-semibold text-white">
+                  {allUsers.length}
+                </span>
+              </div>
             </div>
+            <h1 className="text-base md:text-lg text-gray-400 mt-1">
+              Neurophysiology Department
+            </h1>
           </div>
 
-          <button className="flex md:flex download-btn" onClick={handleDownloadReport}>
-            <LuFileSpreadsheet className="text-lg" />
-            Download Report
-          </button>
+          <div>
+            {user?.role === 'admin' && (
+              <button className="flex download-btn" onClick={handleDownloadReport}>
+                <LuFileSpreadsheet className="text-lg" />
+                Download Report
+              </button>
+            )}
+          </div>
         </div>
-
-        <h1 className="text-base md:text-lg text-gray-400 my-2">
-          Neurophysiology Department
-        </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allUsers?.map((user) => (

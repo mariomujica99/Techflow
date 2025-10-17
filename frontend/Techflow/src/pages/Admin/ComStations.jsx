@@ -7,6 +7,8 @@ import ComStationCard from "../../components/Cards/ComStationCard";
 import { COM_STATIONS_DROPDOWN_OPTIONS } from "../../utils/data";
 import { UserContext } from "../../context/userContext";
 import toast from "react-hot-toast";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { LiaEdit } from "react-icons/lia";
 
 const ComStations = () => {
   const { user } = useContext(UserContext);
@@ -150,8 +152,16 @@ const ComStations = () => {
             )}
           </div>
           
-          <button className="card-btn" onClick={handleManageComStations}>
-            {isEditMode ? "Done" : "Edit"}
+          <button className="edit-btn" onClick={handleManageComStations}>
+            {isEditMode ? (
+              <>
+                <IoMdCheckmarkCircleOutline />
+              </>
+            ) : (
+              <>
+                <LiaEdit />
+              </>
+            )}
           </button>
         </div>
 

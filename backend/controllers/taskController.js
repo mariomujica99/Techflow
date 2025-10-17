@@ -17,13 +17,31 @@ const getTasks = async (req, res) => {
     .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
-    // Add completed todoChecklist count
+    // Add completed todoChecklist count and recalculate progress and status
     tasks = await Promise.all(
       tasks.map(async (task) => {
         const completedCount = task.todoChecklist.filter(
           (item) => item.completed
         ).length;
-        return { ...task._doc, completedTodoCount: completedCount };
+        const totalCount = task.todoChecklist.length;
+        const actualProgress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+        
+        // Recalculate status based on actual progress
+        let actualStatus = task.status;
+        if (actualProgress === 100) {
+          actualStatus = 'Completed';
+        } else if (actualProgress > 0) {
+          actualStatus = 'In Progress';
+        } else {
+          actualStatus = 'Pending';
+        }
+        
+        return { 
+          ...task._doc, 
+          completedTodoCount: completedCount,
+          progress: actualProgress,
+          status: actualStatus  // Override with calculated status
+        };
       })
     );
 
@@ -80,13 +98,31 @@ const getAllTasksForEveryone = async (req, res) => {
     .populate('assignedTo', 'name email profileImageUrl profileColor')
     .populate('comStation', 'comStation comStationStatus')
 
-    // Add completed todoChecklist count to each task
+    // Add completed todoChecklist count and recalculate progress and status
     const tasksWithCount = await Promise.all(
       tasks.map(async (task) => {
         const completedCount = task.todoChecklist.filter(
           (item) => item.completed
         ).length;
-        return { ...task._doc, completedTodoCount: completedCount };
+        const totalCount = task.todoChecklist.length;
+        const actualProgress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+        
+        // Recalculate status based on actual progress
+        let actualStatus = task.status;
+        if (actualProgress === 100) {
+          actualStatus = 'Completed';
+        } else if (actualProgress > 0) {
+          actualStatus = 'In Progress';
+        } else {
+          actualStatus = 'Pending';
+        }
+        
+        return { 
+          ...task._doc, 
+          completedTodoCount: completedCount,
+          progress: actualProgress,
+          status: actualStatus  // Override with calculated status
+        };
       })
     );
 
