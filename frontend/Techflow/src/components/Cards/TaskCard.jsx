@@ -34,6 +34,8 @@ const TaskCard = ({
         return "text-cyan-500 bg-cyan-50 border border-cyan-500/10";
       case "Completed":
         return "text-green-500 bg-green-50 border border-green-500/10";
+      case "Disconnected":
+        return "text-red-500 bg-red-50 border border-red-500/10";
       default:
         return "text-violet-500 bg-violet-50 border border-violet-500/10";
     }
@@ -52,6 +54,8 @@ const TaskCard = ({
 
   const getStatusIcon = () => {
     switch (status) {
+      case "Disconnected":
+        return <LuCircle className="text-red-500 text-sm" />;
       case "In Progress":
         return <LuClock className="text-cyan-500 text-sm" />;
       case "Pending":
@@ -95,7 +99,9 @@ const TaskCard = ({
 
       <div
         className={`px-4 border-l-[3px] ${
-          status === "In Progress"
+          status === "Disconnected"
+            ? "border-red-500"
+            : status === "In Progress"
             ? "border-cyan-500"
             : status === "Completed"
             ? "border-green-500"

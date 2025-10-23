@@ -106,7 +106,7 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
         onClose={() => setIsModalOpen(false)}
         title="Select Member"
       >
-        <div className="space-y-4 h-[60vh] overflow-y-auto pr-4 pl-4">
+        <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
           {loading ? (
             <p className="text-center text-gray-500">Loading users...</p>
           ) : (

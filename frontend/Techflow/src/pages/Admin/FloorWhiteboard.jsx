@@ -65,13 +65,63 @@ const FloorWhiteboard = () => {
         return todoDate.isSameOrAfter(todayStart);
       };
 
+      // Helper function to check if order has completed all automatic items
+      const hasCompletedAutomaticItems = (task) => {
+        const orderType = task.orderType;
+        const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[orderType];
+        
+        if (!automaticItems || automaticItems.length === 0) {
+          return false; // No automatic items, consider incomplete
+        }
+        
+        // Check if all automatic items are completed
+        let allCompleted = true;
+        automaticItems.forEach(itemText => {
+          const matchingTodo = task.todoChecklist?.find(todo => {
+            const todoTextWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
+            return todoTextWithoutTimestamp === itemText && todo.completed;
+          });
+          if (!matchingTodo) {
+            allCompleted = false;
+          }
+        });
+        
+        return allCompleted;
+      };
+
       // Organize tasks by their todo checklist content - filter by todo creation date
       const organizedTasks = {
         orders: currentClearedSections.orders ? [] : (() => {
-          // For orders, show if task was created today
           const orderTasks = allTasks.filter(task => {
             const taskDate = moment(task.createdAt);
-            return taskDate.isSameOrAfter(todayStart);
+            const updatedDate = moment(task.updatedAt);
+            const isCreatedToday = taskDate.isSame(moment(), "day");
+            const isFromPreviousDays = taskDate.isBefore(moment().startOf("day"));
+
+            const completedToday =
+              hasCompletedAutomaticItems(task) &&
+              updatedDate.isSame(moment(), "day");
+
+            const completedPreviously =
+              hasCompletedAutomaticItems(task) &&
+              updatedDate.isBefore(moment().startOf("day"));
+
+            // Logic summary:
+            // - Always show today's created Tasks
+            // - Show previous Tasks if NOT all automatic items complete
+            // - Hide previous Tasks completed before today
+            // - Show previous Tasks completed today
+            if (isCreatedToday) {
+              return true;
+            }
+
+            if (isFromPreviousDays) {
+              if (!hasCompletedAutomaticItems(task)) return true; // still pending
+              if (completedToday) return true; // completed today, show it
+              if (completedPreviously) return false; // finished in the past, hide
+            }
+
+            return false;
           });
           
           // Sort by order type (Continuous first, then Routine), then by creation date
@@ -593,6 +643,21 @@ const FloorWhiteboard = () => {
 // Orders section component (different from other sections)
 const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateTask, onDelete }) => {
   const getStatusColor = (task) => {
+    // Check if task is disconnected
+    const hasDisconnect = task.todoChecklist?.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+    });
+    
+    const hasEndTimeChart = task.todoChecklist?.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
+    });
+    
+    if (hasDisconnect && hasEndTimeChart) {
+      return 'bg-red-500'; // Disconnected
+    }
+    
     const orderType = task.orderType;
     const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[orderType];
     
@@ -604,7 +669,6 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     let completedCount = 0;
     automaticItems.forEach(itemText => {
       const matchingTodo = task.todoChecklist?.find(todo => {
-        // Strip timestamp from todo text before comparing
         const todoTextWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
         return todoTextWithoutTimestamp === itemText && todo.completed;
       });
@@ -719,6 +783,10 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
           <p className="text-xs md:text-sm text-gray-400">No orders</p>
         )}
       </div>
+
+      <p className="text-xs text-gray-400 mt-2">
+        Orders are prioritized by type (Continuous above Routine) and listed from oldest to newest (longest pending orders shown first).
+      </p>
     </div>
   );
 };
@@ -842,31 +910,9 @@ const WhiteboardSection = ({
 
   // Sort tasks by room number
   const sortedTasks = [...tasks].sort((a, b) => {
-    if (sectionType === 'transfers') {
-      // For transfers, extract the "from" room number
-      const getFromRoom = (task) => {
-        const relevantTodo = task.todoChecklist?.find(todo =>
-          todo.text.toLowerCase().includes("transfer patient from")
-        );
-        if (relevantTodo) {
-          const match = relevantTodo.text.match(/Transfer Patient from\s+([\d-]+)/i);
-          return match ? match[1] : '';
-        }
-        return '';
-      };
-      const roomA = getFromRoom(a);
-      const roomB = getFromRoom(b);
-      
-      // Natural sort (treats "8826-1" and "8826-2" correctly)
-      return roomA.localeCompare(roomB, undefined, { numeric: true, sensitivity: 'base' });
-    } else {
-      // For all other sections, sort by room number (task.title)
-      const roomA = a.title || '';
-      const roomB = b.title || '';
-      
-      // Natural sort (treats "8826-1" and "8826-2" correctly)
-      return roomA.localeCompare(roomB, undefined, { numeric: true, sensitivity: 'base' });
-    }
+    const roomA = a.title || '';
+    const roomB = b.title || '';
+    return roomA.localeCompare(roomB);
   });
 
   return (

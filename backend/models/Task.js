@@ -19,7 +19,7 @@ const taskSchema = new mongoose.Schema(
     sleepDeprivationType: { type: String, enum: ['Not Ordered', 'Ordered'], default: 'Not Ordered' },
     priority: { type: String, enum: ['Routine', 'ASAP', 'STAT'], default: 'Routine' },
     comStation: { type: mongoose.Schema.Types.ObjectId, ref: 'ComStation', default: null },
-    status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
+    status: { type: String, enum: ['Pending', 'In Progress', 'Completed', 'Disconnected'], default: 'Pending' },
     assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     comments: [{ type: String }], // Text comments

@@ -186,6 +186,7 @@ export const STATUS_DATA = [
   { label: "Pending", value: "Pending" },
   { label: "In Progress", value: "In Progress" },
   { label: "Completed", value: "Completed" },
+  { label: "Disconnected", value: "Disconnected" },
 ];
 
 export const ORDER_TYPE_DATA = [

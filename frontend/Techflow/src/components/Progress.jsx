@@ -7,6 +7,8 @@ const Progress = ({ progress, status }) => {
         return "text-cyan-500 bg-cyan-500 border border-cyan-500/10";
       case "Completed":
         return "text-green-500 bg-green-500 border border-green-500/10";
+      case "Disconnected":
+        return "text-red-500 bg-red-500 border border-red-500/10";
       default:
         return "text-violet-500 bg-violet-500 border border-violet-500/10";
     }

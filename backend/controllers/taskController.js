@@ -1,5 +1,23 @@
 const Task = require('../models/Task');
 
+// Determine if a task is disconnected
+const isTaskDisconnected = (task) => {
+  if (!task.todoChecklist || task.todoChecklist.length === 0) return false;
+  
+  // Check if both disconnect-related todos are completed
+  const hasDisconnect = task.todoChecklist.some(todo => {
+    const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+    return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+  });
+  
+  const hasEndTimeChart = task.todoChecklist.some(todo => {
+    const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+    return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
+  });
+  
+  return hasDisconnect && hasEndTimeChart;
+};
+
 // @desc    Get tasks assigned to the current user (always user-specific)
 // @route   GET /api/tasks/
 // @access  Private
@@ -26,9 +44,11 @@ const getTasks = async (req, res) => {
         const totalCount = task.todoChecklist.length;
         const actualProgress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
         
-        // Recalculate status based on actual progress
+        // Check if task is disconnected
         let actualStatus = task.status;
-        if (actualProgress === 100) {
+        if (isTaskDisconnected(task)) {
+          actualStatus = 'Disconnected';
+        } else if (actualProgress === 100) {
           actualStatus = 'Completed';
         } else if (actualProgress > 0) {
           actualStatus = 'In Progress';
@@ -40,39 +60,48 @@ const getTasks = async (req, res) => {
           ...task._doc, 
           completedTodoCount: completedCount,
           progress: actualProgress,
-          status: actualStatus  // Override with calculated status
+          status: actualStatus
         };
       })
     );
 
     // Status summary counts (always user-specific)
-    const allTasks = await Task.countDocuments({ assignedTo: req.user._id });
+    const allUserTasks = await Task.find({ assignedTo: req.user._id });
 
-    const pendingTasks = await Task.countDocuments({
-      ...filter,
-      status: 'Pending',
-      assignedTo: req.user._id,
+    // Recalculate all statuses to get accurate counts
+    let pendingCount = 0;
+    let inProgressCount = 0;
+    let completedCount = 0;
+    let disconnectedCount = 0;
+
+    allUserTasks.forEach(task => {
+      if (isTaskDisconnected(task)) {
+        disconnectedCount++;
+      } else {
+        const completedTodoCount = task.todoChecklist.filter(item => item.completed).length;
+        const totalTodoCount = task.todoChecklist.length;
+        const progress = totalTodoCount > 0 ? Math.round((completedTodoCount / totalTodoCount) * 100) : 0;
+        
+        if (progress === 100) {
+          completedCount++;
+        } else if (progress > 0) {
+          inProgressCount++;
+        } else {
+          pendingCount++;
+        }
+      }
     });
 
-    const inProgressTasks = await Task.countDocuments({
-      ...filter,
-      status: 'In Progress',
-      assignedTo: req.user._id,
-    });
-
-    const completedTasks = await Task.countDocuments({
-      ...filter,
-      status: 'Completed',
-      assignedTo: req.user._id,
-    });
+    const allTasks = allUserTasks.length;
 
     res.json({
       tasks,
       statusSummary: {
         all: allTasks,
-        pendingTasks,
-        inProgressTasks,
-        completedTasks,
+        pendingTasks: pendingCount,
+        inProgressTasks: inProgressCount,
+        completedTasks: completedCount,
+        disconnectedTasks: disconnectedCount,
       },
     });
   } catch (error) {
@@ -107,9 +136,11 @@ const getAllTasksForEveryone = async (req, res) => {
         const totalCount = task.todoChecklist.length;
         const actualProgress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
         
-        // Recalculate status based on actual progress
+        // Check if task is disconnected
         let actualStatus = task.status;
-        if (actualProgress === 100) {
+        if (isTaskDisconnected(task)) {
+          actualStatus = 'Disconnected';
+        } else if (actualProgress === 100) {
           actualStatus = 'Completed';
         } else if (actualProgress > 0) {
           actualStatus = 'In Progress';
@@ -121,24 +152,48 @@ const getAllTasksForEveryone = async (req, res) => {
           ...task._doc, 
           completedTodoCount: completedCount,
           progress: actualProgress,
-          status: actualStatus  // Override with calculated status
+          status: actualStatus
         };
       })
     );
 
     // Status summary counts for all tasks
-    const allTasks = await Task.countDocuments();
-    const pendingTasks = await Task.countDocuments({ status: 'Pending' });
-    const inProgressTasks = await Task.countDocuments({ status: 'In Progress' });
-    const completedTasks = await Task.countDocuments({ status: 'Completed' });
+    const allTasksList = await Task.find();
+
+    // Recalculate all statuses to get accurate counts
+    let pendingCount = 0;
+    let inProgressCount = 0;
+    let completedCount = 0;
+    let disconnectedCount = 0;
+
+    allTasksList.forEach(task => {
+      if (isTaskDisconnected(task)) {
+        disconnectedCount++;
+      } else {
+        const completedTodoCount = task.todoChecklist.filter(item => item.completed).length;
+        const totalTodoCount = task.todoChecklist.length;
+        const progress = totalTodoCount > 0 ? Math.round((completedTodoCount / totalTodoCount) * 100) : 0;
+        
+        if (progress === 100) {
+          completedCount++;
+        } else if (progress > 0) {
+          inProgressCount++;
+        } else {
+          pendingCount++;
+        }
+      }
+    });
+
+    const allTasks = allTasksList.length;
 
     res.json({
       tasks: tasksWithCount,
       statusSummary: {
         all: allTasks,
-        pendingTasks,
-        inProgressTasks,
-        completedTasks,
+        pendingTasks: pendingCount,
+        inProgressTasks: inProgressCount,
+        completedTasks: completedCount,
+        disconnectedTasks: disconnectedCount,
       },
     });
   } catch (error) {
@@ -157,7 +212,19 @@ const getTaskById = async (req, res) => {
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    res.json(task);
+    // Recalculate status to check if disconnected
+    let actualStatus = task.status;
+    if (isTaskDisconnected(task)) {
+      actualStatus = 'Disconnected';
+    }
+    
+    // Return task with recalculated status
+    const taskData = {
+      ...task._doc,
+      status: actualStatus
+    };
+
+    res.json(taskData);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

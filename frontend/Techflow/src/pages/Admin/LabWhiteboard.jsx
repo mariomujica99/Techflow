@@ -516,6 +516,19 @@ const LabWhiteboard = () => {
                         )}
                       </div>
                     )}
+
+                    {/* Show message if no outpatient slots assigned */}
+                    {!isEditMode && 
+                      ![
+                        whiteboardData?.outpatients?.np8am,
+                        whiteboardData?.outpatients?.op8am1,
+                        whiteboardData?.outpatients?.op8am2,
+                        whiteboardData?.outpatients?.op10am,
+                        whiteboardData?.outpatients?.op12pm,
+                        whiteboardData?.outpatients?.op2pm
+                      ].some(slot => slot && slot.length > 0) && (
+                        <p className="text-sm text-gray-400 mt-2">No outpatients scheduled for today</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -536,96 +549,43 @@ const LabWhiteboard = () => {
                       </button>
                     )}
                   </div>
+
                   <div className="text-sm text-gray-400 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">ON CALL</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.coverage.onCall}
-                            setSelectedUsers={(userIds) => setEditData(prev => ({
-                              ...prev,
-                              coverage: { ...prev.coverage, onCall: userIds }
-                            }))}
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.coverage?.onCall)
-                      )}
-                    </div>
+                    {[
+                      { label: "ON CALL", key: "onCall" },
+                      { label: "SURG CALL", key: "surgCall" },
+                      { label: "SCANNING", key: "scanning" },
+                      { label: "SURGICAL", key: "surgicals" },
+                      { label: "WADA", key: "wada" },
+                    ].map(({ label, key }) => {
+                      const hasUsers = whiteboardData?.coverage?.[key]?.length > 0;
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">SURG CALL</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.coverage.surgCall}
-                            setSelectedUsers={(userIds) => setEditData(prev => ({
-                              ...prev,
-                              coverage: { ...prev.coverage, surgCall: userIds }
-                            }))}                            
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.coverage?.surgCall)
-                      )}
-                    </div>
+                      if (!isEditMode && !hasUsers) return null;
 
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">SCANNING</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.coverage.scanning}
-                            setSelectedUsers={(userIds) => setEditData(prev => ({
-                              ...prev,
-                              coverage: { ...prev.coverage, scanning: userIds }
-                            }))}
-                          />
+                      return (
+                        <div className="flex justify-between items-center" key={key}>
+                          <p className="whitespace-nowrap">{label}</p>
+                          {isEditMode ? (
+                            <div className="w-32">
+                              <SelectCoverageUser
+                                selectedUsers={editData.coverage[key]}
+                                setSelectedUsers={(userIds) =>
+                                  setEditData((prev) => ({
+                                    ...prev,
+                                    coverage: { ...prev.coverage, [key]: userIds },
+                                  }))
+                                }
+                              />
+                            </div>
+                          ) : (
+                            renderUserDisplay(whiteboardData?.coverage?.[key])
+                          )}
                         </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.coverage?.scanning)
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">SURGICALS</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.coverage.surgicals}
-                            setSelectedUsers={(userIds) => setEditData(prev => ({
-                              ...prev,
-                              coverage: { ...prev.coverage, surgicals: userIds }
-                            }))}
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.coverage?.surgicals)
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <p className="whitespace-nowrap">WADA</p>
-                      {isEditMode ? (
-                        <div className="w-32">
-                          <SelectCoverageUser
-                            selectedUsers={editData.coverage.wada}
-                            setSelectedUsers={(userIds) => setEditData(prev => ({
-                              ...prev,
-                              coverage: { ...prev.coverage, wada: userIds }
-                            }))}
-                          />
-                        </div>
-                      ) : (
-                        renderUserDisplay(whiteboardData?.coverage?.wada)
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
-
-              
+              </div>              
             </div>
 
             {/* Comments Section */}
@@ -654,11 +614,10 @@ const LabWhiteboard = () => {
                 )}
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
+      
       <Modal
         isOpen={showValidationModal}
         onClose={() => setShowValidationModal(false)}

@@ -20,6 +20,8 @@ const ViewTaskDetails = () => {
         return "text-cyan-500 bg-cyan-50 border border-cyan-500/10";
       case "Completed":
         return "text-green-500 bg-green-50 border border-green-500/10";
+      case "Disconnected":
+        return "text-red-500 bg-red-50 border border-red-500/10";
       default:
         return "text-violet-500 bg-violet-50 border border-violet-500/10";
     }

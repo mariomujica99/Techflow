@@ -220,9 +220,11 @@ const Supplies = () => {
             )}
 
             <div className="whiteboard-card">
-              <p className="text-xs font-medium text-gray-700">
-                Last Updated
+              <p className="text-sm md:text-base text-gray-700 font-medium">
+                {moment().format("dddd Do MMMM YYYY")}
               </p>
+
+              <p className="text-xs font-medium text-gray-400">Supply Lists Last Updated</p>
               <p className="text-xs text-gray-400 truncate">
                 {lastUpdated
                   ? `${moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A")}${
