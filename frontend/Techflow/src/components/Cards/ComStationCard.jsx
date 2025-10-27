@@ -23,7 +23,10 @@ const ComStationCard = ({
     comStation: comStationInfo?.comStation || '',
     comStationType: comStationInfo?.comStationType || 'EEG Cart',
     comStationLocation: comStationInfo?.comStationLocation || 'Inpatient',
-    graveyardReason: comStationInfo?.graveyardReason || ''
+    comStationStatus: comStationInfo?.comStationStatus || 'Active',
+    issueDescription: comStationInfo?.issueDescription || '',
+    hasTicket: comStationInfo?.hasTicket || false,
+    ticketNumber: comStationInfo?.ticketNumber || ''
   });
 
   const [dropdownStates, setDropdownStates] = useState({
@@ -32,12 +35,35 @@ const ComStationCard = ({
   });
 
   const typeOptions = ['EMU Station', 'EEG Cart'];
-  const locationOptions = ['Inpatient', 'Outpatient', 'Bellevue', 'Graveyard'];
+  const locationOptions = ['Inpatient', 'Outpatient', 'Bellevue'];
 
   // Handle dropdown selection
   const handleDropdownSelect = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setDropdownStates(prev => ({ ...prev, [field.replace('comStation', '').toLowerCase()]: false }));
+  };
+
+  // Handle status toggle
+  const handleStatusToggle = () => {
+    const newStatus = formData.comStationStatus === 'Active' ? 'Inactive' : 'Active';
+    setFormData(prev => ({ 
+      ...prev, 
+      comStationStatus: newStatus,
+      // Clear issue fields when switching to Active
+      issueDescription: newStatus === 'Active' ? '' : prev.issueDescription,
+      hasTicket: newStatus === 'Active' ? false : prev.hasTicket,
+      ticketNumber: newStatus === 'Active' ? '' : prev.ticketNumber
+    }));
+  };
+
+  // Handle ticket toggle
+  const handleTicketToggle = () => {
+    setFormData(prev => ({
+      ...prev,
+      hasTicket: !prev.hasTicket,
+      // Clear ticket number when toggling off
+      ticketNumber: !prev.hasTicket ? prev.ticketNumber : ''
+    }));
   };
 
   // Handle form submission for add/edit
@@ -57,7 +83,10 @@ const ComStationCard = ({
           comStation: '',
           comStationType: 'EEG Cart',
           comStationLocation: 'Inpatient',
-          graveyardReason: ''
+          comStationStatus: 'Active',
+          issueDescription: '',
+          hasTicket: false,
+          ticketNumber: ''
         });
       } else {
         response = await axiosInstance.put(
@@ -65,7 +94,10 @@ const ComStationCard = ({
           {
             comStationType: formData.comStationType,
             comStationLocation: formData.comStationLocation,
-            graveyardReason: formData.graveyardReason
+            comStationStatus: formData.comStationStatus,
+            issueDescription: formData.issueDescription,
+            hasTicket: formData.hasTicket,
+            ticketNumber: formData.ticketNumber
           }
         );
         toast.success("Computer station updated successfully");
@@ -166,16 +198,61 @@ const ComStationCard = ({
               </div>
             </div>
 
-            {formData.comStationLocation === 'Graveyard' && (
-              <div>
-                <label className="text-xs text-gray-500 block mb-1">Issue</label>
-                <textarea
-                  placeholder="Enter the current issue"
-                  value={formData.graveyardReason}
-                  onChange={(e) => setFormData(prev => ({ ...prev, graveyardReason: e.target.value }))}
-                  className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"
-                />
-              </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Status</label>
+              <button
+                onClick={handleStatusToggle}
+                className={`w-full text-sm font-medium px-3 py-2 rounded-md flex items-center justify-center gap-2 cursor-pointer transition-colors ${
+                  formData.comStationStatus === 'Active'
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}
+              >
+                <div className={`w-2 h-2 rounded-full ${getStatusColor(formData.comStationStatus)}`}></div>
+                {formData.comStationStatus}
+              </button>
+            </div>
+
+            {formData.comStationStatus === 'Inactive' && (
+              <>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">Issue</label>
+                  <textarea
+                    placeholder="Describe the current issue"
+                    value={formData.issueDescription}
+                    onChange={(e) => setFormData(prev => ({ ...prev, issueDescription: e.target.value }))}
+                    className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs text-gray-500">Ticket Placed</label>
+                    <button
+                      onClick={handleTicketToggle}
+                      className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
+                        formData.hasTicket ? 'bg-primary' : 'bg-gray-300'
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                          formData.hasTicket ? 'transform translate-x-5' : ''
+                        }`}
+                      ></div>
+                    </button>
+                  </div>
+
+                  {formData.hasTicket && (
+                    <input
+                      type="text"
+                      placeholder="Enter ticket number (optional)"
+                      value={formData.ticketNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, ticketNumber: e.target.value }))}
+                      className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 focus:outline-none placeholder:text-gray-500"
+                    />
+                  )}
+                </div>
+              </>
             )}
           </div>
 
@@ -278,22 +355,80 @@ const ComStationCard = ({
           )}
         </div>
 
-        {(comStationInfo?.comStationLocation === 'Graveyard' || formData.comStationLocation === 'Graveyard') && (
+        {isEditMode && (
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Issue</label>
-            {isEditMode ? (
-              <textarea
-                placeholder="Enter the current issue"
-                value={formData.graveyardReason}
-                onChange={(e) => setFormData(prev => ({ ...prev, graveyardReason: e.target.value }))}
-                className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"          
-              />
-            ) : (
-              <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                {comStationInfo?.graveyardReason || 'No issue provided'}
-              </p>
-            )}
+            <label className="text-xs text-gray-500 block mb-1">Status</label>
+            <button
+              onClick={handleStatusToggle}
+              className={`w-full text-sm font-medium px-3 py-2 rounded-md flex items-center justify-center gap-2 cursor-pointer transition-colors ${
+                formData.comStationStatus === 'Active'
+                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  : 'bg-red-50 text-red-700 border border-red-200'
+              }`}
+            >
+              <div className={`w-2 h-2 rounded-full ${getStatusColor(formData.comStationStatus)}`}></div>
+              {formData.comStationStatus}
+            </button>
           </div>
+        )}
+
+        {(comStationInfo?.comStationStatus === 'Inactive' || formData.comStationStatus === 'Inactive') && (
+          <>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Issue</label>
+              {isEditMode ? (
+                <textarea
+                  placeholder="Describe the current issue"
+                  value={formData.issueDescription}
+                  onChange={(e) => setFormData(prev => ({ ...prev, issueDescription: e.target.value }))}
+                  className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 h-16 resize-none focus:outline-none placeholder:text-gray-500"          
+                />
+              ) : (
+                <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                  {comStationInfo?.issueDescription || 'No issue provided'}
+                </p>
+              )}
+            </div>
+
+            {isEditMode && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs text-gray-500">Ticket Placed</label>
+                  <button
+                    onClick={handleTicketToggle}
+                    className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
+                      formData.hasTicket ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                        formData.hasTicket ? 'transform translate-x-5' : ''
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+
+                {formData.hasTicket && (
+                  <input
+                    type="text"
+                    placeholder="Enter ticket number (optional)"
+                    value={formData.ticketNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, ticketNumber: e.target.value }))}
+                    className="w-full text-xs bg-white border border-slate-100 rounded-md px-2 py-2 focus:outline-none placeholder:text-gray-500"
+                  />
+                )}
+              </div>
+            )}
+
+            {!isEditMode && comStationInfo?.hasTicket && comStationInfo?.ticketNumber && (
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Ticket Number</label>
+                <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                  {comStationInfo?.ticketNumber}
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 

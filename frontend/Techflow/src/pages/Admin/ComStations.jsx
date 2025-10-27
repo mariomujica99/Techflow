@@ -83,8 +83,14 @@ const ComStations = () => {
     switch (selectedFilter) {
       case "EMU Station":
         return `EMU`;
-      case "EEG Cart":
-        return `Carts`;
+      case "EEG Cart - All":
+        return `Carts (All)`;
+      case "EEG Cart - Inpatient":
+        return `Carts (IP)`;
+      case "EEG Cart - Outpatient":
+        return `Carts (OP)`;
+      case "EEG Cart - Bellevue":
+        return `Carts (BMC)`;
       default:
         return `All`;
     }

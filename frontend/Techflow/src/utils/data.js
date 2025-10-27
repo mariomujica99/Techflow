@@ -303,7 +303,10 @@ export const DEFAULT_COMMENTS = {
 export const COM_STATIONS_DROPDOWN_OPTIONS = [
   { label: "All Computer Stations", value: "All Computer Stations" },
   { label: "EMU Stations", value: "EMU Station" },
-  { label: "EEG Carts", value: "EEG Cart" },
+  { label: "EEG Carts (All)", value: "EEG Cart - All" },
+  { label: "EEG Carts (Inpatient)", value: "EEG Cart - Inpatient" },
+  { label: "EEG Carts (Outpatient)", value: "EEG Cart - Outpatient" },
+  { label: "EEG Carts (Bellevue)", value: "EEG Cart - Bellevue" },
 ];
 
 export const ROOM_MAPPINGS = {

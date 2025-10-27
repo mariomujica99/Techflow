@@ -16,10 +16,13 @@ router.post("/upload-profile-image", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-    req.file.filename
-  }`;
-  res.json({ imageUrl });
+  
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  
+  res.json({ 
+    imageUrl,
+    filename: req.file.filename // Send filename for potential cleanup
+  });
 });
 
 module.exports = router;

@@ -312,6 +312,20 @@ const updateTask = async (req, res) => {
           };
         }
       });
+
+  // Recalculate progress and status based on checklist
+  const completedCount = task.todoChecklist.filter((item) => item.completed).length;
+  const totalItems = task.todoChecklist.length;
+  task.progress = totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0;
+  
+  // Auto-update status based on progress
+  if (task.progress === 100) {
+    task.status = 'Completed';
+  } else if (task.progress > 0) {
+    task.status = 'In Progress';
+  } else {
+    task.status = 'Pending';
+  }
     }
 
     if (req.body.assignedTo) {
@@ -431,7 +445,7 @@ const updateTaskChecklist = async (req, res) => {
   }
 };
 
-// @desc    Get dashboard data (Admin only)
+// @desc    Get dashboard data
 // @route   GET /api/tasks/dashboard-data
 // @access  Private
 const getDashboardData = async (req, res) => {
@@ -475,11 +489,11 @@ const getDashboardData = async (req, res) => {
       return acc;
     }, {});
 
-    // Fetch recent 10 tasks
+    // Fetch recent 10 tasks WITH todoChecklist
     const recentTasks = await Task.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('title status priority createdAt')
+      .select('title status priority createdAt todoChecklist orderType')
     
     res.status(200).json({
       statistics: {
@@ -498,51 +512,55 @@ const getDashboardData = async (req, res) => {
   }
 };
 
-// @desc    Get dashboard data (User-specific)
+// @desc    Get dashboard data
 // @route   GET /api/tasks/user-dashboard-data
 // @access  Private
 const getUserDashboardData = async (req, res) => {
   try {
-    const userId = req.user._id; // Only fetch data for the logged-in user
+    // Fetch statistics
+    const totalTasks = await Task.countDocuments();
+    const pendingTasks = await Task.countDocuments({ status: 'Pending' });
+    const completedTasks = await Task.countDocuments({ status: 'Completed' });
 
-    // Fetch statistics for user-specific tasks
-    const totalTasks = await Task.countDocuments({ assignedTo: userId });
-    const pendingTasks = await Task.countDocuments({ assignedTo: userId, status: 'Pending' });
-    const completedTasks = await Task.countDocuments({ assignedTo: userId, status: 'Completed' });
-
-    // Task distribution by status
+    // Ensure all possible statuses are included
     const taskStatuses = ['Pending', 'In Progress', 'Completed'];
     const taskDistributionRaw = await Task.aggregate([
-      { $match: { assignedTo: userId } },
-      { $group: { _id: '$status', count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
     ]);
-
     const taskDistribution = taskStatuses.reduce((acc, status) => {
-      const formattedKey = status.replace(/\s+/g, '');
-      acc[formattedKey] =
+      const formattedKey = status.replace(/\s+/g, ''); // Remove spaces for response keys
+      acc[formattedKey] = 
         taskDistributionRaw.find((item) => item._id === status)?.count || 0;
       return acc;
     }, {});
-    taskDistribution['All'] = totalTasks;
+    taskDistribution['All'] = totalTasks; // Add total count to taskDistribution
 
-    // Task distribution by priority
+    // Ensure all priority levels are included
     const taskPriorities = ['Routine', 'ASAP', 'STAT'];
     const taskPriorityLevelsRaw = await Task.aggregate([
-      { $match: { assignedTo: userId } },
-      { $group: { _id: '$priority', count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: '$priority',
+          count: { $sum: 1 },
+        },
+      },
     ]);
-
     const taskPriorityLevels = taskPriorities.reduce((acc, priority) => {
       acc[priority] =
         taskPriorityLevelsRaw.find((item) => item._id === priority)?.count || 0;
       return acc;
     }, {});
 
-    // Fetch recent 10 tasks for the logged-in user
-    const recentTasks = await Task.find({ assignedTo: userId })
+    // Fetch recent 10 tasks WITH todoChecklist
+    const recentTasks = await Task.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('title status priority createdAt');
+      .select('title status priority createdAt todoChecklist orderType')
     
     res.status(200).json({
       statistics: {

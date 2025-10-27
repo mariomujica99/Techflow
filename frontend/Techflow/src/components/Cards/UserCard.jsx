@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { getInitials } from "../../utils/getInitials";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
-import DeleteAlert from "../DeleteAlert"; // adjust path if needed
+import DeleteAlert from "../DeleteAlert";
 import { LuTrash2 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import Modal from "../Modal";
@@ -32,7 +32,7 @@ const UserCard = ({userInfo, onUserDeleted, showAdminBadge = false}) => {
   return (
     <div className="user-card p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex items-start gap-3 min-w-0 my-2">
           <div className="relative flex-shrink-0">
             {userInfo?.profileImageUrl ? (
               <img
@@ -78,24 +78,6 @@ const UserCard = ({userInfo, onUserDeleted, showAdminBadge = false}) => {
             onDelete={() => deleteUser()}
           />
         </Modal>
-      </div>
-
-      <div className="flex flex-wrap items-end gap-4 mt-5">
-        <StatCard
-          label="Pending"
-          count={userInfo?.pendingTasks || 0}
-          status="Pending"
-        />
-        <StatCard
-          label="In Progress"
-          count={userInfo?.inProgressTasks || 0}
-          status="In Progress"
-        />
-        <StatCard
-          label="Completed"
-          count={userInfo?.completedTasks || 0}
-          status="Completed"
-        />
       </div>
     </div>
   );

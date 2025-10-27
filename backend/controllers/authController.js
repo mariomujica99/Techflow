@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -107,6 +109,24 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// Delete image file
+const deleteImageFile = (imageUrl) => {
+  if (!imageUrl) return;
+  
+  try {
+    // Extract filename from URL (e.g., http://localhost:8000/uploads/filename.jpg)
+    const filename = imageUrl.split('/uploads/')[1];
+    if (filename) {
+      const filePath = path.join(__dirname, '..', 'uploads', filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting image file:', error);
+  }
+};
+
 // @desc    Update user profile
 // @route   PUT /api/auth/profile
 // @access  Private (Requires JWT)
@@ -118,9 +138,24 @@ const updateUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    const oldImageUrl = user.profileImageUrl;
+
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.profileImageUrl = req.body.profileImageUrl !== undefined ? req.body.profileImageUrl : user.profileImageUrl;
+    
+    // Handle profile image/color updates
+    if (req.body.profileImageUrl !== undefined) {
+      // User uploaded a new image - delete old one
+      if (req.body.profileImageUrl && oldImageUrl && req.body.profileImageUrl !== oldImageUrl) {
+        deleteImageFile(oldImageUrl);
+      }
+      // User switched to color - delete old image
+      else if (req.body.profileImageUrl === null && oldImageUrl) {
+        deleteImageFile(oldImageUrl);
+      }
+      user.profileImageUrl = req.body.profileImageUrl;
+    }
+    
     user.profileColor = req.body.profileColor !== undefined ? req.body.profileColor : user.profileColor;
 
     // Handle admin role upgrade
@@ -158,6 +193,11 @@ const deleteUserAccount = async (req, res) => {
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete profile image if exists
+    if (user.profileImageUrl) {
+      deleteImageFile(user.profileImageUrl);
     }
 
     await user.deleteOne();

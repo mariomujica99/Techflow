@@ -94,23 +94,24 @@ const FloorWhiteboard = () => {
         orders: currentClearedSections.orders ? [] : (() => {
           const orderTasks = allTasks.filter(task => {
             const taskDate = moment(task.createdAt);
-            const updatedDate = moment(task.updatedAt);
             const isCreatedToday = taskDate.isSame(moment(), "day");
             const isFromPreviousDays = taskDate.isBefore(moment().startOf("day"));
+            const completionDate = task.completedOn ? moment(task.completedOn) : null;
+            const completedToday = 
+              hasCompletedAutomaticItems(task) && 
+              completionDate && 
+              completionDate.isSame(moment(), "day");
 
-            const completedToday =
-              hasCompletedAutomaticItems(task) &&
-              updatedDate.isSame(moment(), "day");
-
-            const completedPreviously =
-              hasCompletedAutomaticItems(task) &&
-              updatedDate.isBefore(moment().startOf("day"));
+            const completedPreviously = 
+              hasCompletedAutomaticItems(task) && 
+              completionDate && 
+              completionDate.isBefore(moment().startOf("day"));
 
             // Logic summary:
             // - Always show today's created Tasks
             // - Show previous Tasks if NOT all automatic items complete
-            // - Hide previous Tasks completed before today
-            // - Show previous Tasks completed today
+            // - Hide previous Tasks completed before today (automatic items complete)
+            // - Show previous Tasks completed today (automatic items complete)
             if (isCreatedToday) {
               return true;
             }

@@ -11,8 +11,17 @@ const getComStations = async (req, res) => {
     if (type && type !== 'All Computer Stations') {
       if (type === 'EMU Station') {
         filter.comStationType = 'EMU Station';
-      } else if (type === 'EEG Cart') {
+      } else if (type === 'EEG Cart - All') {
         filter.comStationType = 'EEG Cart';
+      } else if (type === 'EEG Cart - Inpatient') {
+        filter.comStationType = 'EEG Cart';
+        filter.comStationLocation = 'Inpatient';
+      } else if (type === 'EEG Cart - Outpatient') {
+        filter.comStationType = 'EEG Cart';
+        filter.comStationLocation = 'Outpatient';
+      } else if (type === 'EEG Cart - Bellevue') {
+        filter.comStationType = 'EEG Cart';
+        filter.comStationLocation = 'Bellevue';
       }
     }
 
@@ -28,7 +37,7 @@ const getComStations = async (req, res) => {
 // @access  Private
 const createComStation = async (req, res) => {
   try {
-    const { comStation, comStationType, comStationLocation, graveyardReason } = req.body;
+    const { comStation, comStationType, comStationLocation, comStationStatus, issueDescription, hasTicket, ticketNumber } = req.body;
 
     const existingStation = await ComStation.findOne({ comStation });
     if (existingStation) {
@@ -39,7 +48,10 @@ const createComStation = async (req, res) => {
       comStation,
       comStationType,
       comStationLocation,
-      graveyardReason: comStationLocation === 'Graveyard' ? graveyardReason : ''
+      comStationStatus: comStationStatus || 'Active',
+      issueDescription: comStationStatus === 'Inactive' ? issueDescription : '',
+      hasTicket: comStationStatus === 'Inactive' ? (hasTicket || false) : false,
+      ticketNumber: comStationStatus === 'Inactive' && hasTicket ? ticketNumber : ''
     });
 
     res.status(201).json({ message: 'Computer station created successfully', comStation: newComStation });
@@ -53,7 +65,7 @@ const createComStation = async (req, res) => {
 // @access  Private
 const updateComStation = async (req, res) => {
   try {
-    const { comStationType, comStationLocation, graveyardReason } = req.body;
+    const { comStationType, comStationLocation, comStationStatus, issueDescription, hasTicket, ticketNumber } = req.body;
     
     const comStation = await ComStation.findById(req.params.id);
     if (!comStation) {
@@ -62,7 +74,18 @@ const updateComStation = async (req, res) => {
 
     comStation.comStationType = comStationType || comStation.comStationType;
     comStation.comStationLocation = comStationLocation || comStation.comStationLocation;
-    comStation.graveyardReason = comStationLocation === 'Graveyard' ? (graveyardReason || '') : '';
+    comStation.comStationStatus = comStationStatus || comStation.comStationStatus;
+    
+    // Clear issue-related fields if status is Active
+    if (comStationStatus === 'Active') {
+      comStation.issueDescription = '';
+      comStation.hasTicket = false;
+      comStation.ticketNumber = '';
+    } else {
+      comStation.issueDescription = issueDescription || '';
+      comStation.hasTicket = hasTicket || false;
+      comStation.ticketNumber = hasTicket ? (ticketNumber || '') : '';
+    }
 
     const updatedComStation = await comStation.save();
     res.json({ message: 'Computer station updated successfully', comStation: updatedComStation });
