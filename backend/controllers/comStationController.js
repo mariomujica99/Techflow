@@ -9,7 +9,9 @@ const getComStations = async (req, res) => {
     let filter = {};
 
     if (type && type !== 'All Computer Stations') {
-      if (type === 'EMU Station') {
+      if (type === 'All Inactive Stations') {
+        filter.comStationStatus = 'Inactive';
+      } else if (type === 'EMU Station') {
         filter.comStationType = 'EMU Station';
       } else if (type === 'EEG Cart - All') {
         filter.comStationType = 'EEG Cart';

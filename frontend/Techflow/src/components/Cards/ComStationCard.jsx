@@ -130,7 +130,7 @@ const ComStationCard = ({
 
   if (isAddCard) {
     return (
-      <div className="user-card p-4 bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300">
+      <div className="bg-white p-4 rounded-xl shadow-md shadow-gray-100 border border-gray-200/50">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <FaComputer className="text-gray-400 text-xl flex-shrink-0" />
@@ -269,7 +269,7 @@ const ComStationCard = ({
   }
 
   return (
-    <div className="user-card p-4 bg-white rounded-lg shadow-sm">
+    <div className="bg-white p-4 rounded-xl shadow-md shadow-gray-100 border border-gray-200/50">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative">

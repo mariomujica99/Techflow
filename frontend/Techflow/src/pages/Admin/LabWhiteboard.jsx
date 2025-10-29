@@ -237,7 +237,7 @@ const LabWhiteboard = () => {
           <div className="form-card col-span-3">
             <div className="flex md:flex-row justify-between mb-2">
               <div>
-                <h2 className="text-xl md:text-xl font-medium text-gray-700">Lab Whiteboard</h2>
+                <h2 className="text-xl md:text-xl text-gray-600 font-bold">Lab Whiteboard</h2>
 
                 <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
@@ -270,7 +270,7 @@ const LabWhiteboard = () => {
             
 
             <div className="whiteboard-card">
-              <p className="text-sm md:text-base text-gray-700 font-medium">
+              <p className="text-sm md:text-base text-gray-600 font-medium">
                 {moment().format("dddd Do MMMM YYYY")}
               </p>
 
@@ -286,10 +286,10 @@ const LabWhiteboard = () => {
               <div className="whiteboard-card col-span-4">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700">Reading Providers</h2>
+                    <h2 className="text-base md:text-lg font-medium text-gray-600">Reading Providers</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearReadingProviders}
                       >
                         Clear
@@ -360,10 +360,10 @@ const LabWhiteboard = () => {
               <div className="whiteboard-card col-span-4 md:col-span-2">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700">Outpatients</h2>
+                    <h2 className="text-base md:text-lg font-medium text-gray-600">Outpatients</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearOutpatients}
                       >
                         Clear
@@ -539,10 +539,10 @@ const LabWhiteboard = () => {
               <div className="whiteboard-card col-span-4 md:col-span-2">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-base md:text-lg font-medium text-gray-700">Coverage</h2>
+                    <h2 className="text-base md:text-lg font-medium text-gray-600">Coverage</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearCoverage}
                       >
                         Clear
@@ -591,7 +591,7 @@ const LabWhiteboard = () => {
             {/* Comments Section */}
             <div className="whiteboard-card">
               <div>
-                <h2 className="text-base md:text-lg mb-2 font-medium text-gray-700">Comments</h2>
+                <h2 className="text-base md:text-lg mb-2 font-medium text-gray-600">Comments</h2>
                 {!isEditMode ? (
                   <>
                     {whiteboardData?.comments?.length > 0 ? (
@@ -617,7 +617,7 @@ const LabWhiteboard = () => {
           </div>
         </div>
       </div>
-      
+
       <Modal
         isOpen={showValidationModal}
         onClose={() => setShowValidationModal(false)}

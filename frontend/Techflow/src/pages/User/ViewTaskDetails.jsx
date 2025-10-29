@@ -117,7 +117,7 @@ const ViewTaskDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
             <div className="form-card col-span-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-base md:text-xl font-medium">{task?.title}</h2>
+                <h2 className="text-base md:text-xl font-bold text-gray-600">{task?.title}</h2>
 
                 <div
                   className={`text-[11px] md:text-[13px] font-medium ${getStatusTagColor(

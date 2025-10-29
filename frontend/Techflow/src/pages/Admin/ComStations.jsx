@@ -74,15 +74,25 @@ const ComStations = () => {
     }
   };
 
+  const getTotalCount = () => {
+    return allComStations.length;
+  };
+
   const getActiveCount = () => {
     return allComStations.filter(station => station.comStationStatus === 'Active').length;
+  };
+
+  const getInactiveCount = () => {
+    return allComStations.filter(station => station.comStationStatus === 'Inactive').length;
   };
 
   const getHeaderText = () => {
     const activeCount = getActiveCount();
     switch (selectedFilter) {
+      case "All Inactive Stations":
+        return `All Inactive`;   
       case "EMU Station":
-        return `EMU`;
+        return `EMU Stations`;
       case "EEG Cart - All":
         return `Carts (All)`;
       case "EEG Cart - Inpatient":
@@ -92,7 +102,7 @@ const ComStations = () => {
       case "EEG Cart - Bellevue":
         return `Carts (BMC)`;
       default:
-        return `All`;
+        return `All Stations`;
     }
   };
 
@@ -109,31 +119,49 @@ const ComStations = () => {
   return (
     <DashboardLayout activeMenu="Computer Stations">
       <div className="mt-5 mb-10">
-        <div className="flex md:flex-row md:items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl md:text-xl font-medium">{getHeaderText()}</h2>
-            <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <h2 className="text-xl md:text-xl text-gray-500 font-bold">{getHeaderText()}</h2>
+            <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full w-fit">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-gray-500">
+                  {getTotalCount()}
+                </span>
+              </div>          
+              <span className="text-sm text-gray-500 font-semibold">
+                Total
+              </span>              
+              <div className="flex items-center gap-2">
+                <div className="ml-2 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                 <span className="text-sm font-semibold text-primary">
                   {getActiveCount()}
                 </span>
-              </div>
+              </div>          
               <span className="text-sm text-primary font-semibold">
                 Active
               </span>
+              <div className="flex items-center gap-2">
+                <div className="ml-2 w-2 h-2 bg-rose-400 rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-rose-400">
+                  {getInactiveCount()}
+                </span>
+              </div>
+              <span className="text-sm text-rose-400 font-semibold">
+                Inactive
+              </span>                           
             </div>
           </div>
 
           {user?.role === 'admin' && (
-            <button className="flex download-btn" onClick={handleDownloadReport}>
+            <button className="flex flex-shrink-0 download-btn w-fit" onClick={handleDownloadReport}>
               <LuFileSpreadsheet className="text-lg" />
               Download Report
             </button>
           )}
         </div>
 
-        <div className="flex md:flex-row md:items-center justify-between mt-5">
+        <div className="flex md:flex-row md:items-center justify-between mt-3">
           <div className="relative w-64">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -171,7 +199,7 @@ const ComStations = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {allComStations?.map((comStation) => (
             <ComStationCard 
               key={comStation._id}

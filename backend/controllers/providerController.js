@@ -31,7 +31,7 @@ const getProviderById = async (req, res) => {
 // @access Private
 const createProvider = async (req, res) => {
   try {
-    const { name, profileColor } = req.body;
+    const { name, profileColor, email, phoneNumber, pagerNumber } = req.body;
 
     const existingProvider = await Provider.findOne({ name });
     if (existingProvider) {
@@ -40,7 +40,10 @@ const createProvider = async (req, res) => {
 
     const newProvider = await Provider.create({
       name,
-      profileColor: profileColor || '#30b5b2'
+      profileColor: profileColor || '#30b5b2',
+      email: email || '',
+      phoneNumber: phoneNumber || '',
+      pagerNumber: pagerNumber || '',
     });
 
     res.status(201).json({ message: 'Provider created successfully', provider: newProvider });
@@ -54,7 +57,7 @@ const createProvider = async (req, res) => {
 // @access Private
 const updateProvider = async (req, res) => {
   try {
-    const { name, profileColor } = req.body;
+    const { name, profileColor, email, phoneNumber, pagerNumber } = req.body;
     
     const provider = await Provider.findById(req.params.id);
     if (!provider) {
@@ -63,6 +66,9 @@ const updateProvider = async (req, res) => {
 
     provider.name = name || provider.name;
     provider.profileColor = profileColor || provider.profileColor;
+    provider.email = email !== undefined ? email : provider.email;
+    provider.phoneNumber = phoneNumber !== undefined ? phoneNumber : provider.phoneNumber;
+    provider.pagerNumber = pagerNumber !== undefined ? pagerNumber : provider.pagerNumber;
 
     const updatedProvider = await provider.save();
     res.json({ message: 'Provider updated successfully', provider: updatedProvider });

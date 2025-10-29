@@ -166,7 +166,7 @@ const ManageTasks = () => {
       <div className="mt-2.5 mb-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-xl md:text-xl font-medium text-gray-700 whitespace-nowrap">Manage Tasks</h2>
+            <h2 className="text-xl md:text-xl text-gray-500 font-bold">Manage Tasks</h2>
 
             {user?.role === 'admin' && (
               <button
@@ -227,7 +227,7 @@ const ManageTasks = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2 md:mt-4">
           {allTasks?.map((item, index) => (
             <TaskCard
               key={item._id}

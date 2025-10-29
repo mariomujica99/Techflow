@@ -13,15 +13,15 @@ const SelectDropdown = ({ options, value, onChange, placeholder }) => {
     {/* Dropdown Button */}
     <button
       onClick={() => setIsOpen(!isOpen)}
-      className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"
+      className="w-full text-sm text-gray-600 outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"
     >
       {value ? options.find((opt) => opt.value === value)?.label : placeholder}
-      <span className="mt-2">{isOpen ? <LuChevronDown className="rotate-180" /> : <LuChevronDown />}</span>
+      <span>{isOpen ? <LuChevronDown className="rotate-180" /> : <LuChevronDown />}</span>
     </button>
 
     {/* Dropdown Menu */}
     {isOpen && (
-      <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10 max-h-48 overflow-y-auto">
+      <div className="absolute w-full bg-white text-gray-600 border border-slate-100 rounded-md mt-1 shadow-md z-10 max-h-48 overflow-y-auto">
         {options.map((option) => (
           <div
             key={option.value}

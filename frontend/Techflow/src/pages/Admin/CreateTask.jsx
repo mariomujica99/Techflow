@@ -389,13 +389,13 @@ const CreateTask = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4 mb-4">
           <div className="form-card col-span-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl md:text-xl font-medium">
+              <h2 className="text-xl md:text-xl text-gray-600 font-bold">
                 {taskId ? "Update Task" : "Create Task"}
               </h2>
 
               {taskId && (
                 <button
-                  className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100 hover:border-rose-300 cursor-pointer"
+                  className="flex flex-shrink-0 items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100 hover:border-rose-300 cursor-pointer"
                   onClick={() => setOpenDeleteAlert(true)}
                 >
                   <LuTrash2 className="text-base" /> Delete
@@ -455,7 +455,7 @@ const CreateTask = () => {
                           }
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <label htmlFor="mri-leads" className="text-sm text-gray-700 cursor-pointer">
+                        <label htmlFor="mri-leads" className="text-sm text-gray-600 cursor-pointer">
                           MRI Leads
                         </label>
                       </div>
@@ -474,7 +474,7 @@ const CreateTask = () => {
                           }}
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <label htmlFor="tensive" className="text-sm text-gray-700 cursor-pointer">
+                        <label htmlFor="tensive" className="text-sm text-gray-600 cursor-pointer">
                           Tensive Glue
                         </label>
                       </div>
@@ -493,7 +493,7 @@ const CreateTask = () => {
                           }}
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <label htmlFor="no-adhesive" className="text-sm text-gray-700 cursor-pointer">
+                        <label htmlFor="no-adhesive" className="text-sm text-gray-600 cursor-pointer">
                           No Adhesive Glue Used
                         </label>
                       </div>
@@ -508,7 +508,7 @@ const CreateTask = () => {
                           }
                           className="w-4 h-4 accent-primary rounded cursor-pointer"
                         />
-                        <label htmlFor="adhesive-allergy" className="text-sm text-gray-700 cursor-pointer">
+                        <label htmlFor="adhesive-allergy" className="text-sm text-gray-600 cursor-pointer">
                           Adhesive Tape Allergy
                         </label>
                       </div>
@@ -527,7 +527,7 @@ const CreateTask = () => {
                         }
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <label htmlFor="adhesive-allergy" className="text-sm text-gray-700 cursor-pointer">
+                      <label htmlFor="adhesive-allergy" className="text-sm text-gray-600 cursor-pointer">
                         Adhesive Tape Allergy
                       </label>
                     </div>
@@ -548,7 +548,7 @@ const CreateTask = () => {
                         }
                         className="w-4 h-4 accent-primary rounded cursor-pointer"
                       />
-                      <label htmlFor="sleep-deprivation" className="text-sm text-gray-700 cursor-pointer">
+                      <label htmlFor="sleep-deprivation" className="text-sm text-gray-600 cursor-pointer">
                         Sleep Deprivation
                       </label>
                     </div>
@@ -590,7 +590,7 @@ const CreateTask = () => {
                   }))}
                   value={taskData.comStation}
                   onChange={handleComStationChange}
-                  placeholder="Select Station"
+                  placeholder="Station"
                 />
               </div>
 
@@ -641,7 +641,7 @@ const CreateTask = () => {
               <p className="text-xs font-medium text-red-500 mt-5">{error}</p>
             )}
 
-            <div className="flex justify-end mt-7">
+            <div className="flex flex-shrink-0 justify-end mt-7">
               <button
                 className="add-btn"
                 onClick={handleSubmit}

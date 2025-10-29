@@ -183,14 +183,14 @@ const Supplies = () => {
           <div className="form-card col-span-3">
             <div className="flex md:flex-row  justify-between mb-2">
               <div>
-                <h2 className="text-xl md:text-xl font-medium text-gray-700">Needed Supplies</h2>
+                <h2 className="text-xl md:text-xl text-gray-600 font-bold">Needed Supplies</h2>
 
                 <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
 
               <div>
                 <button 
-                  className="edit-btn flex items-center gap-2"
+                  className="edit-btn flex flex-shrink-0 items-center gap-2"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
@@ -208,7 +208,7 @@ const Supplies = () => {
             </div>
 
             {user?.role === "admin" && (
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex flex-shrink-0 items-center gap-3 mb-3">
                 <button
                   className="flex download-btn"
                   onClick={handleDownloadReport}
@@ -220,7 +220,7 @@ const Supplies = () => {
             )}
 
             <div className="whiteboard-card">
-              <p className="text-sm md:text-base text-gray-700 font-medium">
+              <p className="text-sm md:text-base text-gray-600 font-medium">
                 {moment().format("dddd Do MMMM YYYY")}
               </p>
 
@@ -281,12 +281,12 @@ const StorageRoomSection = ({
   return (
     <div className="whiteboard-card">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-base md:text-lg font-medium text-gray-700">
+        <h2 className="text-base md:text-lg font-medium text-gray-600">
           {title}
         </h2>
         {isEditMode ? (
           <button
-            className="flex items-center text-[12px] gap-1 font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex flex-shrink-0 items-center text-[12px] gap-1 font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onAddClick}
           >
             Add <HiMiniPlus className="text-base md:text-lg" />
@@ -294,7 +294,7 @@ const StorageRoomSection = ({
         ) : (
           items.length > 0 && (
             <button
-              className="flex items-center text-[12px] gap-1 font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+              className="flex flex-shrink-0 items-center text-[12px] gap-1 font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
               onClick={onCheckAll}
             >
               Check All <MdChecklistRtl className="text-sm md:text-base" />
@@ -310,7 +310,7 @@ const StorageRoomSection = ({
               key={item}
               className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded"
             >
-              <span className="text-xs md:text-sm text-gray-700">{item}</span>
+              <span className="text-xs md:text-sm text-gray-600">{item}</span>
 
               {isEditMode ? (
                 <HiOutlineTrash

@@ -14,7 +14,7 @@ const generateToken = (userId) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl, profileColor, adminInviteToken } = 
+    const { name, email, password, profileImageUrl, profileColor, adminInviteToken, phoneNumber, pagerNumber } = 
       req.body;
 
     // Check if user already exists
@@ -44,6 +44,8 @@ const registerUser = async (req, res) => {
       profileImageUrl,
       profileColor,
       role,
+      phoneNumber: phoneNumber || '',
+      pagerNumber: pagerNumber || '',
     });
 
     // Return user data with JWT
@@ -54,6 +56,8 @@ const registerUser = async (req, res) => {
       role: user.role,
       profileImageUrl: user.profileImageUrl,
       profileColor: user.profileColor,
+      phoneNumber: user.phoneNumber,
+      pagerNumber: user.pagerNumber,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -142,6 +146,8 @@ const updateUserProfile = async (req, res) => {
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    user.phoneNumber = req.body.phoneNumber !== undefined ? req.body.phoneNumber : user.phoneNumber;
+    user.pagerNumber = req.body.pagerNumber !== undefined ? req.body.pagerNumber : user.pagerNumber;
     
     // Handle profile image/color updates
     if (req.body.profileImageUrl !== undefined) {
@@ -177,6 +183,8 @@ const updateUserProfile = async (req, res) => {
       role: updatedUser.role,
       profileImageUrl: updatedUser.profileImageUrl,
       profileColor: updatedUser.profileColor,
+      phoneNumber: updatedUser.phoneNumber,
+      pagerNumber: updatedUser.pagerNumber,
       token: generateToken(updatedUser._id),
     });
   } catch (error) {

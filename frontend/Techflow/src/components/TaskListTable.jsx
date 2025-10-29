@@ -26,10 +26,10 @@ const TaskListTable = ({tableData, getOrderStatus}) => {
       <table className="min-w-full">
         <thead>
           <tr className="text-left">
-            <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Room</th>
-            <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Status</th>
-            <th className="py-3 px-4 text-gray-800 font-medium text-[13px]">Priority</th>
-            <th className="py-3 px-4 text-gray-800 font-medium text-[13px] hidden md:table-cell">Created On</th>
+            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Room</th>
+            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Status</th>
+            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Priority</th>
+            <th className="py-3 px-4 text-gray-600 font-medium text-[13px] hidden md:table-cell">Created On</th>
           </tr>
         </thead>
         <tbody>

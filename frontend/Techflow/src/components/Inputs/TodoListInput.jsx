@@ -265,7 +265,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"
+            className="w-full text-sm text-gray-600 outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"
           >
             {selectedTemplate ? 
               TODO_DROPDOWN_OPTIONS.find(opt => opt.value === selectedTemplate)?.label || "Select Task"
@@ -275,7 +275,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10 max-h-48 overflow-y-auto">
+            <div className="absolute w-full bg-white text-gray-600 border border-slate-100 rounded-md mt-1 shadow-md z-10 max-h-48 overflow-y-auto">
               {TODO_DROPDOWN_OPTIONS.map((option) => (
                 <div
                   key={option.value}
@@ -303,7 +303,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                     <input
                       type="number"
                       min="1"
-                      max="30"
+                      max="60"
                       placeholder="1"
                       value={templateInputs.day}
                       onChange={(e) => {
@@ -313,9 +313,9 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                           setTemplateErrors(prev => ({ ...prev, day: '' }));
                         }
                       }}
-                      className={`w-full text-sm text-black outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
+                      className={`w-full text-sm text-gray-600 outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
                         templateErrors.day ? 'border-red-500' : 'border-gray-200'
-                      }`}
+                      } [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
                     />
                     {templateErrors.day && (
                       <p className="text-xs text-red-500 mt-1">{templateErrors.day}</p>
@@ -339,7 +339,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                           setTemplateErrors(prev => ({ ...prev, room: '' }));
                         }
                       }}
-                      className={`w-full text-sm text-black outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
+                      className={`w-full text-sm text-gray-600 outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
                         templateErrors.room ? 'border-red-500' : 'border-gray-200'
                       }`}
                     />
@@ -365,7 +365,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                           setTemplateErrors(prev => ({ ...prev, comment: '' }));
                         }
                       }}
-                      className={`w-full text-sm text-black outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
+                      className={`w-full text-sm text-gray-600 outline-none bg-white border px-3 py-2 rounded-md placeholder:text-gray-500 ${
                         templateErrors.comment ? 'border-red-500' : 'border-gray-200'
                       }`}
                     />
@@ -379,7 +379,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
               {/* Preview */}
               <div className="mt-3">
                 <label className="text-xs font-medium text-slate-600 mb-1 block">Preview</label>
-                <div className="text-sm text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-md">
+                <div className="text-sm text-gray-600 bg-white border border-gray-200 px-3 py-2 rounded-md">
                   {(() => {
                     let preview = selectedTemplate;
                     
@@ -410,9 +410,9 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex justify-between sm:justify-end sm:items-center gap-3 mt-4">
                 <button 
-                  className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-100 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-300 cursor-pointer" 
+                  className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer" 
                   onClick={() => {
                     setShowTemplateInputs(false);
                     setSelectedTemplate("");
@@ -425,7 +425,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                 </button>
                 
                 <button 
-                  className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer" 
+                  className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer" 
                   onClick={handleAddTemplate}
                 >
                   <HiMiniPlus className="text-lg" /> Add Task
@@ -444,12 +444,12 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
             placeholder="Type a Custom Task"
             value={customText}
             onChange={({ target }) => setCustomText(target.value)}
-            className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
+            className="w-full text-[13px] text-gray-600 outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
             rows="1"
             onInput={(e) => autoResize(e.target)}
           />
           
-          <button className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={handleAddCustom}>
+          <button className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={handleAddCustom}>
             <HiMiniPlus className="text-lg" /> Add
           </button>
         </div>

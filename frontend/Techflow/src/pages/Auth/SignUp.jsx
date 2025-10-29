@@ -9,6 +9,7 @@ import { API_PATHS } from '../../utils/apiPaths';
 import { UserContext } from '../../context/userContext';
 import uploadImage from '../../utils/uploadImage';
 import ProfileColorSelector from '../../components/Inputs/ProfileColorSelector';
+import { formatPhoneNumber, isPhoneNumber } from '../../utils/phoneFormatter';
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -16,6 +17,8 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [adminInviteToken, setAdminInviteToken] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [pagerNumber, setPagerNumber] = useState('');
 
   const [selectedColor, setSelectedColor] = useState('#30b5b2');
 
@@ -26,8 +29,17 @@ const SignUp = () => {
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
-    // Clear profile pic when selecting color
     setProfilePic(null);
+  };
+
+  const handlePhoneChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setPhoneNumber(formatted);
+  };
+
+  const handlePagerChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setPagerNumber(formatted);
   };
 
   //Handle SignUp Form Submit
@@ -54,16 +66,13 @@ const SignUp = () => {
 
     setError('');
 
-    // SignUp API Call
     try {
-
-      // Handle image upload or color selection
       if (profilePic) {
         const imgUploadRes = await uploadImage(profilePic);
         profileImageUrl = imgUploadRes.imageUrl || "";
-        profileColor = null; // If uploading image, clear color
+        profileColor = null;
       } else {
-        profileImageUrl = null; // Use color if no image
+        profileImageUrl = null;
       }
 
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
@@ -72,7 +81,9 @@ const SignUp = () => {
         password,
         profileImageUrl,
         profileColor,
-        adminInviteToken
+        adminInviteToken,
+        phoneNumber,
+        pagerNumber,
       });
 
       const { token, role } = response.data;
@@ -81,7 +92,6 @@ const SignUp = () => {
         localStorage.setItem("token", token);
         updateUser(response.data);
 
-        // Redirect based on role
         if (role === "admin") {
           navigate("/admin/dashboard");
         } else {
@@ -96,9 +106,11 @@ const SignUp = () => {
       }
     }
   };
+
   return (
     <AuthLayout>
-      <div className="lg:w-[100%] h-auto md:h-full mt-10 md:mt-0 flex flex-col justify-center">
+      <div className="w-full">
+        <h2 className="text-lg font-medium text-black">Techflow</h2>
         <h3 className="text-xl font-semibold text-black">Create an Account</h3>
         <p className="text-xs text-slate-700 mt-[5px] mb-6">
           Join by entering your details below.
@@ -109,10 +121,8 @@ const SignUp = () => {
 
         <form onSubmit={handleSignUp}>
           <div className="flex items-start justify-center gap-8 mb-6">
-            {/* Upload image */}
             <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
             
-            {/* Or Edit Background Color of Initials */}
             <div className="text-center">
               <ProfileColorSelector
                 selectedColor={selectedColor}
@@ -154,22 +164,54 @@ const SignUp = () => {
               placeholder="6 Digit Code"
               type="text"
             />
+
+            <div>
+              <div className="text-[13px] text-slate-800">Phone Number (Optional)</div>
+              <div className="input-box">
+                <input
+                  type="tel"
+                  name="phone"
+                  autoComplete="tel"
+                  placeholder="(123) 456-7890"
+                  className="w-full bg-transparent outline-none"
+                  value={phoneNumber}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  maxLength={14}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Can add or change at a later time</p>
+            </div>
+
+            <div>
+              <div className="text-[13px] text-slate-800">Pager Number (Optional)</div>
+              <div className="input-box">
+                <input
+                  type="tel"
+                  name="pager"
+                  autoComplete="tel-extension"
+                  placeholder="(123) 456-7890"
+                  className="w-full bg-transparent outline-none"
+                  value={pagerNumber}
+                  onChange={(e) => handlePagerChange(e.target.value)}
+                  maxLength={14}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Can add or change at a later time</p>
+            </div>
           </div>
 
+          {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
-            {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+          <button type="submit" className="btn-primary">
+            CREATE ACCOUNT
+          </button>
 
-            <button type="submit" className="btn-primary">
-              CREATE ACCOUNT
-            </button>
-
-            <p className="text-[13px] text-slate-800 mt-3">
-              Already have an account?{" "}
-              <Link className="font-medium text-primary underline" to="/login">
-                Log In
-              </Link>
-            </p>
-          
+          <p className="text-[13px] text-slate-800 mt-3">
+            Already have an account?{" "}
+            <Link className="font-medium text-primary underline" to="/login">
+              Log In
+            </Link>
+          </p>
         </form>
       </div>
     </AuthLayout>

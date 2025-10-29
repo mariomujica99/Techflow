@@ -462,14 +462,14 @@ const FloorWhiteboard = () => {
           <div className="form-card col-span-3">
             <div className="flex md:flex-row  justify-between mb-2">
               <div>
-                <h2 className="text-xl md:text-xl font-medium text-gray-700">Floor Whiteboard</h2>
+                <h2 className="text-xl md:text-xl text-gray-600 font-bold">Floor Whiteboard</h2>
 
                 <h1 className="text-base md:text-lg text-gray-400">Neurophysiology Department</h1>
               </div>
 
               <div>
                 <button 
-                  className="edit-btn flex items-center gap-2"
+                  className="edit-btn flex flex-shrink-0 items-center gap-2"
                   onClick={handleEditModeToggle}
                   disabled={loading}
                 >
@@ -487,7 +487,7 @@ const FloorWhiteboard = () => {
             </div>
 
             <div className="whiteboard-card">
-              <p className="text-sm md:text-base text-gray-700 font-medium">
+              <p className="text-sm md:text-base text-gray-600 font-medium">
                 {moment().format("dddd Do MMMM YYYY")}
               </p>
               
@@ -726,10 +726,10 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
   return (
     <div className="whiteboard-card">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-base md:text-lg font-medium text-gray-700">{title}</h2>
+        <h2 className="text-base md:text-lg font-medium text-gray-600">{title}</h2>
         <div className="flex items-center gap-2">
           <button 
-            className="flex items-center gap-1 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex flex-shrink-0 items-center gap-1 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onAdd}
           >
             New <HiMiniPlus className="text-base md:text-lg" />
@@ -749,7 +749,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
             >
               <div className="flex items-center gap-2 flex-1">
                 <div className={`w-2 h-2 rounded-full ${getStatusColor(task)}`}></div>
-                <span className="text-xs md:text-sm text-gray-700 font-medium">{roomWithPrefix}</span>
+                <span className="text-xs md:text-sm text-gray-600 font-medium">{roomWithPrefix}</span>
                 <span className="text-xs text-gray-500">| {orderTypeShort} |</span>
                 <span className={`text-xs ${getPriorityColor(task.priority)}`}>
                   {task.priority}
@@ -918,7 +918,7 @@ const WhiteboardSection = ({
 
   return (
     <div className="whiteboard-card">
-      <h2 className="text-base md:text-lg font-medium text-gray-700 mb-2">
+      <h2 className="text-base md:text-lg font-medium text-gray-600 mb-2">
         {title === "Troubleshoots" ? (
           <>
             Trouble<wbr />shoots
@@ -930,7 +930,7 @@ const WhiteboardSection = ({
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
           <button 
-            className="flex items-center gap-1 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex flex-shrink-0 items-center gap-1 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onToggleDropdown}
           >
             Add <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
@@ -941,7 +941,7 @@ const WhiteboardSection = ({
               {roomNumbers.map(roomNumber => (
                 <button
                   key={roomNumber}
-                  className="block w-full text-left px-3 py-2 text-xs md:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-xs md:text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
                     onAdd(roomNumber);
                     onToggleDropdown();
@@ -1002,7 +1002,7 @@ const WhiteboardSection = ({
                 <span className={`text-xs md:text-sm font-medium ${
                   relevantTodo?.completed 
                     ? 'text-green-700' 
-                    : 'text-gray-700'
+                    : 'text-gray-600'
                 }`}>
                   {formatDisplayText(task, sectionType)}
                 </span>

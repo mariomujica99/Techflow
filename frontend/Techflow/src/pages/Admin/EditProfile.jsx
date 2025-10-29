@@ -12,6 +12,7 @@ import DeleteAlert from "../../components/DeleteAlert";
 import ProfileColorSelector from "../../components/Inputs/ProfileColorSelector";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { formatPhoneNumber, displayPhoneNumber } from '../../utils/phoneFormatter';
 
 const EditProfile = () => {
   const { user, updateUser, clearUser } = useContext(UserContext);
@@ -22,25 +23,37 @@ const EditProfile = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [adminInviteToken, setAdminInviteToken] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [pagerNumber, setPagerNumber] = useState('');
   const [selectedColor, setSelectedColor] = useState('#30b5b2');
   
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
-  // Initialize form with current user data
   useEffect(() => {
     if (user) {
       setFullName(user.name || '');
       setEmail(user.email || '');
+      setPhoneNumber(displayPhoneNumber(user.phoneNumber) || '');
+      setPagerNumber(displayPhoneNumber(user.pagerNumber) || '');
       setSelectedColor(user.profileColor || '#30b5b2');
     }
   }, [user]);
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
-    // Clear profile pic when selecting color
     setProfilePic(null);
+  };
+
+  const handlePhoneChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setPhoneNumber(formatted);
+  };
+
+  const handlePagerChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setPagerNumber(formatted);
   };
 
   const handleUpdateProfile = async (e) => {
@@ -48,7 +61,6 @@ const EditProfile = () => {
     setError('');
     setLoading(true);
 
-    // Validation
     if (!fullName) {
       setError('Please enter your full name.');
       setLoading(false);
@@ -64,12 +76,10 @@ const EditProfile = () => {
     try {
       let profileImageUrl = user.profileImageUrl;
 
-      // Handle image upload or color selection
       if (profilePic) {
         const imgUploadRes = await uploadImage(profilePic);
         profileImageUrl = imgUploadRes.imageUrl || "";
       } else if (selectedColor !== user.profileColor) {
-        // User selected color, remove profile image
         profileImageUrl = null;
       }
 
@@ -81,6 +91,14 @@ const EditProfile = () => {
         adminInviteToken: adminInviteToken || undefined,
       };
 
+      if (phoneNumber !== displayPhoneNumber(user.phoneNumber)) {
+        updateData.phoneNumber = phoneNumber;
+      }
+
+      if (pagerNumber !== displayPhoneNumber(user.pagerNumber)) {
+        updateData.pagerNumber = pagerNumber;
+      }
+
       if (password) {
         updateData.password = password;
       }
@@ -89,8 +107,10 @@ const EditProfile = () => {
 
       updateUser(response.data);
       toast.success("Profile updated successfully");
-      
-      // Clear sensitive fields
+
+      setPhoneNumber(displayPhoneNumber(response.data.phoneNumber) || '');
+      setPagerNumber(displayPhoneNumber(response.data.pagerNumber) || '');
+
       setPassword('');
       setAdminInviteToken('');
       setProfilePic(null);
@@ -113,7 +133,6 @@ const EditProfile = () => {
       setOpenDeleteAlert(false);
       toast.success("Account deleted successfully");
       
-      // Clear user data and redirect
       clearUser();
       localStorage.clear();
       navigate("/login");
@@ -127,21 +146,18 @@ const EditProfile = () => {
   return (
     <DashboardLayout activeMenu="Edit Profile">
       <div className="mt-5 mb-10">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl md:text-xl font-medium text-gray-700">Edit Profile</h2>
-        </div>
-
         <div className="form-card mt-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl md:text-xl text-gray-600 font-bold mb-2">Edit Profile</h2>
+          </div>          
           <form onSubmit={handleUpdateProfile}>
             <div className="text-xs text-slate-700 mt-[5px] mb-6">
               <p>Choose to either upload your profile picture or edit your profile background color</p>
             </div>
 
             <div className="flex items-start justify-center gap-8 mb-6">
-              {/* Upload image */}
               <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
               
-              {/* Or Edit Background Color of Initials */}
               <div className="text-center">
                 <ProfileColorSelector 
                   selectedColor={selectedColor}
@@ -168,6 +184,38 @@ const EditProfile = () => {
                 type="text"
               />
 
+              <div>
+                <div className="text-[13px] text-slate-800">Phone Number (Optional)</div>
+                <div className="input-box">
+                  <input
+                    type="tel"
+                    name="phone"
+                    autoComplete="tel"
+                    placeholder="(123) 456-7890"
+                    className="w-full bg-transparent outline-none"
+                    value={phoneNumber}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    maxLength={14}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[13px] text-slate-800">Pager Number (Optional)</div>
+                <div className="input-box">
+                  <input
+                    type="tel"
+                    name="pager"
+                    autoComplete="tel-extension"
+                    placeholder="(123) 456-7890"
+                    className="w-full bg-transparent outline-none"
+                    value={pagerNumber}
+                    onChange={(e) => handlePagerChange(e.target.value)}
+                    maxLength={14}
+                  />
+                </div>
+              </div>
+
               <Input
                 value={password}
                 onChange={({ target }) => setPassword(target.value)}
@@ -188,7 +236,6 @@ const EditProfile = () => {
             {error && <p className="text-red-500 text-xs pb-2.5 mt-4">{error}</p>}
 
             <div className="flex items-center gap-3 mt-6">
-              {/* Delete Account */}
               <button 
                 type="button"
                 className="w-full text-sm font-medium text-white bg-rose-400 shadow-lg shadow-rose-300/20 p-[10px] rounded-md hover:bg-rose-300 cursor-pointer"
@@ -197,7 +244,6 @@ const EditProfile = () => {
                 DELETE ACCOUNT
               </button>
 
-              {/* Update Account */}
               <button 
                 type="submit" 
                 className="btn-primary"

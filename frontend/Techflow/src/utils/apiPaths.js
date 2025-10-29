@@ -56,7 +56,8 @@ export const API_PATHS = {
 
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks", // Download all tasks as an Excel/PDF report
-    EXPORT_USERS: "/api/reports/export/users", // Download user-task report
+    EXPORT_USERS: "/api/reports/export/users", // Download users report
+    EXPORT_PROVIDERS: "/api/reports/export/providers", // Download providers report
     EXPORT_COM_STATIONS: "/api/reports/export/com-stations", // Download computer stations report
     EXPORT_SUPPLIES: "/api/reports/export/supplies", // Download supplies report
   },

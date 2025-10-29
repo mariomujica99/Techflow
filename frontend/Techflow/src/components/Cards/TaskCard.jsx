@@ -109,7 +109,7 @@ const TaskCard = ({
         }`}
       >
         <div className="flex items-center justify-between mt-4">
-          <p className="text-lg font-medium text-gray-800 line-clamp-2">
+          <p className="text-lg font-bold text-gray-600 line-clamp-2">
             {title}
           </p>
 
@@ -199,9 +199,9 @@ const TaskCard = ({
         </div>
 
         <div className="flex items-center justify-between mt-1.75 mb-2.5">
-          <p className="text-[13px] text-gray-700/80 font-medium leading-[18px]">
+          <p className="text-[13px] text-gray-600 font-medium leading-[18px]">
             Task Done:{" "}
-            <span className="font-semibold text-gray-700">
+            <span className="font-semibold text-gray-600">
               {completedTodoCount} / {todoChecklist.length || 0}
             </span>
           </p>
@@ -221,7 +221,7 @@ const TaskCard = ({
         <div className="flex items-center justify-between my-1">
           <div>
             <label className="text-xs text-gray-500">Created On</label>
-            <p className="text-[13px] font-medium text-gray-700">
+            <p className="text-[13px] font-medium text-gray-600">
               {moment(createdAt).utc().format("Do MMM YYYY")}
             </p>
           </div>
@@ -229,13 +229,13 @@ const TaskCard = ({
           <div>
             <label className="text-xs text-gray-500">Completed On</label>
             {completedOn ? (
-              <p className="text-[13px] font-medium text-gray-700">
+              <p className="text-[13px] font-medium text-gray-600">
                 {moment(completedOn).utc().format("Do MMM YYYY")}
               </p>
             ) : (
               <div className="flex items-center gap-1.5">
                 {getStatusIcon()}
-                <span className="text-[13px] text-gray-700">—</span>
+                <span className="text-[13px] text-gray-600">—</span>
               </div>
             )}
           </div>

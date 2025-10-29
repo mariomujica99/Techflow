@@ -63,7 +63,7 @@ const exportTasksReport = async (req, res) => {
 // @access Private (Admin)
 const exportUsersReport = async (req, res) => {
   try {
-    const users = await User.find().select('name email').lean();
+    const users = await User.find().select('name email phoneNumber pagerNumber').lean();
 
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet('Team Members Report');
@@ -71,10 +71,17 @@ const exportUsersReport = async (req, res) => {
     worksheet.columns = [
       { header: 'Name', key: 'name', width: 30 },
       { header: 'Email', key: 'email', width: 40 },
+      { header: 'Phone', key: 'phoneNumber', width: 20 },
+      { header: 'Pager', key: 'pagerNumber', width: 20 },
     ];
 
     users.forEach((user) => {
-      worksheet.addRow(user);
+      worksheet.addRow({
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber || 'N/A',
+        pagerNumber: user.pagerNumber || 'N/A',
+      });
     });
 
     res.setHeader(
@@ -91,6 +98,49 @@ const exportUsersReport = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error exporting team members', error: error.message });
+  }
+};
+
+// @desc Export providers report as Excel file
+// @route GET /api/reports/export/providers
+// @access Private (Admin)
+const exportProvidersReport = async (req, res) => {
+  try {
+    const providers = await Provider.find().select('name email phoneNumber pagerNumber').lean();
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Reading Providers Report');
+
+    worksheet.columns = [
+      { header: 'Provider', key: 'name', width: 30 },
+      { header: 'Email', key: 'email', width: 40 },
+      { header: 'Phone', key: 'phoneNumber', width: 20 },
+      { header: 'Pager', key: 'pagerNumber', width: 20 },
+    ];
+
+    providers.forEach((provider) => {
+      worksheet.addRow({
+        name: `Dr. ${provider.name}`,
+        email: provider.email || 'N/A',
+        phoneNumber: provider.phoneNumber || 'N/A',
+        pagerNumber: provider.pagerNumber || 'N/A',
+      });
+    });
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="reading_providers_report.xlsx"'
+    );
+
+    return workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error exporting providers', error: error.message });
   }
 };
 
@@ -210,4 +260,5 @@ module.exports = {
   exportUsersReport,
   exportComStationsReport,
   exportSuppliesReport,
+  exportProvidersReport,
 };

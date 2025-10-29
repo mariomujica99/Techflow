@@ -20,7 +20,7 @@
 
 .input-box {
   @apply w-full flex justify-between gap-3 text-sm text-black 
-    bg-primary/5 rounded px-4 py-3 mb-4 mt-3 
+    bg-primary/5 rounded px-4 py-3 mt-3 
     border border-primary/10 outline-none 
     focus:border-primary focus:ring-2 focus:ring-primary/40;
 }
@@ -36,7 +36,7 @@
 }
 
 .card-btn {
-  @apply flex items-center gap-3 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-1.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap;
+  @apply flex items-center gap-3 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-1.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap;
 }
 
 .card-btn-fill {
@@ -60,7 +60,7 @@
 }
 
 .user-card {
-  @apply bg-white p-4 rounded-xl shadow-md shadow-gray-100 border border-gray-200/50;
+  @apply flex items-center bg-white p-4 rounded-xl shadow-md shadow-gray-100 border border-gray-200/50;
 }
 
 .whiteboard-card {
@@ -76,5 +76,5 @@
 }
 
 .edit-btn {
-  @apply flex items-center gap-1 text-base md:text-lg font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-2.5 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap;
+  @apply flex items-center gap-1 text-base md:text-lg font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 py-2.5 rounded-full border border-gray-200/50 cursor-pointer whitespace-nowrap;
 }

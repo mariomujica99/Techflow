@@ -302,11 +302,12 @@ export const DEFAULT_COMMENTS = {
 
 export const COM_STATIONS_DROPDOWN_OPTIONS = [
   { label: "All Computer Stations", value: "All Computer Stations" },
+  { label: "All Inactive Stations", value: "All Inactive Stations" },
   { label: "EMU Stations", value: "EMU Station" },
-  { label: "EEG Carts (All)", value: "EEG Cart - All" },
-  { label: "EEG Carts (Inpatient)", value: "EEG Cart - Inpatient" },
-  { label: "EEG Carts (Outpatient)", value: "EEG Cart - Outpatient" },
-  { label: "EEG Carts (Bellevue)", value: "EEG Cart - Bellevue" },
+  { label: "Carts (All)", value: "EEG Cart - All" },
+  { label: "Carts (Inpatient)", value: "EEG Cart - Inpatient" },
+  { label: "Carts (Outpatient)", value: "EEG Cart - Outpatient" },
+  { label: "Carts (Bellevue)", value: "EEG Cart - Bellevue" },
 ];
 
 export const ROOM_MAPPINGS = {

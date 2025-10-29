@@ -73,7 +73,7 @@ const ManageUsers = () => {
 
           <div>
             <div className="flex items-center gap-3 mt-1">
-              <h2 className="text-xl md:text-xl font-medium text-gray-700">Team Members</h2>
+              <h2 className="text-xl md:text-xl text-gray-500 font-bold">Team Members</h2>
               <div className="flex items-center gap-2 bg-primary px-3 py-1 rounded-full">
                 <span className="text-sm font-semibold text-white">
                   {allUsers.length}
