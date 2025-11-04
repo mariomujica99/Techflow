@@ -733,7 +733,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     switch (priority) {
       case 'STAT': return 'bg-red-50 text-red-500 ring-red-200';
       case 'ASAP': return 'bg-orange-50 text-orange-500 ring-orange-200';
-      default: return 'bg-lime-50 text-lime-500 ring-lime-200';
+      default: return 'bg-lime-50 text-lime-500 ring-lime-300';
     }
   };
 
@@ -790,16 +790,16 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
               className="flex justify-between items-center py-2 px-3 md:px-5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
             >
               {/* Left side: info */}
-              <div className="flex flex-col md:flex-row md:items-center flex-1 gap-x-1 gap-y-1.75 font-medium">
+              <div className="flex flex-col md:flex-row md:items-center flex-1 gap-x-1 gap-y-1.75">
                 {/* First row: status, room, orderType - always on one line */}
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${getStatusColor(task)}`}></div>
-                  <span className="text-sm md:text-base text-gray-600">{roomWithPrefix}</span>
-                  <span className="w-fit h-5 text-[10px] font-medium bg-gray-50 text-gray-500 ring-gray-200 px-2 py-0.5 rounded ring-1">{orderTypeShort}</span>
+                  <span className="font-medium text-sm md:text-base text-gray-600">{roomWithPrefix}</span>
+                  <span className="w-fit h-5 text-[10px] bg-gray-50 text-gray-500 ring-gray-300 px-2 py-0.5 rounded ring-1">{orderTypeShort}</span>
                 </div>
 
                 {/* Second row on mobile / continues on same line on desktop */}
-                <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[10px] font-medium text-gray-500 pl-[14px] md:pl-0">
+                <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[10px] text-gray-500 pl-[14px] md:pl-0">
                   {/* Priority badge */}
                   <div className={`w-fit h-5 ${getPriorityColor(task.priority)} px-2 py-0.5 rounded ring-1`}>{task.priority}</div>
                   

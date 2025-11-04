@@ -222,7 +222,8 @@ const TaskCard = ({
           <div>
             <label className="text-xs text-gray-500">Created On</label>
             <p className="text-[13px] font-medium text-gray-600">
-              {moment(createdAt).utc().format("Do MMM YYYY")}
+              {moment.utc(createdAt).local().format("Do MMM YYYY")
+}
             </p>
           </div>
 
@@ -230,7 +231,8 @@ const TaskCard = ({
             <label className="text-xs text-gray-500">Completed On</label>
             {completedOn ? (
               <p className="text-[13px] font-medium text-gray-600">
-                {moment(completedOn).utc().format("Do MMM YYYY")}
+                {moment.utc(completedOn).local().format("Do MMM YYYY")
+}
               </p>
             ) : (
               <div className="flex items-center gap-1.5">
