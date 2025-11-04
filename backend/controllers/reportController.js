@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const User = require('../models/User');
+const Provider = require('../models/Provider');
 const ComStation = require('../models/ComStation');
 const Supply = require('../models/Supply')
 const excelJS = require('exceljs');
@@ -9,35 +10,46 @@ const excelJS = require('exceljs');
 // @access Private (Admin)
 const exportTasksReport = async (req, res) => {
   try {
-    const tasks = await Task.find().populate('assignedTo', 'name email');
+    const tasks = await Task.find().populate('assignedTo', 'name');
 
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet('Tasks Report');
 
     worksheet.columns = [
-      { header: 'Task ID', key: '_id', width: 25 },
-      { header: 'Title', key: 'title', width: 30 },
+      { header: 'Room', key: 'title', width: 30 },
       { header: 'Order Type', key: 'orderType', width: 50 },
       { header: 'Priority', key: 'priority', width: 15 },
       { header: 'Status', key: 'status', width: 20 },
+      { header: 'Created On', key: 'createdOn', width: 20 },      
       { header: 'Completed On', key: 'completedOn', width: 20 },
-      { header: 'Created On', key: 'createdOn', width: 20 },
-      { header: 'Assigned To', key: 'assignedTo', width: 30 },
+      { header: 'Worked On', key: 'assignedTo', width: 30 },
     ];
 
     tasks.forEach(task => {
       const assignedTo = task.assignedTo
-        .map(user => `${user.name} (${user.email})`)
+        .map(user => `${user.name}`)
         .join(', ');
       worksheet.addRow({
-        _id: task._id,
         title: task.title,
         orderType: task.orderType,
         priority: task.priority,
         status: task.status,
-        completedOn: task.completedOn ? task.completedOn.toISOString().split('T')[0] : 'Not Completed',
         createdOn: task.createdAt.toISOString().split('T')[0],
+        completedOn: task.completedOn ? task.completedOn.toISOString().split('T')[0] : 'Not Completed',
         assignedTo: assignedTo || 'Unassigned',
+      });
+    });
+
+    // Style
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
       });
     });
 
@@ -64,17 +76,20 @@ const exportTasksReport = async (req, res) => {
 const exportUsersReport = async (req, res) => {
   try {
     const users = await User.find().select('name email phoneNumber pagerNumber').lean();
-
+    
+    // Sort alphabetically by name
+    users.sort((a, b) => a.name.localeCompare(b.name));
+    
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet('Team Members Report');
-
+    
     worksheet.columns = [
       { header: 'Name', key: 'name', width: 30 },
       { header: 'Email', key: 'email', width: 40 },
       { header: 'Phone', key: 'phoneNumber', width: 20 },
       { header: 'Pager', key: 'pagerNumber', width: 20 },
     ];
-
+    
     users.forEach((user) => {
       worksheet.addRow({
         name: user.name,
@@ -83,7 +98,20 @@ const exportUsersReport = async (req, res) => {
         pagerNumber: user.pagerNumber || 'N/A',
       });
     });
-
+    
+    // Style
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+    
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -92,7 +120,7 @@ const exportUsersReport = async (req, res) => {
       'Content-Disposition',
       'attachment; filename="team_members_report.xlsx"'
     );
-
+    
     return workbook.xlsx.write(res).then(() => {
       res.end();
     });
@@ -107,17 +135,20 @@ const exportUsersReport = async (req, res) => {
 const exportProvidersReport = async (req, res) => {
   try {
     const providers = await Provider.find().select('name email phoneNumber pagerNumber').lean();
-
+    
+    // Sort alphabetically by name
+    providers.sort((a, b) => a.name.localeCompare(b.name));
+    
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet('Reading Providers Report');
-
+    
     worksheet.columns = [
       { header: 'Provider', key: 'name', width: 30 },
       { header: 'Email', key: 'email', width: 40 },
       { header: 'Phone', key: 'phoneNumber', width: 20 },
       { header: 'Pager', key: 'pagerNumber', width: 20 },
     ];
-
+    
     providers.forEach((provider) => {
       worksheet.addRow({
         name: `Dr. ${provider.name}`,
@@ -126,7 +157,20 @@ const exportProvidersReport = async (req, res) => {
         pagerNumber: provider.pagerNumber || 'N/A',
       });
     });
-
+    
+    // Style
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+    
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -135,7 +179,7 @@ const exportProvidersReport = async (req, res) => {
       'Content-Disposition',
       'attachment; filename="reading_providers_report.xlsx"'
     );
-
+    
     return workbook.xlsx.write(res).then(() => {
       res.end();
     });
@@ -159,7 +203,9 @@ const exportComStationsReport = async (req, res) => {
       { header: 'Location', key: 'comStationLocation', width: 15 },
       { header: 'Type', key: 'comStationType', width: 15 },
       { header: 'Status', key: 'comStationStatus', width: 15 },
-      { header: 'Graveyard Reason', key: 'graveyardReason', width: 30 },
+      { header: 'Issue', key: 'issueDescription', width: 30 },
+      { header: 'Ticket?', key: 'hasTicket', width: 10 },
+      { header: 'Ticket Number', key: 'ticketNumber', width: 20 },
     ];
 
     comStations.forEach(station => {
@@ -168,7 +214,22 @@ const exportComStationsReport = async (req, res) => {
         comStationLocation: station.comStationLocation,
         comStationType: station.comStationType,
         comStationStatus: station.comStationStatus,
-        graveyardReason: station.graveyardReason || 'N/A',
+        issueDescription: station.issueDescription || 'N/A',
+        hasTicket: station.hasTicket ? 'Yes' : 'No',
+        ticketNumber: station.ticketNumber || 'N/A',
+      });
+    });
+
+    // Style
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
       });
     });
 
@@ -224,15 +285,8 @@ const exportSuppliesReport = async (req, res) => {
       worksheet.addRow(row);
     }
 
-    // Style the header row
+    // Style
     worksheet.getRow(1).font = { bold: true };
-    worksheet.getRow(1).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFE0E0E0' }
-    };
-
-    // Add borders to all cells
     worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
       row.eachCell({ includeEmpty: true }, (cell) => {
         cell.border = {

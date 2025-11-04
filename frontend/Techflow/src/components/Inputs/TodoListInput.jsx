@@ -67,7 +67,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
           roomRequired: true,
           showComment: true,
           commentLabel: "Comment",
-          commentPlaceholder: "Ex: @2:00pm"
+          commentPlaceholder: "Ex: At 2:00pm"
         };
       case "Troubleshoot ":
         return { 
@@ -89,7 +89,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
         return { 
           showComment: true,
           commentLabel: "Comment",
-          commentPlaceholder: "Ex: @2:00pm"
+          commentPlaceholder: "Ex: At 2:00pm"
         };
       default:
         return {};
@@ -102,7 +102,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
       case "Fix Electrodes ": return "Ex: Fz Cz Pz";
       case "Photic Stimulation ": return "Ex: Prolonged";
       case "Hyperventilation ": return "Ex: 5min";
-      case "Disconnect ": return "Ex: @2:00pm";
+      case "Disconnect ": return "Ex: At 2:00pm";
       case "Rehook ": return "Ex: MRI Leads";
       default: return "Enter comment";
     }
@@ -304,7 +304,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                       type="number"
                       min="1"
                       max="60"
-                      placeholder="1"
+                      placeholder=""
                       value={templateInputs.day}
                       onChange={(e) => {
                         setTemplateInputs(prev => ({ ...prev, day: e.target.value }));
@@ -330,7 +330,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                     </label>
                     <input
                       type="text"
-                      placeholder="3846"
+                      placeholder=""
                       value={templateInputs.room}
                       onChange={(e) => {
                         setTemplateInputs(prev => ({ ...prev, room: e.target.value }));
@@ -412,7 +412,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
 
               <div className="flex justify-between sm:justify-end sm:items-center gap-3 mt-4">
                 <button 
-                  className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer" 
+                  className="flex items-center gap-1 md:gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-white hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/80 cursor-pointer" 
                   onClick={() => {
                     setShowTemplateInputs(false);
                     setSelectedTemplate("");
@@ -425,10 +425,10 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
                 </button>
                 
                 <button 
-                  className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer" 
+                  className="flex items-center gap-1 md:gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-white hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/80 cursor-pointer" 
                   onClick={handleAddTemplate}
                 >
-                  <HiMiniPlus className="text-lg" /> Add Task
+                  <HiMiniPlus className="text-base md:text-lg" /> Add Task
                 </button>
               </div>
             </div>
@@ -444,13 +444,17 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
             placeholder="Type a Custom Task"
             value={customText}
             onChange={({ target }) => setCustomText(target.value)}
-            className="w-full text-[13px] text-gray-600 outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
+            className="w-full text-[13px] text-black outline-none bg-white border border-gray-100 px-3 py-2 rounded-md resize-none min-h-[40px] overflow-hidden"
             rows="1"
             onInput={(e) => autoResize(e.target)}
           />
           
-          <button className="flex items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap" onClick={handleAddCustom}>
-            <HiMiniPlus className="text-lg" /> Add
+          <button
+            className="flex items-center gap-1 md:gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 md:px-4 py-2.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
+            onClick={handleAddCustom}
+          >
+            <HiMiniPlus className="text-base md:text-lg" />
+            <span className="hidden md:inline">Add</span>
           </button>
         </div>
       </div>

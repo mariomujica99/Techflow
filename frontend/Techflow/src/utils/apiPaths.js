@@ -62,6 +62,14 @@ export const API_PATHS = {
     EXPORT_SUPPLIES: "/api/reports/export/supplies", // Download supplies report
   },
 
+  FILES: {
+    GET_ALL_FILES: "/api/files",
+    CREATE_FOLDER: "/api/files/folder",
+    UPLOAD_FILE: "/api/files/upload",
+    DELETE_FILE: (fileId) => `/api/files/${fileId}`,
+    DOWNLOAD_FILE: (fileId) => `/api/files/download/${fileId}`,
+  },
+
   IMAGE: {
     UPLOAD_IMAGE: "/api/auth/upload-profile-image",
   },

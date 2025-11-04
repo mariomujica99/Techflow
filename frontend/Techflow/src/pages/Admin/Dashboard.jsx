@@ -244,7 +244,7 @@ const Dashboard = () => {
               <h5 className="text-lg font-medium text-gray-600">Recent Orders</h5>
 
               <button className="card-btn" onClick={onSeeMore}>
-                See All <LuArrowRight className="text-base" />
+                See All <LuArrowRight className="text-xs md:text-sm" />
               </button>
             </div>
 

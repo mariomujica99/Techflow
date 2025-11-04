@@ -196,7 +196,7 @@ const SignUp = () => {
                   maxLength={14}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Can add or change at a later time</p>
+              <p className="text-xs text-gray-500 mt-1 mb-4">Can add or change at a later time</p>
             </div>
           </div>
 

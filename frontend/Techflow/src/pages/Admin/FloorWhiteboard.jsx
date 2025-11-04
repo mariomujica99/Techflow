@@ -8,11 +8,12 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import toast from "react-hot-toast";
 import { HiMiniPlus } from "react-icons/hi2";
-import { LuTrash2, LuChevronDown, LuListChecks, LuArrowRight } from "react-icons/lu";
+import { LuTrash2, LuChevronDown, LuListChecks, LuArrowRight, LuShieldAlert, LuTriangleAlert, LuBrainCircuit, LuBrain } from "react-icons/lu";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 import { LiaEdit } from "react-icons/lia";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { PiSyringe } from "react-icons/pi";
 
 const FloorWhiteboard = () => {
   const { user } = useContext(UserContext);
@@ -91,108 +92,148 @@ const FloorWhiteboard = () => {
 
       // Organize tasks by their todo checklist content - filter by todo creation date
       const organizedTasks = {
-        orders: currentClearedSections.orders ? [] : (() => {
-          const orderTasks = allTasks.filter(task => {
-            const taskDate = moment(task.createdAt);
-            const isCreatedToday = taskDate.isSame(moment(), "day");
-            const isFromPreviousDays = taskDate.isBefore(moment().startOf("day"));
-            const completionDate = task.completedOn ? moment(task.completedOn) : null;
-            const completedToday = 
-              hasCompletedAutomaticItems(task) && 
-              completionDate && 
-              completionDate.isSame(moment(), "day");
+        orders: currentClearedSections.orders
+          ? []
+          : (() => {
+              const orderTasks = allTasks.filter(task => {
+                const taskDate = moment(task.createdAt);
+                const isCreatedToday = taskDate.isSame(moment(), "day");
+                const isFromPreviousDays = taskDate.isBefore(moment().startOf("day"));
+                const completionDate = task.completedOn ? moment(task.completedOn) : null;
 
-            const completedPreviously = 
-              hasCompletedAutomaticItems(task) && 
-              completionDate && 
-              completionDate.isBefore(moment().startOf("day"));
+                const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[task.orderType] || [];
+                const automaticTodos = task.todoChecklist?.filter(todo =>
+                  automaticItems.includes(
+                    todo.text.replace(
+                      /\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/,
+                      ""
+                    ).trim()
+                  )
+                );
 
-            // Logic summary:
-            // - Always show today's created Tasks
-            // - Show previous Tasks if NOT all automatic items complete
-            // - Hide previous Tasks completed before today (automatic items complete)
-            // - Show previous Tasks completed today (automatic items complete)
-            if (isCreatedToday) {
-              return true;
-            }
+                const allAutomaticComplete =
+                  automaticTodos?.length === automaticItems.length &&
+                  automaticTodos.every(todo => todo.completed);
 
-            if (isFromPreviousDays) {
-              if (!hasCompletedAutomaticItems(task)) return true; // still pending
-              if (completedToday) return true; // completed today, show it
-              if (completedPreviously) return false; // finished in the past, hide
-            }
+                const lastAutomaticCompletion = automaticTodos
+                  ?.filter(todo => todo.completed && todo.completedAt)
+                  ?.map(todo => moment(todo.completedAt))
+                  ?.sort((a, b) => b - a)[0]; // most recent automatic completion
 
-            return false;
-          });
-          
-          // Sort by order type (Continuous first, then Routine), then by creation date
-          return orderTasks.sort((a, b) => {
-            const aIsContinuous = a.orderType?.startsWith("Continuous");
-            const bIsContinuous = b.orderType?.startsWith("Continuous");
-            
-            if (aIsContinuous && !bIsContinuous) return -1;
-            if (!aIsContinuous && bIsContinuous) return 1;
-            
-            return new Date(a.createdAt) - new Date(b.createdAt);
-          });
-        })(),
-        
-        skinChecks: currentClearedSections.skinChecks ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("skin check") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        electrodeFixes: currentClearedSections.electrodeFixes ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("fix electrodes") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        disconnects: currentClearedSections.disconnects ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo => {
-            const isDisconnectTodo = todo.text.toLowerCase().includes("disconnect") || 
-                                    todo.text.toLowerCase().includes("discontinue");
-            
-            // Exclude disconnects from Routine EEG orders (except Neuropsychiatric)
-            if (isDisconnectTodo && task.orderType?.startsWith("Routine EEG") && 
-                task.orderType !== "Neuropsychiatric EEG") {
-              return false;
-            }
-            
-            return isDisconnectTodo && isTodoCreatedToday(todo);
-          })
-        ),
-        
-        rehooks: currentClearedSections.rehooks ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("rehook") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        hyperventilation: currentClearedSections.hyperventilation ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("hyperventilation") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        photic: currentClearedSections.photic ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("photic") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        transfers: currentClearedSections.transfers ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("transfer patient from") && isTodoCreatedToday(todo)
-          )
-        ),
-        
-        troubleshoots: currentClearedSections.troubleshoots ? [] : allTasks.filter(task =>
-          task.todoChecklist?.some(todo =>
-            todo.text.toLowerCase().includes("troubleshoot") && isTodoCreatedToday(todo)
-          )
-        )
+                const completedToday =
+                  allAutomaticComplete &&
+                  lastAutomaticCompletion &&
+                  lastAutomaticCompletion.isSame(moment(), "day");
+
+                const completedPreviously =
+                  allAutomaticComplete &&
+                  lastAutomaticCompletion &&
+                  lastAutomaticCompletion.isBefore(moment().startOf("day"));
+
+                // --- Logic Summary ---
+                // Show if:
+                // - Created today
+                // - Still pending (not all automatic complete)
+                // - Completed today (automatic items finished today)
+                if (isCreatedToday) return true;
+                if (isFromPreviousDays) {
+                  if (!allAutomaticComplete) return true; // still pending
+                  if (completedToday) return true; // automatic completion happened today
+                  if (completedPreviously) return false; // completed before today
+                }
+
+                return false;
+              });
+
+              // Sort by order type (Continuous first, then Routine), then creation date
+              return orderTasks.sort((a, b) => {
+                const aIsContinuous = a.orderType?.startsWith("Continuous");
+                const bIsContinuous = b.orderType?.startsWith("Continuous");
+
+                if (aIsContinuous && !bIsContinuous) return -1;
+                if (!aIsContinuous && bIsContinuous) return 1;
+
+                return new Date(a.createdAt) - new Date(b.createdAt);
+              });
+            })(),
+
+        skinChecks: currentClearedSections.skinChecks
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("skin check") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        electrodeFixes: currentClearedSections.electrodeFixes
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("fix electrodes") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        disconnects: currentClearedSections.disconnects
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(todo => {
+                const isDisconnectTodo =
+                  todo.text.toLowerCase().includes("disconnect") ||
+                  todo.text.toLowerCase().includes("discontinue");
+
+                // Exclude disconnects from Routine EEG orders (except Neuropsychiatric)
+                if (
+                  isDisconnectTodo &&
+                  task.orderType?.startsWith("Routine EEG") &&
+                  task.orderType !== "Neuropsychiatric EEG"
+                ) {
+                  return false;
+                }
+
+                return isDisconnectTodo && isTodoCreatedToday(todo);
+              })
+            ),
+
+        rehooks: currentClearedSections.rehooks
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("rehook") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        hyperventilation: currentClearedSections.hyperventilation
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("hyperventilation") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        photic: currentClearedSections.photic
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("photic") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        transfers: currentClearedSections.transfers
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo =>
+                  todo.text.toLowerCase().includes("transfer patient from") && isTodoCreatedToday(todo)
+              )
+            ),
+
+        troubleshoots: currentClearedSections.troubleshoots
+          ? []
+          : allTasks.filter(task =>
+              task.todoChecklist?.some(
+                todo => todo.text.toLowerCase().includes("troubleshoot") && isTodoCreatedToday(todo)
+              )
+            ),
       };
 
       setTasks(organizedTasks);
@@ -690,9 +731,9 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'STAT': return 'text-red-500';
-      case 'ASAP': return 'text-orange-500';
-      default: return 'text-lime-500';
+      case 'STAT': return 'bg-red-50 text-red-500 ring-red-200';
+      case 'ASAP': return 'bg-orange-50 text-orange-500 ring-orange-200';
+      default: return 'bg-lime-50 text-lime-500 ring-lime-200';
     }
   };
 
@@ -726,15 +767,16 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
   return (
     <div className="whiteboard-card">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-base md:text-lg font-medium text-gray-600">{title}</h2>
-        <div className="flex items-center gap-2">
-          <button 
-            className="flex flex-shrink-0 items-center gap-1 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
-            onClick={onAdd}
-          >
-            New <HiMiniPlus className="text-base md:text-lg" />
-          </button>
-        </div>
+        <h2 className="text-base md:text-lg font-medium text-gray-600">
+          {title} <span className="text-base md:text-lg text-gray-400">| {tasks.length}</span>
+        </h2>
+
+        <button 
+          className="flex flex-shrink-0 items-center gap-1 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+          onClick={onAdd}
+        >
+          New <HiMiniPlus className="text-base md:text-lg" />
+        </button>
       </div>
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -744,42 +786,125 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
           return (
             <div 
               key={task._id}
-              className="flex justify-between items-center py-2 px-5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onTaskClick(task._id)}
+              className="flex justify-between items-center py-2 px-3 md:px-5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
             >
-              <div className="flex items-center gap-2 flex-1">
-                <div className={`w-2 h-2 rounded-full ${getStatusColor(task)}`}></div>
-                <span className="text-xs md:text-sm text-gray-600 font-medium">{roomWithPrefix}</span>
-                <span className="text-xs text-gray-500">| {orderTypeShort} |</span>
-                <span className={`text-xs ${getPriorityColor(task.priority)}`}>
-                  {task.priority}
-                </span>
+              {/* Left side: info */}
+              <div className="flex flex-col md:flex-row md:items-center flex-1 gap-x-1 gap-y-1.75 font-medium">
+                {/* First row: status, room, orderType - always on one line */}
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${getStatusColor(task)}`}></div>
+                  <span className="text-sm md:text-base text-gray-600">{roomWithPrefix}</span>
+                  <span className="w-fit h-5 text-[10px] font-medium bg-gray-50 text-gray-500 ring-gray-200 px-2 py-0.5 rounded ring-1">{orderTypeShort}</span>
+                </div>
+
+                {/* Second row on mobile / continues on same line on desktop */}
+                <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[10px] font-medium text-gray-500 pl-[14px] md:pl-0">
+                  {/* Priority badge */}
+                  <div className={`w-fit h-5 ${getPriorityColor(task.priority)} px-2 py-0.5 rounded ring-1`}>{task.priority}</div>
+                  
+                  {/* Electrode type badge */}
+                  {(task.orderType?.includes("Continuous EEG") || task.orderType?.includes("Continuous SEEG")) && (
+                    <div
+                      className={`flex items-center gap-1 px-2 py-0.25 rounded ring-1 w-fit h-5 ${
+                        task.electrodeType === "MRI Leads"
+                          ? "text-rose-600 bg-rose-50 ring-rose-200"
+                          : task.orderType?.includes("Continuous SEEG")
+                          ? "text-teal-600 bg-teal-50 ring-teal-200"
+                          : "text-blue-600 bg-blue-50 ring-blue-200"
+                      }`}
+                    >
+                      {task.electrodeType === "MRI Leads" ? (
+                        <>
+                          <LuTriangleAlert className="text-xs" />
+                          <span>MRI</span>
+                        </>
+                      ) : task.orderType?.includes("Continuous SEEG") ? (
+                        <>
+                          <LuBrainCircuit className="text-xs" />
+                          <span>Depth</span>
+                        </>
+                      ) : (
+                        <>
+                          <LuBrain className="text-xs" />
+                          <span>Regular</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Force line break on mobile only */}
+                  <div className="basis-full h-0 md:hidden"></div>
+                  
+                  {/* Adhesive type badge */}
+                  {task.orderType?.includes("Continuous EEG") && (
+                    <div
+                      className={`flex items-center gap-1 px-2 py-0.25 rounded ring-1 w-fit h-5 ${
+                        task.adhesiveType === "Collodion"
+                          ? "text-orange-400 bg-orange-50 ring-orange-200"
+                          : task.adhesiveType === "Tensive"
+                          ? "text-blue-400 bg-blue-50 ring-blue-200"
+                          : "text-gray-600 bg-gray-50 ring-gray-200"
+                      }`}
+                    >
+                      {task.adhesiveType === "Collodion" ? (
+                        <>
+                          <PiSyringe className="text-xs" />
+                          <span>Collodion</span>
+                        </>
+                      ) : task.adhesiveType === "Tensive" ? (
+                        <>
+                          <PiSyringe className="text-xs" />
+                          <span>Tensive</span>
+                        </>
+                      ) : (
+                        <>
+                          <PiSyringe className="text-xs" />
+                          <span>None</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Allergy badge */}
+                  {task.allergyType === "Adhesive Tape" && (
+                    <div className="flex items-center gap-1 text-amber-600 bg-amber-50 ring-1 ring-amber-200 px-2 py-0.25 rounded w-fit h-5">
+                      <LuShieldAlert className="text-xs" />
+                      <span>Allergy</span>
+                    </div>
+                  )}                  
+                </div>
               </div>
-              
-              <div className="flex items-center gap-2">
+
+              {/* Right side: icons */}
+              <div className="flex items-center justify-center ml-2">
                 {!isEditMode && (
-                  <LuListChecks 
-                    className="text-lg md:text-xl text-gray-400 hover:text-primary cursor-pointer"
+                  <div
+                    className="p-1.5 rounded-sm bg-gray-200/40 hover:bg-gray-200 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       onUpdateTask(task._id);
                     }}
-                  />
+                  >
+                    <LuListChecks className="text-lg md:text-xl text-primary" />
+                  </div>
                 )}
                 {isEditMode && (
-                  <LuTrash2 
-                    className="text-red-500 hover:text-red-300 cursor-pointer"
+                  <div
+                    className="p-1.5 rounded-sm hover:bg-gray-200 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDelete(task._id);
                     }}
-                  />
+                  >
+                    <LuTrash2 className="text-red-500 text-lg md:text-xl" />
+                  </div>
                 )}
               </div>
             </div>
           );
         })}
-        
+
         {tasks.length === 0 && (
           <p className="text-xs md:text-sm text-gray-400">No orders</p>
         )}
@@ -791,6 +916,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
     </div>
   );
 };
+
 
 // Regular section component
 const WhiteboardSection = ({ 
@@ -930,7 +1056,7 @@ const WhiteboardSection = ({
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
           <button 
-            className="flex flex-shrink-0 items-center gap-1 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex flex-shrink-0 items-center gap-1 text-[10px] md:text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onToggleDropdown}
           >
             Add <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />

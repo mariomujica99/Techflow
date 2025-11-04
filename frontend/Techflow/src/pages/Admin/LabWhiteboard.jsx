@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import AddCommentsInput from "../../components/Inputs/AddCommentsInput";
 import Modal from "../../components/Modal";
 import { CiSaveDown1 } from "react-icons/ci";
+import { LuEraser } from "react-icons/lu";
 import { LiaEdit } from "react-icons/lia";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
@@ -289,10 +290,11 @@ const LabWhiteboard = () => {
                     <h2 className="text-base md:text-lg font-medium text-gray-600">Reading Providers</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearReadingProviders}
                       >
                         Clear
+                        <LuEraser className="text-xs"/>
                       </button>
                     )}
                   </div>
@@ -363,11 +365,12 @@ const LabWhiteboard = () => {
                     <h2 className="text-base md:text-lg font-medium text-gray-600">Outpatients</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearOutpatients}
                       >
                         Clear
-                      </button>
+                        <LuEraser className="text-xs"/>
+                      </button>                      
                     )}
                   </div>
                   <div className="text-sm text-gray-400 space-y-2">
@@ -542,10 +545,11 @@ const LabWhiteboard = () => {
                     <h2 className="text-base md:text-lg font-medium text-gray-600">Coverage</h2>
                     {isEditMode && (
                       <button
-                        className="text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+                        className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-3 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
                         onClick={handleClearCoverage}
                       >
                         Clear
+                        <LuEraser className="text-xs"/>
                       </button>
                     )}
                   </div>

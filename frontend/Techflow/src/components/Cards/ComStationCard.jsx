@@ -13,7 +13,8 @@ const ComStationCard = ({
   isAddCard = false,
   onComStationDeleted,
   onComStationUpdated,
-  onComStationCreated 
+  onComStationCreated,
+  userRole
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -282,7 +283,7 @@ const ComStationCard = ({
           </div>
         </div>
 
-        {isEditMode && (
+        {isEditMode && userRole === 'admin' && (
           <button
             className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
             onClick={() => setOpenDeleteAlert(true)}

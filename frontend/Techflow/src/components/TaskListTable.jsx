@@ -26,9 +26,9 @@ const TaskListTable = ({tableData, getOrderStatus}) => {
       <table className="min-w-full">
         <thead>
           <tr className="text-left">
-            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Room</th>
-            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Status</th>
-            <th className="py-3 px-4 text-gray-600 font-medium text-[13px]">Priority</th>
+            <th className="py-3 px-2 md:px-4 text-gray-600 font-medium text-[13px]">Room</th>
+            <th className="py-3 px-2 md:px-4 text-gray-600 font-medium text-[13px]">Status</th>
+            <th className="py-3 px-2 md:px-4 text-gray-600 font-medium text-[13px]">Priority</th>
             <th className="py-3 px-4 text-gray-600 font-medium text-[13px] hidden md:table-cell">Created On</th>
           </tr>
         </thead>
@@ -39,11 +39,11 @@ const TaskListTable = ({tableData, getOrderStatus}) => {
             
             return (
               <tr key={task._id} className="border-t border-gray-200">
-                <td className="my-3 mx-4 text-gray-700 text-[13px] line-clamp-1 overflow-hidden">{task.title}</td>
-                <td className="py-4 px-4">
+                <td className="py-3 px-2 md:px-4 text-gray-700 text-[13px] line-clamp-1 overflow-hidden">{task.title}</td>
+                <td className="py-3 px-2 md:px-4">
                   <span className={`px-2 py-1 text-xs rounded inline-block ${getStatusBadgeColor(orderStatus)}`}>{orderStatus}</span>
                 </td>
-                <td className="py-4 px-4">
+                <td className="py-3 px-2 md:px-4">
                   <span className={`px-2 py-1 text-xs rounded inline-block ${getPriorityBadgeColor(task.priority)}`}>{task.priority}</span>
                 </td>
                 <td className="py-4 px-4 text-gray-700 text-[13px] text-nowrap hidden md:table-cell">{task.createdAt ? moment(task.createdAt).utc().format('Do MMM YYYY') : 'N/A'}</td>

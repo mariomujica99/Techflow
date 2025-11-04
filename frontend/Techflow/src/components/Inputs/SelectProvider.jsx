@@ -109,9 +109,9 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
               >
                 {getInitials(provider.name)}
               </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-800 dark:text-white">Dr. {provider.name}</p>
-                <p className="text-[13px] text-gray-500">Reading Provider</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-800 dark:text-white truncate">Dr. {provider.name}</p>
+                <p className="text-[13px] text-gray-500 truncate">Reading Provider</p>
               </div>
               {selectedProviderId === provider._id && (
                 <div className="w-4 h-4 bg-primary rounded-full"></div>

@@ -86,7 +86,7 @@ const Providers = () => {
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
             {user?.role === 'admin' && (
               <button className="flex download-btn" onClick={handleDownloadReport}>
                 <LuFileSpreadsheet className="text-lg" />
@@ -94,17 +94,19 @@ const Providers = () => {
               </button>
             )}
             
-            <button className="edit-btn" onClick={handleManageProviders}>
-              {isEditMode ? (
-                <>
-                  <IoMdCheckmarkCircleOutline />
-                </>
-              ) : (
-                <>
-                  <LiaEdit />
-                </>
-              )}
-            </button>
+            {user?.role === 'admin' && (
+              <button className="edit-btn" onClick={handleManageProviders}>
+                {isEditMode ? (
+                  <>
+                    <IoMdCheckmarkCircleOutline />
+                  </>
+                ) : (
+                  <>
+                    <LiaEdit />
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 

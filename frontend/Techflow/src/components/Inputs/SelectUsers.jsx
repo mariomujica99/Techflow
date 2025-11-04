@@ -95,17 +95,17 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
                 <img
                   src={user.profileImageUrl}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover"
+                  className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                 />
               ) : (
                 <div 
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium flex-shrink-0"
                   style={{ backgroundColor: user.profileColor || "#30b5b2" }}
                 >
                   {getInitials(user.name)}
                 </div>
               )}
-              <div className="flex-1 truncate">
+              <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
                 <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
               </div>

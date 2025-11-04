@@ -13,6 +13,7 @@ import { FaUserMd } from "react-icons/fa";
 import { TbChalkboard } from "react-icons/tb";
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { BsCartPlus } from "react-icons/bs";
+import { PiFiles } from "react-icons/pi";
 
 export const SIDE_MENU_DATA = [
   {
@@ -71,24 +72,30 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "10",
+    label: "Files",
+    icon: PiFiles,
+    path: "/admin/files",
+  },
+  {
+    id: "11",
     label: "Team Members",
     icon: LuUsers,
     path: "/admin/users",
   },
   {
-    id: "11",
+    id: "12",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/admin/providers",
   },
   {
-    id: "12",
+    id: "13",
     label: "Edit Profile",
     icon: LuUser,
     path: "/admin/edit-profile",
   },
   {
-    id: "13",
+    id: "14",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",
@@ -152,24 +159,30 @@ export const SIDE_MENU_USER_DATA = [
   },
   {
     id: "10",
+    label: "Files",
+    icon: PiFiles,
+    path: "/user/files",
+  },
+  {
+    id: "11",
     label: "Team Members",
     icon: LuUsers,
     path: "/user/users",
   },
   {
-    id: "11",
+    id: "12",
     label: "Reading Providers",
     icon: FaUserMd,
     path: "/user/providers",
   },
   {
-    id: "12",
+    id: "13",
     label: "Edit Profile",
     icon: LuUser,
     path: "/user/edit-profile",
   },
   {
-    id: "13",
+    id: "14",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

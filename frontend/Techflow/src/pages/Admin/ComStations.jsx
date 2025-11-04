@@ -207,13 +207,15 @@ const ComStations = () => {
               isEditMode={isEditMode}
               onComStationDeleted={handleComStationDeleted}
               onComStationUpdated={handleComStationUpdated}
+              userRole={user?.role}
             />
           ))}
           
-          {isEditMode && (
+          {isEditMode && user?.role === 'admin' && (
             <ComStationCard 
               isAddCard={true}
               onComStationCreated={handleComStationCreated}
+              userRole={user?.role}
             />
           )}
         </div>

@@ -29,6 +29,7 @@ import { Toaster } from 'react-hot-toast';
 import LabWhiteboard from './pages/Admin/LabWhiteboard';
 import FloorWhiteboard from './pages/Admin/FloorWhiteboard';
 import Supplies from './pages/Admin/Supplies';
+import Files from './pages/Admin/Files';
 
 const App = () => {
   return (
@@ -51,6 +52,7 @@ const App = () => {
               <Route path="/admin/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/admin/supplies" element={<Supplies />} />
               <Route path="/admin/com-stations" element={<ComStations />} />
+              <Route path="/admin/files" element={<Files/>} />
               <Route path="/admin/users" element={<ManageUsers />} />
               <Route path="/admin/providers" element={<Providers />} />
               <Route path="/admin/edit-profile" element={<EditProfile />} />
@@ -68,6 +70,7 @@ const App = () => {
               <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
               <Route path="/user/supplies" element={<Supplies />} />
               <Route path="/user/com-stations" element={<ComStations />} />
+              <Route path="/user/files" element={<Files/>} />
               <Route path="/user/users" element={<ViewUsers />} />
               <Route path="/user/providers" element={<Providers />} />
               <Route path="/user/edit-profile" element={<EditProfile />} />

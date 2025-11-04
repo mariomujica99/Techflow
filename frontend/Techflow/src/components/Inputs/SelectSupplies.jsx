@@ -71,10 +71,10 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
             placeholder="Enter custom supply item"
             value={customItem}
             onChange={(e) => setCustomItem(e.target.value)}
-            className="flex-1 text-sm text-black outline-none dark:bg-white border border-slate-100 px-3 py-1.75 rounded-md placeholder:text-gray-500"
+            className="flex-1 min-w-0 text-xs md:text-sm text-black outline-none dark:bg-white border border-slate-100 px-3 py-1.75 rounded-md placeholder:text-gray-500"
           />
           <button
-            className="flex items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-2 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
+            className="flex flex-shrink-0 items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-1.75 md:py-2 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
             onClick={handleAddCustom}
           >
             <HiMiniPlus className="text-lg" />
