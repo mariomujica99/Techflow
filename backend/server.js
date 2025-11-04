@@ -22,6 +22,7 @@ app.use(
     origin: process.env.CLIENT_URL || "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
   })
 );
 
@@ -41,6 +42,16 @@ app.use("/api/providers", providerRoutes);
 app.use("/api/lab-whiteboard", whiteboardRoutes);
 app.use("/api/supplies", supplyRoutes);
 app.use("/api/files", fileRoutes);
+
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
+// Catch-all for undefined routes (should be last)
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
 
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
