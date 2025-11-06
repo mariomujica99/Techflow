@@ -13,26 +13,21 @@ const uploadFile = async (req, res) => {
     
     const fileUrl = req.file.path;
     const cloudinaryId = req.file.filename;
-    const fileSize = req.file.size || req.file.bytes || 0;
     
-    // Preserve original filename with extension
-    const originalName = req.file.originalname;
-    const ext = path.extname(originalName).toLowerCase();
+    // Determine file type from original filename
+    const ext = path.extname(req.file.originalname).toLowerCase();
     let fileType = 'other';
     
-    if (['.doc', '.docx'].includes(ext)) fileType = 'doc';
+    if (['.jpg', '.jpeg', '.png'].includes(ext)) fileType = 'image';
     else if (['.pdf'].includes(ext)) fileType = 'pdf';
-    else if (['.ppt', '.pptx'].includes(ext)) fileType = 'ppt';
-    else if (['.xls', '.xlsx'].includes(ext)) fileType = 'xls';
-    else if (['.jpg', '.jpeg', '.png'].includes(ext)) fileType = 'image';
 
     const newFile = await File.create({
-      name: originalName, // Keep original filename with extension
+      name: req.file.originalname,
       type: 'file',
       fileType,
       fileUrl: fileUrl,
       fileName: cloudinaryId,
-      size: fileSize,
+      size: req.file.size,
       parentFolder: parentFolder || null,
       uploadedBy: req.user._id,
     });
@@ -105,9 +100,7 @@ const deleteFile = async (req, res) => {
   }
 };
 
-// @desc    Download a file
-// @route   GET /api/files/download/:id
-// @access  Private
+// Download file redirects to Cloudinary URL
 const downloadFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
@@ -116,28 +109,12 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Map file extensions to proper MIME types
-    const mimeTypes = {
-      'doc': 'application/msword',
-      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'xls': 'application/vnd.ms-excel',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'ppt': 'application/vnd.ms-powerpoint',
-      'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'pdf': 'application/pdf',
-      'image': 'image/*'
-    };
-
-    const mimeType = mimeTypes[file.fileType] || 'application/octet-stream';
-
-    // Return file info WITH mime type for frontend to handle
-    res.json({
-      fileUrl: file.fileUrl,
-      fileName: file.name,
-      fileType: file.fileType,
-      size: file.size,
-      mimeType: mimeType
-    });
+    // Redirect to the URL. Cloudinary handles the download
+    res.redirect(file.fileUrl);
+    
+    // Alternative: Force download with attachment flag
+    // const downloadUrl = file.fileUrl.replace('/upload/', '/upload/fl_attachment/');
+    // res.redirect(downloadUrl);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

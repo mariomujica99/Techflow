@@ -13,29 +13,16 @@ import {
   LuArrowLeft,
   LuFile,
   LuEye,
-  LuLoader
+  LuX
 } from "react-icons/lu";
 import { MdOutlineMoreVert } from "react-icons/md";
 import { 
   FaFilePdf, 
-  FaFileWord, 
-  FaFilePowerpoint, 
-  FaFileExcel, 
   FaFileImage 
 } from "react-icons/fa";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 import moment from "moment";
-
-// Detect if user is on mobile device
-const isMobileDevice = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-};
-
-// Check if popup was blocked
-const isPopupBlocked = (popup) => {
-  return !popup || popup.closed || typeof popup.closed === 'undefined';
-};
 
 const Files = () => {
   const { user } = useContext(UserContext);
@@ -48,7 +35,8 @@ const Files = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [loadingFileId, setLoadingFileId] = useState(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
 
   const isAdmin = user?.role === 'admin';
 
@@ -61,33 +49,6 @@ const Files = () => {
     } catch (error) {
       console.error("Error fetching files:", error);
       toast.error("Failed to load files");
-    }
-  };
-
-  // Helper function to download file with correct filename
-  const downloadFileWithName = async (fileUrl, fileName) => {
-    try {
-      // Fetch the file from Cloudinary as a blob
-      const response = await fetch(fileUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      
-      // Create a blob URL and trigger download
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName; // Use original filename
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error('Failed to download file');
     }
   };
 
@@ -164,75 +125,16 @@ const Files = () => {
     setOpenDropdown(null);
   };
 
-  const handleDownload = async (fileId, fileName, fileType) => {
-    setLoadingFileId(fileId);
-
-    try {
-      const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId));
-      const { fileUrl, mimeType } = response.data;
-
-      const imageTypes = ['image'];
-      const pdfType = 'pdf';
-      const officeTypes = ['doc', 'xls', 'ppt'];
-
-      // Images: Open directly in new tab
-      if (imageTypes.includes(fileType)) {
-        window.open(fileUrl, '_blank', 'noopener,noreferrer');
-        toast.success("Image opened in new tab");
-      } 
-      // PDFs: Use Google Docs Viewer for better mobile compatibility
-      else if (fileType === pdfType) {
-        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=false`;
-        window.open(viewerUrl, '_blank', 'noopener,noreferrer');
-        toast.success("PDF opened in new tab");
-      } 
-      // Office documents: Use Microsoft Office Online Viewer
-      else if (officeTypes.includes(fileType)) {
-        // Force download with proper filename and extension
-        const msOfficeUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`;
-        window.open(msOfficeUrl, '_blank', 'noopener,noreferrer');
-        toast.success(`${fileType.toUpperCase()} file opened in new tab`);
-      } 
-      else {
-        // Fallback: Direct download
-        await downloadFileWithName(fileUrl, fileName);
-      }
-
-      setOpenDropdown(null);
-    } catch (error) {
-      console.error("Error accessing file:", error);
-      toast.error("Failed to open file");
-    } finally {
-      setLoadingFileId(null);
-    }
+  const handlePreview = (file) => {
+    setPreviewFile(file);
+    setShowPreviewModal(true);
+    setOpenDropdown(null);
   };
 
-  // Separate function for direct downloads with proper filename
-  const handleDirectDownload = async (fileUrl, fileName, fileType) => {
+  const handleDownload = async (file) => {
     try {
-      // Get file extension from fileType
-      const extensions = {
-        'doc': '.docx',
-        'xls': '.xlsx', 
-        'ppt': '.pptx',
-        'pdf': '.pdf',
-        'image': fileName.includes('.') ? '' : '.jpg'
-      };
-      
-      const ext = extensions[fileType] || '';
-      const fullFileName = fileName.includes('.') ? fileName : fileName + ext;
-      
-      // For Office docs, transform Cloudinary URL to force download with proper filename
-      let downloadUrl = fileUrl;
-      if (['doc', 'xls', 'ppt'].includes(fileType)) {
-        // Add fl_attachment to Cloudinary URL to force download with original name
-        const urlParts = fileUrl.split('/upload/');
-        if (urlParts.length === 2) {
-          downloadUrl = `${urlParts[0]}/upload/fl_attachment:${encodeURIComponent(fullFileName)}/${urlParts[1]}`;
-        }
-      }
-      
-      const response = await fetch(downloadUrl);
+      // Fetch the file as blob
+      const response = await fetch(file.fileUrl);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -244,13 +146,14 @@ const Files = () => {
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = fullFileName;
+      link.download = file.name; // Use original filename
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
       
       toast.success("Download started");
+      setOpenDropdown(null);
     } catch (error) {
       console.error('Download error:', error);
       toast.error('Failed to download file');
@@ -281,12 +184,6 @@ const Files = () => {
     switch (file.fileType) {
       case 'pdf':
         return <FaFilePdf className="text-2xl text-red-500" />;
-      case 'doc':
-        return <FaFileWord className="text-2xl text-blue-600" />;
-      case 'ppt':
-        return <FaFilePowerpoint className="text-2xl text-orange-500" />;
-      case 'xls':
-        return <FaFileExcel className="text-2xl text-green-600" />;
       case 'image':
         return <FaFileImage className="text-2xl text-purple-500" />;
       default:
@@ -309,6 +206,13 @@ const Files = () => {
   return (
     <DashboardLayout activeMenu="Files">
       <div className="mt-5 mb-10">
+        {/* Info Banner */}
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+          <div className="text-blue-600 text-sm font-medium">
+            ℹ️ Only Images (.jpg, .jpeg, .png) and PDF Files (.pdf) are allowed
+          </div>
+        </div>
+
         <div className="flex flex-row items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             {folderPath.length > 0 && (
@@ -347,7 +251,7 @@ const Files = () => {
                   className="hidden"
                   onChange={handleFileUpload}
                   disabled={uploading}
-                  accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png"
+                  accept=".jpg,.jpeg,.png,.pdf"
                   multiple
                 />
               </label>
@@ -387,11 +291,11 @@ const Files = () => {
                   </tr>
                 ) : (
                   files.map((file) => (
-                      <tr
-                        key={file._id}
-                        className={`hover:bg-gray-50 ${file.type === 'folder' ? 'cursor-pointer' : ''}`}
-                        onClick={() => file.type === 'folder' && handleFolderClick(file)}
-                      >
+                    <tr
+                      key={file._id}
+                      className={`hover:bg-gray-50 ${file.type === 'folder' ? 'cursor-pointer' : ''}`}
+                      onClick={() => file.type === 'folder' && handleFolderClick(file)}
+                    >
                       <td className="px-4 py-3 whitespace-nowrap">
                         {getFileIcon(file)}
                       </td>
@@ -425,24 +329,14 @@ const Files = () => {
                                 {file.type === 'file' && (
                                   <>
                                     <button
-                                      onClick={() => handleDownload(file._id, file.name, file.fileType)}
-                                      disabled={loadingFileId === file._id}
-                                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                                      onClick={() => handlePreview(file)}
+                                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                                     >
-                                      {loadingFileId === file._id ? (
-                                        <>
-                                          <LuLoader className="text-base animate-spin" />
-                                          Opening...
-                                        </>
-                                      ) : (
-                                        <>
-                                          <LuEye className="text-base" />
-                                          Preview
-                                        </>
-                                      )}
+                                      <LuEye className="text-base" />
+                                      Preview
                                     </button>
                                     <button
-                                      onClick={() => handleDirectDownload(file.fileUrl, file.name, file.fileType)}
+                                      onClick={() => handleDownload(file)}
                                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                                     >
                                       <LuDownload className="text-base" />
@@ -464,19 +358,14 @@ const Files = () => {
                           !isAdmin && file.type === 'file' && (
                             <div className="flex items-center gap-1">
                               <button
-                                onClick={() => handleDownload(file._id, file.name, file.fileType)}
-                                disabled={loadingFileId === file._id}
-                                className="p-2 hover:bg-gray-100 rounded cursor-pointer disabled:opacity-50"
+                                onClick={() => handlePreview(file)}
+                                className="p-2 hover:bg-gray-100 rounded cursor-pointer"
                                 title="Preview Document"
                               >
-                                {loadingFileId === file._id ? (
-                                  <LuLoader className="text-gray-600 animate-spin" />
-                                ) : (
-                                  <LuEye className="text-gray-600" />
-                                )}
+                                <LuEye className="text-gray-600" />
                               </button>
                               <button
-                                onClick={() => handleDirectDownload(file.fileUrl, file.name, file.fileType)}
+                                onClick={() => handleDownload(file)}
                                 className="p-2 hover:bg-gray-100 rounded cursor-pointer"
                                 title="Download File"
                               >
@@ -537,6 +426,49 @@ const Files = () => {
           </div>
         </Modal>
 
+        {/* Preview Modal */}
+        {showPreviewModal && previewFile && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <div className="relative w-full h-full max-w-7xl max-h-screen p-4">
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setShowPreviewModal(false);
+                  setPreviewFile(null);
+                }}
+                className="absolute top-6 right-6 z-10 p-2 bg-white rounded-full hover:bg-gray-100 shadow-lg cursor-pointer"
+              >
+                <LuX className="text-xl text-gray-700" />
+              </button>
+
+              {/* Preview Content */}
+              <div className="w-full h-full flex items-center justify-center">
+                {previewFile.fileType === 'image' ? (
+                  <img
+                    src={previewFile.fileUrl}
+                    alt={previewFile.name}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : previewFile.fileType === 'pdf' ? (
+                  <iframe
+                    src={previewFile.fileUrl}
+                    title={previewFile.name}
+                    className="w-full h-full bg-white rounded-lg"
+                  />
+                ) : null}
+              </div>
+
+              {/* File Name */}
+              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 px-4 py-2 rounded-lg shadow-lg">
+                <p className="text-sm font-medium text-gray-700 text-center">
+                  {previewFile.name}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Modal */}
         <Modal
           isOpen={showDeleteModal}
           onClose={() => {

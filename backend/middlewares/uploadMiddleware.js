@@ -19,24 +19,11 @@ const ALLOWED_MIME_TYPES = [
   
   // Documents
   'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  
-  // Presentations
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  
-  // Spreadsheets
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 ];
 
 const ALLOWED_EXTENSIONS = [
   'jpg', 'jpeg', 'png',           // Images
   'pdf',                          // PDF
-  'doc', 'docx',                  // Word
-  'ppt', 'pptx',                  // PowerPoint
-  'xls', 'xlsx'                   // Excel
 ];
 
 // Cloudinary storage configuration
@@ -53,31 +40,14 @@ const storage = new CloudinaryStorage({
     let folder = 'techflow/documents';
     if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
       folder = 'techflow/images';
-      resourceType = 'image';
     } else if (fileExtension === 'pdf') {
       folder = 'techflow/pdfs';
-      resourceType = 'image'; // PDF preview works with 'image' type
-    } else {
-      resourceType = 'raw'; // For doc, docx, xls, xlsx, ppt, pptx
     }
-    
-    // Create a clean public_id from original filename
-    const timestamp = Date.now();
-    const cleanFileName = file.originalname
-      .replace(/\.[^/.]+$/, '') // Remove extension
-      .replace(/[^a-zA-Z0-9]/g, '_') // Replace special chars with underscore
-      .substring(0, 50); // Limit length
-    
-    const publicId = `${cleanFileName}_${timestamp}`;
     
     return {
       folder: folder,
       allowed_formats: ALLOWED_EXTENSIONS,
-      resource_type: resourceType,
-      public_id: publicId,
-      // Force original filename for downloads
-      use_filename: true,
-      unique_filename: false
+      resource_type: resourceType, // 'image', 'raw', or 'auto'
     };
   }
 });
