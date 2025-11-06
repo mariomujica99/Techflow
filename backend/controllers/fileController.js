@@ -2,6 +2,24 @@ const File = require('../models/File');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 
+const generateSignedUrl = (publicId, resourceType = 'raw') => {
+  const timestamp = Math.round(new Date().getTime() / 1000);
+  const signature = cloudinary.utils.api_sign_request(
+    {
+      public_id: publicId,
+      timestamp: timestamp,
+    },
+    process.env.CLOUDINARY_API_SECRET
+  );
+  
+  return cloudinary.url(publicId, {
+    resource_type: resourceType,
+    type: 'authenticated',
+    sign_url: true,
+    secure: true
+  });
+};
+
 // Upload file using Cloudinary
 const uploadFile = async (req, res) => {
   try {
@@ -13,8 +31,6 @@ const uploadFile = async (req, res) => {
     
     const fileUrl = req.file.path;
     const cloudinaryId = req.file.filename;
-    
-    // Get file size from Cloudinary response or use bytes field
     const fileSize = req.file.size || req.file.bytes || 0;
     
     const ext = path.extname(req.file.originalname).toLowerCase();
@@ -40,7 +56,7 @@ const uploadFile = async (req, res) => {
     const populatedFile = await File.findById(newFile._id).populate('uploadedBy', 'name');
     res.status(201).json({ message: 'File uploaded successfully', file: populatedFile });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Upload error details:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -115,14 +131,15 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Return file metadata with Cloudinary URL
-    res.json({
-      fileUrl: file.fileUrl,
+    let fileUrl = file.fileUrl;
+
+    res.json({ 
+      fileUrl: fileUrl,
       fileName: file.name,
-      fileType: file.fileType,
-      size: file.size
+      fileType: file.fileType
     });
   } catch (error) {
+    console.error('Download error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

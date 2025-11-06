@@ -6,7 +6,8 @@ const cloudinary = require('cloudinary').v2;
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
 });
 
 // Allowed file types
@@ -44,22 +45,25 @@ const ALLOWED_EXTENSIONS = [
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    // Determine file type for better organization
     const fileExtension = file.originalname.split('.').pop().toLowerCase();
-    let resourceType = 'auto'; // Cloudinary auto-detects
     
-    // Organize by file type in Cloudinary folders
+    // Determine resource type
+    let resourceType = 'raw'; // Default to raw for documents
     let folder = 'techflow/documents';
+    
+    // Images need 'image' resource type
     if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+      resourceType = 'image';
       folder = 'techflow/images';
     } else if (fileExtension === 'pdf') {
       folder = 'techflow/pdfs';
+      // PDFs stay as 'raw'
     }
     
     return {
       folder: folder,
+      resource_type: resourceType, // 'image' or 'raw'
       allowed_formats: ALLOWED_EXTENSIONS,
-      resource_type: resourceType, // 'image', 'raw', or 'auto'
     };
   }
 });

@@ -128,24 +128,27 @@ const Files = () => {
     try {
       const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId));
       
-      const fileUrl = response.data?.fileUrl || response.data;
+      const fileUrl = response.data.fileUrl;
+      const fileType = response.data.fileType;
       
-      // Open in new tab for preview
-      window.open(fileUrl, '_blank', 'noopener,noreferrer');
-      
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.setAttribute('download', fileName);
-      link.setAttribute('target', '_blank');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast.success("File opened in new tab");
+      // For images and PDFs, open in new tab for preview
+      if (fileType === 'image' || fileType === 'pdf') {
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+        toast.success(`${fileType === 'pdf' ? 'PDF' : 'Image'} opened in new tab`);
+      } else {
+        // For documents (Word, Excel, PowerPoint), force download
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.setAttribute('download', fileName);
+        link.setAttribute('target', '_blank');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Download started");
+      }
     } catch (error) {
       console.error("Error downloading file:", error);
-      toast.error("Failed to download file");
+      toast.error(error.response?.data?.message || "Failed to download file");
     }
     setOpenDropdown(null);
   };
