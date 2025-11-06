@@ -126,18 +126,25 @@ const Files = () => {
 
   const handleDownload = async (fileId, fileName) => {
     try {
-      const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId), {
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Get the file metadata from your API
+      const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId));
+      
+      // If your API returns the file URL directly (Cloudinary URL)
+      const fileUrl = response.data?.fileUrl || response.data;
+      
+      // Open in new tab for preview
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      
+      // Also trigger download
       const link = document.createElement('a');
-      link.href = url;
+      link.href = fileUrl;
       link.setAttribute('download', fileName);
+      link.setAttribute('target', '_blank');
       document.body.appendChild(link);
       link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      
+      toast.success("File opened in new tab");
     } catch (error) {
       console.error("Error downloading file:", error);
       toast.error("Failed to download file");
