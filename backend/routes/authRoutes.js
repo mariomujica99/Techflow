@@ -17,11 +17,12 @@ router.post("/upload-profile-image", upload.single("image"), (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
   
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  const imageUrl = req.file.path; // Cloudinary URL
+  const cloudinaryId = req.file.filename; // Cloudinary public_id
   
   res.json({ 
-    imageUrl,
-    filename: req.file.filename // Send filename for potential cleanup
+    imageUrl: imageUrl,
+    filename: cloudinaryId // Send filename for potential cleanup
   });
 });
 

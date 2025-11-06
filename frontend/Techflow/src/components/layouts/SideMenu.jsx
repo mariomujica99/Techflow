@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { SIDE_MENU_DATA, SIDE_MENU_USER_DATA } from "../../utils/data";
+import BG_SIDEMENU_IMG from '../../assets/images/bg-sidemenu-image.png';
 import { UserContext } from "../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { getInitials } from "../../utils/getInitials";
@@ -35,7 +36,7 @@ const SideMenu = ({activeMenu}) => {
   return (
     <div className="w-64 h-[calc(100vh-64px)] bg-cover bg-center relative" 
         style={{ 
-          backgroundImage: "url('/bg-sidemenu-image.png')",
+          backgroundImage: `url(${BG_SIDEMENU_IMG})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat'

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import SideMenu from "./SideMenu";
 import logo from "../../assets/images/logo.png";
+import BG_NAV_IMG from '../../assets/images/bg-nav-image.png';
 
 const Navbar = ({ activeMenu }) => {
   const [openSideMenu, setOpenSideMenu] = useState(false);
@@ -10,7 +11,7 @@ const Navbar = ({ activeMenu }) => {
     <div
       className="flex gap-5 items-center py-4 px-7 fixed top-0 left-0 right-0 z-30"
       style={{ 
-        backgroundImage: "url('/bg-nav-image.png')",
+        backgroundImage: `url(${BG_NAV_IMG})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat'

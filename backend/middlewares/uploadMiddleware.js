@@ -1,43 +1,90 @@
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-// Configure storage for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Allowed file types
+const ALLOWED_MIME_TYPES = [
+  // Images
+  'image/jpeg',
+  'image/png',
+  'image/jpg',
+  
+  // Documents
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  
+  // Presentations
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  
+  // Spreadsheets
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+];
+
+const ALLOWED_EXTENSIONS = [
+  'jpg', 'jpeg', 'png',           // Images
+  'pdf',                          // PDF
+  'doc', 'docx',                  // Word
+  'ppt', 'pptx',                  // PowerPoint
+  'xls', 'xlsx'                   // Excel
+];
+
+// Cloudinary storage configuration
+// Files are uploaded directly to Cloudinary
+// Cloudinary returns a URL which is stored in MongoDB
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    // Determine file type for better organization
+    const fileExtension = file.originalname.split('.').pop().toLowerCase();
+    let resourceType = 'auto'; // Cloudinary auto-detects
+    
+    // Organize by file type in Cloudinary folders
+    let folder = 'techflow/documents';
+    if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+      folder = 'techflow/images';
+    } else if (fileExtension === 'pdf') {
+      folder = 'techflow/pdfs';
+    }
+    
+    return {
+      folder: folder,
+      allowed_formats: ALLOWED_EXTENSIONS,
+      resource_type: resourceType, // 'image', 'raw', or 'auto'
+    };
   }
 });
 
-// File filter to allow documents, PDFs, presentations, spreadsheets, and images
+// File validation filter. Runs before upload to validate file type
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = [
-    'image/jpeg', 
-    'image/png', 
-    'image/jpg',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  ];
-  
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    cb(null, true); // Accept file
   } else {
-    cb(new Error('Invalid file type. Only images, PDFs, Word, PowerPoint, and Excel files are allowed'), false);
+    cb(
+      new Error(
+        'Invalid file type. Only images, PDFs, Word, PowerPoint, and Excel files are allowed'
+      ),
+      false
+    );
   }
 };
 
-const upload = multer({ 
-  storage, 
-  fileFilter,
+// Multer configuration
+const upload = multer({
+  storage: storage,              // Use Cloudinary storage
+  fileFilter: fileFilter,        // Validate file types
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB limit
+    fileSize: 50 * 1024 * 1024,  // 50MB max file size
+    files: 5                      // Max 5 files per request (for multiple uploads)
   }
 });
 
