@@ -48,6 +48,24 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  
+  // Handle multer errors
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'File is too large. Maximum size is 50MB' });
+    }
+    return res.status(400).json({ message: err.message });
+  }
+  
+  // Handle other errors
+  res.status(err.status || 500).json({ 
+    message: err.message || 'Internal server error'
+  });
+});
+
 // Catch-all for undefined routes (should be last)
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });

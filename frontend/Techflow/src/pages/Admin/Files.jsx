@@ -126,16 +126,14 @@ const Files = () => {
 
   const handleDownload = async (fileId, fileName) => {
     try {
-      // Get the file metadata from your API
       const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId));
       
-      // If your API returns the file URL directly (Cloudinary URL)
       const fileUrl = response.data?.fileUrl || response.data;
       
       // Open in new tab for preview
       window.open(fileUrl, '_blank', 'noopener,noreferrer');
       
-      // Also trigger download
+      // Trigger download
       const link = document.createElement('a');
       link.href = fileUrl;
       link.setAttribute('download', fileName);

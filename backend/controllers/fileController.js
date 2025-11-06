@@ -11,13 +11,12 @@ const uploadFile = async (req, res) => {
 
     const { parentFolder } = req.body;
     
-    // Cloudinary automatically uploads the file and provides these properties:
-    // req.file.path = Cloudinary URL
-    // req.file.filename = Cloudinary public_id
     const fileUrl = req.file.path;
     const cloudinaryId = req.file.filename;
     
-    // Determine file type from original filename
+    // Get file size from Cloudinary response or use bytes field
+    const fileSize = req.file.size || req.file.bytes || 0;
+    
     const ext = path.extname(req.file.originalname).toLowerCase();
     let fileType = 'other';
     
@@ -31,9 +30,9 @@ const uploadFile = async (req, res) => {
       name: req.file.originalname,
       type: 'file',
       fileType,
-      fileUrl: fileUrl,              // Cloudinary URL
-      fileName: cloudinaryId,        // Cloudinary public_id (for deletion)
-      size: req.file.size,
+      fileUrl: fileUrl,
+      fileName: cloudinaryId,
+      size: fileSize,
       parentFolder: parentFolder || null,
       uploadedBy: req.user._id,
     });
@@ -41,6 +40,7 @@ const uploadFile = async (req, res) => {
     const populatedFile = await File.findById(newFile._id).populate('uploadedBy', 'name');
     res.status(201).json({ message: 'File uploaded successfully', file: populatedFile });
   } catch (error) {
+    console.error('Upload error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -104,7 +104,9 @@ const deleteFile = async (req, res) => {
   }
 };
 
-// Download file redirects to Cloudinary URL
+// @desc    Download a file
+// @route   GET /api/files/download/:id
+// @access  Private
 const downloadFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
@@ -113,12 +115,13 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Redirect to the URL. Cloudinary handles the download
-    res.redirect(file.fileUrl);
-    
-    // Alternative: Force download with attachment flag
-    // const downloadUrl = file.fileUrl.replace('/upload/', '/upload/fl_attachment/');
-    // res.redirect(downloadUrl);
+    // Return file metadata with Cloudinary URL
+    res.json({
+      fileUrl: file.fileUrl,
+      fileName: file.name,
+      fileType: file.fileType,
+      size: file.size
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
