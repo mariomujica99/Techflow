@@ -400,11 +400,7 @@ const Files = () => {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        // Direct download without preview
-                                        const downloadUrl = file.fileUrl.includes('cloudinary.com')
-                                          ? file.fileUrl.replace('/upload/', '/upload/fl_attachment:' + encodeURIComponent(file.name) + '/')
-                                          : file.fileUrl;
-                                        window.location.href = downloadUrl;
+                                        downloadFileWithName(file.fileUrl, file.name);
                                         setOpenDropdown(null);
                                       }}
                                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
@@ -426,17 +422,27 @@ const Files = () => {
                           </div>
                         ) : (
                           file.type === 'file' && (
-                            <button
-                              onClick={() => handleDownload(file._id, file.name, file.fileType)}
-                              className="p-2 hover:bg-gray-100 rounded cursor-pointer"
-                              title={file.fileType === 'image' ? 'View Image' : 'Preview Document'}
-                            >
-                              {file.fileType === 'image' ? (
-                                <LuEye className="text-gray-600" />
-                              ) : (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleDownload(file._id, file.name, file.fileType)}
+                                disabled={loadingFileId === file._id}
+                                className="p-2 hover:bg-gray-100 rounded cursor-pointer disabled:opacity-50"
+                                title={file.fileType === 'image' ? 'View Image' : 'Preview Document'}
+                              >
+                                {loadingFileId === file._id ? (
+                                  <LuLoader className="text-gray-600 animate-spin" />
+                                ) : (
+                                  <LuEye className="text-gray-600" />
+                                )}
+                              </button>
+                              <button
+                                onClick={() => downloadFileWithName(file.fileUrl, file.name)}
+                                className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                                title="Download File"
+                              >
                                 <LuDownload className="text-gray-600" />
-                              )}
-                            </button>
+                              </button>
+                            </div>
                           )
                         )}
                       </td>

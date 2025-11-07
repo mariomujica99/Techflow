@@ -128,12 +128,27 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Return file info for preview/download handling on frontend
+    // Map file extensions to proper MIME types
+    const mimeTypes = {
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'xls': 'application/vnd.ms-excel',
+      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'ppt': 'application/vnd.ms-powerpoint',
+      'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'pdf': 'application/pdf',
+      'image': 'image/*'
+    };
+
+    const mimeType = mimeTypes[file.fileType] || 'application/octet-stream';
+
+    // Return file info WITH mime type for frontend to handle
     res.json({
       fileUrl: file.fileUrl,
       fileName: file.name,
       fileType: file.fileType,
-      size: file.size
+      size: file.size,
+      mimeType: mimeType
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
