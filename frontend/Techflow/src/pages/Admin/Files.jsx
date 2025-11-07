@@ -64,6 +64,33 @@ const Files = () => {
     }
   };
 
+  // Helper function to download file with correct filename
+  const downloadFileWithName = async (fileUrl, fileName) => {
+    try {
+      // Fetch the file from Cloudinary as a blob
+      const response = await fetch(fileUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      
+      // Create a blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName; // Use original filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download file');
+    }
+  };
+
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) {
       toast.error("Folder name is required");
@@ -145,64 +172,30 @@ const Files = () => {
       const { fileUrl } = response.data;
 
       const mobile = isMobileDevice();
-      const previewableTypes = ['pdf', 'doc', 'ppt', 'xls'];
+      const officeTypes = ['doc', 'xls', 'ppt'];
       const imageTypes = ['image'];
+      const pdfType = 'pdf';
 
       if (imageTypes.includes(fileType)) {
-        // Images: Open directly
-        if (mobile) {
-          // Mobile: Direct navigation works better
-          window.location.href = fileUrl;
-        } else {
-          // Desktop: Try new tab
-          const newWindow = window.open(fileUrl, '_blank', 'noopener,noreferrer');
-          if (isPopupBlocked(newWindow)) {
-            toast.error("Popup blocked. Please allow popups for this site.");
-            window.location.href = fileUrl;
-          }
-        }
-      } else if (previewableTypes.includes(fileType)) {
-        // Try Microsoft first for Office files, Google for others
-        let viewerUrl;
-        if (['doc', 'xls', 'ppt'].includes(fileType)) {
-          viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`;
-        } else {
-          viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-        }
-        
-        if (mobile) {
-          // Mobile: Show options
-          const userChoice = window.confirm(
-            `Preview ${fileName}?\n\nOK = Preview in browser\nCancel = Download file`
-          );
-          
-          if (userChoice) {
-            window.location.href = viewerUrl;
-          } else {
-            const downloadUrl = fileUrl.includes('cloudinary.com')
-              ? fileUrl.replace('/upload/', '/upload/fl_attachment:' + encodeURIComponent(fileName) + '/')
-              : fileUrl;
-            window.location.href = downloadUrl;
-          }
-        } else {
-          // Desktop: Try new window
-          const newWindow = window.open(viewerUrl, '_blank', 'width=1000,height=800,noopener,noreferrer');
-          if (isPopupBlocked(newWindow)) {
-            toast.error("Popup blocked. Downloading file instead...");
-            setTimeout(() => {
-              const downloadUrl = fileUrl.includes('cloudinary.com')
-                ? fileUrl.replace('/upload/', '/upload/fl_attachment:' + encodeURIComponent(fileName) + '/')
-                : fileUrl;
-              window.location.href = downloadUrl;
-            }, 1000);
-          }
-        }
-      } else {
-        // Other files: Direct download
-        const downloadUrl = fileUrl.includes('cloudinary.com')
-          ? fileUrl.replace('/upload/', '/upload/fl_attachment:' + encodeURIComponent(fileName) + '/')
-          : fileUrl;
-        window.location.href = downloadUrl;
+        // Images: Open in new tab (target="_blank")
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+        toast.success("Image opened in new tab");
+      } 
+      else if (fileType === pdfType) {
+        // PDFs: Use Google Docs Viewer in new tab
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+        window.open(viewerUrl, '_blank', 'noopener,noreferrer');
+        toast.success("PDF opened in new tab");
+      } 
+      else if (officeTypes.includes(fileType)) {
+        // Office documents: Use Microsoft Office Online Viewer in new tab
+        const msOfficeUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`;
+        window.open(msOfficeUrl, '_blank', 'noopener,noreferrer');
+        toast.success(`${fileType.toUpperCase()} file opened in new tab`);
+      } 
+      else {
+        // Other file types: Direct download
+        await downloadFileWithName(fileUrl, fileName);
       }
 
       setOpenDropdown(null);
