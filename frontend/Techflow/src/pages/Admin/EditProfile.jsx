@@ -249,7 +249,7 @@ const EditProfile = () => {
                 className="btn-primary"
                 disabled={loading}
               >
-                {loading ? 'UPDATING' : 'UPDATE PROFILE'}
+                {loading ? 'UPDATING PROFILE' : 'UPDATE PROFILE'}
               </button>
             </div>
           </form>

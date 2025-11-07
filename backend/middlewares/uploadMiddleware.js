@@ -50,6 +50,7 @@ const storage = new CloudinaryStorage({
     // Determine resource type
     let resourceType = 'raw'; // Default to raw for documents
     let folder = 'techflow/documents';
+    let format = fileExtension; // Preserve original format
     
     // Images need 'image' resource type
     if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
@@ -63,6 +64,7 @@ const storage = new CloudinaryStorage({
     return {
       folder: folder,
       resource_type: resourceType, // 'image' or 'raw'
+      format: format, // Explicitly preserve format
       allowed_formats: ALLOWED_EXTENSIONS,
     };
   }

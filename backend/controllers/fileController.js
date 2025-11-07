@@ -2,30 +2,20 @@ const File = require('../models/File');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 
-const generateSignedUrl = (publicId, resourceType = 'raw') => {
-  const timestamp = Math.round(new Date().getTime() / 1000);
-  const signature = cloudinary.utils.api_sign_request(
-    {
-      public_id: publicId,
-      timestamp: timestamp,
-    },
-    process.env.CLOUDINARY_API_SECRET
-  );
-  
-  return cloudinary.url(publicId, {
-    resource_type: resourceType,
-    type: 'authenticated',
-    sign_url: true,
-    secure: true
-  });
-};
-
 // Upload file using Cloudinary
 const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
+
+    console.log('File upload details:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      cloudinaryPath: req.file.path,
+      cloudinaryId: req.file.filename
+    });
 
     const { parentFolder } = req.body;
     
@@ -54,9 +44,16 @@ const uploadFile = async (req, res) => {
     });
 
     const populatedFile = await File.findById(newFile._id).populate('uploadedBy', 'name');
+    
+    console.log('File saved to database:', populatedFile._id);
+    
     res.status(201).json({ message: 'File uploaded successfully', file: populatedFile });
   } catch (error) {
-    console.error('Upload error details:', error);
+    console.error('Upload error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
