@@ -242,10 +242,6 @@ const UserDashboard = () => {
           <div className="card">
             <div className="flex items-center justify-between">
               <h5 className="text-lg font-medium text-gray-600">Recent Orders</h5>
-
-              <button className="card-btn" onClick={onSeeMore}>
-                See All <LuArrowRight className="text-base" />
-              </button>
             </div>
 
             <TaskListTable 
