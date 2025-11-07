@@ -45,24 +45,39 @@ const ALLOWED_EXTENSIONS = [
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
+    // Get file extension
     const fileExtension = file.originalname.split('.').pop().toLowerCase();
+    let resourceType = 'auto';
     
-    // Determine resource type
-    let resourceType = 'raw'; // Default to raw for documents
+    // Organize by file type in Cloudinary folders
     let folder = 'techflow/documents';
-    
-    // Images need 'image' resource type
     if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
-      resourceType = 'image';
       folder = 'techflow/images';
+      resourceType = 'image';
     } else if (fileExtension === 'pdf') {
       folder = 'techflow/pdfs';
-      // PDFs stay as 'raw'
+      resourceType = 'image'; // PDF preview works with 'image' type
+    } else {
+      resourceType = 'raw'; // For doc, docx, xls, xlsx, ppt, pptx
     }
+    
+    // Create a clean public_id from original filename
+    const timestamp = Date.now();
+    const cleanFileName = file.originalname
+      .replace(/\.[^/.]+$/, '') // Remove extension
+      .replace(/[^a-zA-Z0-9]/g, '_') // Replace special chars with underscore
+      .substring(0, 50); // Limit length
+    
+    const publicId = `${cleanFileName}_${timestamp}`;
     
     return {
       folder: folder,
-      resource_type: resourceType, // 'image' or 'raw'
+      allowed_formats: ALLOWED_EXTENSIONS,
+      resource_type: resourceType,
+      public_id: publicId,
+      // Force original filename for downloads
+      use_filename: true,
+      unique_filename: false
     };
   }
 });

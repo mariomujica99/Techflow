@@ -128,22 +128,14 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    let fileUrl = file.fileUrl;
-    
-    // For documents (not images/PDFs), force download with original filename
-    if (['doc', 'xls', 'ppt'].includes(file.fileType)) {
-      // Append download parameter to the URL
-      const separator = fileUrl.includes('?') ? '&' : '?';
-      fileUrl = `${fileUrl}${separator}attachment=true`;
-    }
-
-    res.json({ 
-      fileUrl: fileUrl,
+    // Return file info for preview/download handling on frontend
+    res.json({
+      fileUrl: file.fileUrl,
       fileName: file.name,
-      fileType: file.fileType
+      fileType: file.fileType,
+      size: file.size
     });
   } catch (error) {
-    console.error('Download error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
