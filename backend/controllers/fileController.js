@@ -9,21 +9,15 @@ const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    console.log('File upload details:', {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      cloudinaryPath: req.file.path,
-      cloudinaryId: req.file.filename
-    });
-
     const { parentFolder } = req.body;
     
     const fileUrl = req.file.path;
     const cloudinaryId = req.file.filename;
     const fileSize = req.file.size || req.file.bytes || 0;
     
-    const ext = path.extname(req.file.originalname).toLowerCase();
+    // Preserve original filename with extension
+    const originalName = req.file.originalname;
+    const ext = path.extname(originalName).toLowerCase();
     let fileType = 'other';
     
     if (['.doc', '.docx'].includes(ext)) fileType = 'doc';
@@ -33,7 +27,7 @@ const uploadFile = async (req, res) => {
     else if (['.jpg', '.jpeg', '.png'].includes(ext)) fileType = 'image';
 
     const newFile = await File.create({
-      name: req.file.originalname,
+      name: originalName, // Keep original filename with extension
       type: 'file',
       fileType,
       fileUrl: fileUrl,
@@ -45,15 +39,9 @@ const uploadFile = async (req, res) => {
 
     const populatedFile = await File.findById(newFile._id).populate('uploadedBy', 'name');
     
-    console.log('File saved to database:', populatedFile._id);
-    
     res.status(201).json({ message: 'File uploaded successfully', file: populatedFile });
   } catch (error) {
-    console.error('Upload error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
+    console.error('Upload error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

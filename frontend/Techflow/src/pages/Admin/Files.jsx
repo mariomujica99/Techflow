@@ -169,32 +169,32 @@ const Files = () => {
 
     try {
       const response = await axiosInstance.get(API_PATHS.FILES.DOWNLOAD_FILE(fileId));
-      const { fileUrl } = response.data;
+      const { fileUrl, mimeType } = response.data;
 
-      const mobile = isMobileDevice();
-      const officeTypes = ['doc', 'xls', 'ppt'];
       const imageTypes = ['image'];
       const pdfType = 'pdf';
+      const officeTypes = ['doc', 'xls', 'ppt'];
 
+      // Images: Open directly in new tab
       if (imageTypes.includes(fileType)) {
-        // Images: Open in new tab (target="_blank")
         window.open(fileUrl, '_blank', 'noopener,noreferrer');
         toast.success("Image opened in new tab");
       } 
+      // PDFs: Use Google Docs Viewer for better mobile compatibility
       else if (fileType === pdfType) {
-        // PDFs: Use Google Docs Viewer in new tab
-        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=false`;
         window.open(viewerUrl, '_blank', 'noopener,noreferrer');
         toast.success("PDF opened in new tab");
       } 
+      // Office documents: Use Microsoft Office Online Viewer
       else if (officeTypes.includes(fileType)) {
-        // Office documents: Use Microsoft Office Online Viewer in new tab
+        // Force download with proper filename and extension
         const msOfficeUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(fileUrl)}`;
         window.open(msOfficeUrl, '_blank', 'noopener,noreferrer');
         toast.success(`${fileType.toUpperCase()} file opened in new tab`);
       } 
       else {
-        // Other file types: Direct download
+        // Fallback: Direct download
         await downloadFileWithName(fileUrl, fileName);
       }
 
@@ -204,6 +204,56 @@ const Files = () => {
       toast.error("Failed to open file");
     } finally {
       setLoadingFileId(null);
+    }
+  };
+
+  // Separate function for direct downloads with proper filename
+  const handleDirectDownload = async (fileUrl, fileName, fileType) => {
+    try {
+      // Get file extension from fileType
+      const extensions = {
+        'doc': '.docx',
+        'xls': '.xlsx', 
+        'ppt': '.pptx',
+        'pdf': '.pdf',
+        'image': fileName.includes('.') ? '' : '.jpg'
+      };
+      
+      const ext = extensions[fileType] || '';
+      const fullFileName = fileName.includes('.') ? fileName : fileName + ext;
+      
+      // For Office docs, transform Cloudinary URL to force download with proper filename
+      let downloadUrl = fileUrl;
+      if (['doc', 'xls', 'ppt'].includes(fileType)) {
+        // Add fl_attachment to Cloudinary URL to force download with original name
+        const urlParts = fileUrl.split('/upload/');
+        if (urlParts.length === 2) {
+          downloadUrl = `${urlParts[0]}/upload/fl_attachment:${encodeURIComponent(fullFileName)}/${urlParts[1]}`;
+        }
+      }
+      
+      const response = await fetch(downloadUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      
+      // Create blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fullFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      
+      toast.success("Download started");
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download file');
     }
   };
 
@@ -382,20 +432,17 @@ const Files = () => {
                                       {loadingFileId === file._id ? (
                                         <>
                                           <LuLoader className="text-base animate-spin" />
-                                          Loading...
+                                          Opening...
                                         </>
                                       ) : (
                                         <>
                                           <LuEye className="text-base" />
-                                          {file.fileType === 'image' ? 'View' : 'Preview'}
+                                          Preview
                                         </>
                                       )}
                                     </button>
                                     <button
-                                      onClick={() => {
-                                        downloadFileWithName(file.fileUrl, file.name);
-                                        setOpenDropdown(null);
-                                      }}
+                                      onClick={() => handleDirectDownload(file.fileUrl, file.name, file.fileType)}
                                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                                     >
                                       <LuDownload className="text-base" />
@@ -414,13 +461,13 @@ const Files = () => {
                             )}
                           </div>
                         ) : (
-                          file.type === 'file' && (
+                          !isAdmin && file.type === 'file' && (
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleDownload(file._id, file.name, file.fileType)}
                                 disabled={loadingFileId === file._id}
                                 className="p-2 hover:bg-gray-100 rounded cursor-pointer disabled:opacity-50"
-                                title={file.fileType === 'image' ? 'View Image' : 'Preview Document'}
+                                title="Preview Document"
                               >
                                 {loadingFileId === file._id ? (
                                   <LuLoader className="text-gray-600 animate-spin" />
@@ -429,7 +476,7 @@ const Files = () => {
                                 )}
                               </button>
                               <button
-                                onClick={() => downloadFileWithName(file.fileUrl, file.name)}
+                                onClick={() => handleDirectDownload(file.fileUrl, file.name, file.fileType)}
                                 className="p-2 hover:bg-gray-100 rounded cursor-pointer"
                                 title="Download File"
                               >
