@@ -63,7 +63,6 @@ const storage = new CloudinaryStorage({
     return {
       folder: folder,
       resource_type: resourceType, // 'image' or 'raw'
-      allowed_formats: ALLOWED_EXTENSIONS,
     };
   }
 });
