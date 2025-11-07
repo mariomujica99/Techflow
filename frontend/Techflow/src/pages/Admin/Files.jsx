@@ -213,7 +213,7 @@ const Files = () => {
                 onClick={handleBackClick}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
-                <LuArrowLeft className="text-xl text-gray-600" />
+                <LuArrowLeft className="text-xl text-gray-600 cursor-pointer" />
               </button>
             )}
             <div>
@@ -253,7 +253,7 @@ const Files = () => {
         </div>
 
         {/* Info Banner */}
-        <div className="mb-2 bg-gray-50 border border-primary rounded-lg p-3 flex items-center gap-2">
+        <div className="mb-2 bg-gray-50 rounded-lg px-3 py-2 md:py-3 flex items-center">
           <div className="text-primary text-xs">
             Only Image And PDF Files Are Supported
           </div>
