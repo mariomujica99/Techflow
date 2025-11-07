@@ -41,7 +41,7 @@ const SideMenu = ({activeMenu}) => {
       <div
         className="w-64 h-[calc(100vh-64px)] bg-cover bg-center relative"
         style={{
-          backgroundImage: "url(/images/bg-sidemenu-image.png)",
+          backgroundImage: "url(/bg-sidemenu-image.png)",
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",

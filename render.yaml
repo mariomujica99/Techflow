@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: techflow-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./frontend/Techflow/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
