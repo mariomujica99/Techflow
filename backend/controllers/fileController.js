@@ -129,6 +129,16 @@ const downloadFile = async (req, res) => {
     }
 
     let fileUrl = file.fileUrl;
+    
+    // For documents (not images/PDFs), force download with original filename
+    if (['doc', 'xls', 'ppt'].includes(file.fileType)) {
+      // Cloudinary transformation to force download with filename
+      const fileName = encodeURIComponent(file.name);
+      fileUrl = file.fileUrl.replace(
+        '/upload/',
+        `/upload/fl_attachment:${fileName}/`
+      );
+    }
 
     res.json({ 
       fileUrl: fileUrl,

@@ -25,6 +25,10 @@ import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 import moment from "moment";
 
+const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
 const Files = () => {
   const { user } = useContext(UserContext);
   const [files, setFiles] = useState([]);
@@ -130,20 +134,42 @@ const Files = () => {
       
       const fileUrl = response.data.fileUrl;
       const fileType = response.data.fileType;
+      const isMobile = isMobileDevice();
       
-      // For images and PDFs, open in new tab for preview
+      // For images and PDFs
       if (fileType === 'image' || fileType === 'pdf') {
-        window.open(fileUrl, '_blank', 'noopener,noreferrer');
-        toast.success(`${fileType === 'pdf' ? 'PDF' : 'Image'} opened in new tab`);
-      } else {
-        // For documents (Word, Excel, PowerPoint), force download
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.setAttribute('download', fileName);
-        link.setAttribute('target', '_blank');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (isMobile) {
+          // On mobile, directly navigate to the URL
+          window.location.href = fileUrl;
+          toast.success(`Opening ${fileType === 'pdf' ? 'PDF' : 'image'}...`);
+        } else {
+          // On desktop, open in new tab
+          const newWindow = window.open(fileUrl, '_blank', 'noopener,noreferrer');
+          if (newWindow) {
+            toast.success(`${fileType === 'pdf' ? 'PDF' : 'Image'} opened in new tab`);
+          } else {
+            toast.error("Please allow popups for this site");
+          }
+        }
+      } 
+      // For documents (Word, Excel, PowerPoint)
+      else if (fileType === 'doc' || fileType === 'xls' || fileType === 'ppt') {
+        // Use Google Docs Viewer
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+        const newWindow = window.open(viewerUrl, '_blank', 'noopener,noreferrer');
+        
+        if (newWindow) {
+          toast.success("Document opened in viewer");
+        } else {
+          // Fallback to direct download
+          window.location.href = fileUrl;
+          toast.success("Download started");
+        }
+      }
+
+      // For other file types
+      else {
+        window.location.href = fileUrl;
         toast.success("Download started");
       }
     } catch (error) {
