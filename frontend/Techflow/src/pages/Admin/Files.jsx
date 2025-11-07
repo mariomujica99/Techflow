@@ -206,13 +206,6 @@ const Files = () => {
   return (
     <DashboardLayout activeMenu="Files">
       <div className="mt-5 mb-10">
-        {/* Info Banner */}
-        <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-          <div className="text-blue-600 text-sm font-medium">
-            ℹ️ Only Images (.jpg, .jpeg, .png) and PDF Files (.pdf) are allowed
-          </div>
-        </div>
-
         <div className="flex flex-row items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             {folderPath.length > 0 && (
@@ -259,9 +252,16 @@ const Files = () => {
           )}
         </div>
 
+        {/* Info Banner */}
+        <div className="mb-2 bg-gray-50 border border-primary rounded-lg p-3 flex items-center gap-2">
+          <div className="text-primary text-xs">
+            Only Image And PDF Files Are Supported
+          </div>
+        </div>
+
         {/* Files Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className={`overflow-x-auto ${isAdmin ? 'pb-20' : ''}`}>
+          <div className={`overflow-x-auto ${isAdmin ? 'pb-30' : ''}`}>
             <table className="min-w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
