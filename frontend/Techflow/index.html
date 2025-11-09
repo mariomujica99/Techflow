@@ -2,11 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icon.png" />
-    <meta name="theme-color" content="#30b5b2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Favicon Configuration -->
+    <!-- High-quality icons for modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="1024x1024" href="/icon.png" />
+    
+    <!-- Standard favicon sizes -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    
+    <!-- Apple Touch Icons (iOS Safari) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <meta name="theme-color" content="#30b5b2" />
     
     <!-- Mobile optimizations -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,8 +29,8 @@
     <!-- Prevent timeout on slow connections -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <!-- Preload background images -->
-    <link rel="preload" as="image" href="/icon.svg" />
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="/favicon-96x96.png" />
     <link rel="preload" as="image" href="/bg-sidemenu-image.png" />
     
     <title>Techflow</title>
