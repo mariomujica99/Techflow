@@ -87,7 +87,7 @@ const Login = () => {
 
         {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
-        <button type="submit" className="btn-primary mt-4">
+        <button type="submit" className="w-full text-sm font-medium text-white bg-primary shadow-lg shadow-primary/20 p-[10px] rounded-md mt-4 mb-1 hover:bg-primary/80 hover:text-white cursor-pointer">
           LOG IN
         </button>
 

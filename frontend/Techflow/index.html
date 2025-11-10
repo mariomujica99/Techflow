@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
     <!-- Favicon Configuration -->
     <!-- High-quality icons for modern browsers -->
@@ -19,12 +19,13 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/site.webmanifest" />
     
+    <!-- Theme color - matches iOS/Android status bar -->
     <meta name="theme-color" content="#30b5b2" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     
     <!-- Mobile optimizations -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Prevent timeout on slow connections -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -34,6 +35,22 @@
     <link rel="preload" as="image" href="/bg-sidemenu-image.png" />
     
     <title>Techflow</title>
+    
+    <!-- PWA viewport-fit for notched devices -->
+    <style>
+      /* Safe area insets for PWA - prevents content behind status bar */
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      
+      /* Ensure root takes full height */
+      #root {
+        min-height: 100vh;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
