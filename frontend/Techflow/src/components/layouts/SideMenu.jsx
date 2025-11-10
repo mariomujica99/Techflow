@@ -39,7 +39,7 @@ const SideMenu = ({activeMenu}) => {
 
   return (
       <div
-        className="w-64 h-[calc(100vh-64px)] bg-cover bg-center relative"
+        className="w-64 h-[calc(100dvh-64px)] bg-cover bg-center relative overflow-hidden"
         style={{
           backgroundImage: "url(/bg-sidemenu-image.png)",
           backgroundSize: "cover",
@@ -79,7 +79,7 @@ const SideMenu = ({activeMenu}) => {
         </div>
 
         {/* Scrollable Menu Section */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-contain touch-pan-y">
           {sideMenuData.map((item, index) => (
             <button
               key={`menu_${index}`}
