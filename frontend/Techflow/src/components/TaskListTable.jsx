@@ -41,7 +41,7 @@ const TaskListTable = ({tableData, getOrderStatus}) => {
               <tr key={task._id} className="border-t border-gray-200">
                 <td className="py-3 px-2 md:px-4 text-gray-700 text-[13px] line-clamp-1 overflow-hidden">{task.title}</td>
                 <td className="py-3 px-2 md:px-4">
-                  <span className={`w-[86px] px-2 py-1 text-xs rounded inline-flex items-center justify-center ${getStatusBadgeColor(orderStatus)}`}>{orderStatus}</span>
+                  <span className={`w-[90px] px-2 py-1 text-xs rounded inline-flex items-center justify-center ${getStatusBadgeColor(orderStatus)}`}>{orderStatus}</span>
                 </td>
                 <td className="py-3 px-2 md:px-4">
                   <span className={`w-[66px] px-2 py-1 text-xs rounded inline-flex items-center justify-center ${getPriorityBadgeColor(task.priority)}`}>{task.priority}</span>

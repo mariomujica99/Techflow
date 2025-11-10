@@ -1056,10 +1056,10 @@ const WhiteboardSection = ({
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
           <button 
-            className="flex flex-shrink-0 items-center gap-1 text-[10px] md:text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
+            className="flex flex-shrink-0 items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onToggleDropdown}
           >
-            Add <LuChevronDown className={`text-xs md:text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            Add <LuChevronDown className={`text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           
           {dropdownOpen && roomNumbers.length > 0 && (
@@ -1067,7 +1067,7 @@ const WhiteboardSection = ({
               {roomNumbers.map(roomNumber => (
                 <button
                   key={roomNumber}
-                  className="block w-full text-left px-3 py-2 text-xs md:text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-base text-gray-600 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
                     onAdd(roomNumber);
                     onToggleDropdown();
@@ -1125,7 +1125,7 @@ const WhiteboardSection = ({
               onClick={() => onTaskClick(task._id)}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className={`text-xs md:text-sm font-medium ${
+                <span className={`text-sm font-medium ${
                   relevantTodo?.completed 
                     ? 'text-green-700' 
                     : 'text-gray-600'
