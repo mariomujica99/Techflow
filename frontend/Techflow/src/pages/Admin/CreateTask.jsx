@@ -26,7 +26,7 @@ const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
-  const [hasLoadedTaskData, setHasLoadedTaskData] = useState(false);
+  const hasLoadedTaskData = useRef(false);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -205,6 +205,9 @@ const CreateTask = () => {
         const taskInfo = response.data;
         setCurrentTask(taskInfo);
         
+        // Set the ref before updating state
+        hasLoadedTaskData.current = true;
+        
         setTaskData((prevState) => ({
           title: taskInfo.title,
           orderType: taskInfo.orderType || "Routine EEG | IP",
@@ -218,10 +221,6 @@ const CreateTask = () => {
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           comments: taskInfo?.comments || [],
         }));
-        
-        setTimeout(() => {
-          setHasLoadedTaskData(true);
-        }, 0);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -273,7 +272,7 @@ const CreateTask = () => {
   // Auto-populate checklist when orderType changes
   useEffect(() => {
     // Skip if we're editing an existing task and haven't finished loading
-    if (taskId && !hasLoadedTaskData) {
+    if (taskId && !hasLoadedTaskData.current) {
       return; // Don't reset fields during initial load when editing
     }
     
@@ -326,7 +325,7 @@ const CreateTask = () => {
         ...resetData
       }));
     }
-  }, [taskData.orderType, taskData.title, taskId, hasLoadedTaskData]);
+  }, [taskData.orderType, taskData.title, taskId]);
 
   // Auto-select order type and computer station based on room number
   useEffect(() => {
