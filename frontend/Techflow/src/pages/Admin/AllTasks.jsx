@@ -64,11 +64,19 @@ const AllTasks = () => {
       const statusSummary = response.data?.statusSummary || {};
 
       const statusArrary = [
-        { label: "All", count: statusSummary.all || 0 },
-        { label: "Pending", count: statusSummary.pendingTasks || 0 },
-        { label: "In Progress", count: statusSummary.inProgressTasks || 0 },
-        { label: "Completed", count: statusSummary.completedTasks || 0 },
-        { label: "Disconnected", count: statusSummary.disconnectedTasks || 0 },
+        { label: "All", count: statusSummary.all || 0, showBadge: false },
+        { label: "Pending", count: statusSummary.pendingTasks || 0, showBadge: false },
+        { label: "In Progress", count: statusSummary.inProgressTasks || 0, showBadge: false },
+        { 
+          label: "Completed", 
+          count: statusSummary.completedTasks || 0, 
+          showBadge: (statusSummary.completedTasks || 0) >= 25 
+        },
+        { 
+          label: "Disconnected", 
+          count: statusSummary.disconnectedTasks || 0, 
+          showBadge: (statusSummary.disconnectedTasks || 0) >= 10 
+        },
       ];
 
       setTabs(statusArrary);
@@ -119,33 +127,18 @@ const AllTasks = () => {
 
           <div className="min-h-[3.5rem] flex items-end">
             {tabs?.[0]?.count > 0 ? (
-              <div className="relative">
-                <TaskStatusTabs
-                  tabs={tabs}
-                  activeTab={filterStatus}
-                  setActiveTab={setFilterStatus}
-                />
-                {/* Badge for disconnected warning */}
-                {disconnectedCount >= 10 && (
-                  <div 
-                    className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
-                    onClick={() => setShowDisconnectedWarning(true)}
-                    title="Click to view warning"
-                  >
-                    !
-                  </div>
-                )}
-                {/* Badge for completed warning */}
-                {completedCount >= 25 && (
-                  <div 
-                    className="absolute top-0 right-34 md:right-39 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
-                    onClick={() => setShowCompletedWarning(true)}
-                    title="Click to view warning"
-                  >
-                    !
-                  </div>
-                )}                
-              </div>
+              <TaskStatusTabs
+                tabs={tabs}
+                activeTab={filterStatus}
+                setActiveTab={setFilterStatus}
+                onBadgeClick={(tabLabel) => {
+                  if (tabLabel === "Disconnected") {
+                    setShowDisconnectedWarning(true);
+                  } else if (tabLabel === "Completed") {
+                    setShowCompletedWarning(true);
+                  }
+                }}
+              />
             ) : (
               <div></div>
             )}
