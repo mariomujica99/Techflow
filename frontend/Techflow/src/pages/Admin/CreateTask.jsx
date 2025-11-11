@@ -216,7 +216,17 @@ const CreateTask = () => {
         hasLoadedTaskData.current = true;
         
         setTaskData((prevState) => ({
-          // ... existing code
+          title: taskInfo.title,
+          orderType: taskInfo.orderType || "Routine EEG | IP",
+          electrodeType: taskInfo.electrodeType || "Regular Leads",
+          adhesiveType: taskInfo.adhesiveType || "None",
+          allergyType: taskInfo.allergyType || "None",
+          sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
+          priority: taskInfo.priority,
+          comStation: taskInfo?.comStation?._id || "",
+          assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
+          todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
+          comments: taskInfo?.comments || [],
         }));
       }
     } catch (error) {
