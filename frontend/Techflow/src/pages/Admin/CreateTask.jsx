@@ -221,7 +221,6 @@ const CreateTask = () => {
         
         setTimeout(() => {
           setHasLoadedTaskData(true);
-          setIsInitialLoad(false);
         }, 0);
       }
     } catch (error) {

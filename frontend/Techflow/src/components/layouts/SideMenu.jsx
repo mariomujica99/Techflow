@@ -34,7 +34,7 @@ const SideMenu = ({activeMenu}) => {
 
   useEffect(() => {
     const img = new Image()
-    img.src = '/images/bg-sidemenu-image.png'
+    img.src = '/bg-sidemenu-image.png'
   }, [])
 
   return (
