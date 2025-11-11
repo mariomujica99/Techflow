@@ -203,23 +203,20 @@ const CreateTask = () => {
 
       if (response.data) {
         const taskInfo = response.data;
-        setCurrentTask(taskInfo);
         
-        // Set the ref before updating state
+        console.log("=== LOADED TASK DATA ===");
+        console.log("electrodeType:", taskInfo.electrodeType);
+        console.log("adhesiveType:", taskInfo.adhesiveType);
+        console.log("allergyType:", taskInfo.allergyType);
+        console.log("sleepDeprivationType:", taskInfo.sleepDeprivationType);
+        console.log("orderType:", taskInfo.orderType);
+        console.log("title (room):", taskInfo.title);
+        
+        setCurrentTask(taskInfo);
         hasLoadedTaskData.current = true;
         
         setTaskData((prevState) => ({
-          title: taskInfo.title,
-          orderType: taskInfo.orderType || "Routine EEG | IP",
-          electrodeType: taskInfo.electrodeType || "Regular Leads",
-          adhesiveType: taskInfo.adhesiveType || "None",
-          allergyType: taskInfo.allergyType || "None",
-          sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
-          priority: taskInfo.priority,
-          comStation: taskInfo?.comStation?._id || "",
-          assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
-          todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
-          comments: taskInfo?.comments || [],
+          // ... existing code
         }));
       }
     } catch (error) {
@@ -271,13 +268,21 @@ const CreateTask = () => {
 
   // Auto-populate checklist when orderType changes
   useEffect(() => {
-    // Skip if we're editing an existing task and haven't finished loading
+    console.log("=== ORDER TYPE EFFECT TRIGGERED ===");
+    console.log("taskId:", taskId);
+    console.log("hasLoadedTaskData.current:", hasLoadedTaskData.current);
+    console.log("orderType:", taskData.orderType);
+    console.log("title:", taskData.title);
+    console.log("Current electrodeType:", taskData.electrodeType);
+    console.log("Current adhesiveType:", taskData.adhesiveType);
+    
     if (taskId && !hasLoadedTaskData.current) {
-      return; // Don't reset fields during initial load when editing
+      console.log("RETURNING EARLY - editing task, not loaded yet");
+      return;
     }
     
-    // Skip if this is an auto-selection from room mapping
     const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
+    console.log("isRoomAutoSelection:", isRoomAutoSelection);
     
     if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType] && !isRoomAutoSelection) {
       const timestamp = formatTimestamp();
