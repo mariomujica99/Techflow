@@ -123,7 +123,7 @@ const WorkedOnTasks = () => {
     <DashboardLayout activeMenu="Worked-On Tasks">
       <div className="mt-2.5 mb-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-          <h2 className="text-xl md:text-xl text-gray-500 font-bold flex-shrink-0 whitespace-nowrap mr-3">Worked-On Tasks</h2>
+          <h2 className="text-xl md:text-xl text-gray-500 font-bold flex-shrink-0 whitespace-nowrap mr-10">Worked-On Tasks</h2>
 
           <div className="min-h-[3.5rem] flex items-end">
             {tabs?.[0]?.count > 0 ? (
