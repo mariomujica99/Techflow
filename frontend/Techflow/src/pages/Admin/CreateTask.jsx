@@ -26,7 +26,7 @@ const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [hasLoadedTaskData, setHasLoadedTaskData] = useState(false);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -204,7 +204,6 @@ const CreateTask = () => {
       if (response.data) {
         const taskInfo = response.data;
         setCurrentTask(taskInfo);
-        setIsInitialLoad(false); // Mark that initial load is complete
         
         setTaskData((prevState) => ({
           title: taskInfo.title,
@@ -219,6 +218,11 @@ const CreateTask = () => {
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           comments: taskInfo?.comments || [],
         }));
+        
+        setTimeout(() => {
+          setHasLoadedTaskData(true);
+          setIsInitialLoad(false);
+        }, 0);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -269,8 +273,8 @@ const CreateTask = () => {
 
   // Auto-populate checklist when orderType changes
   useEffect(() => {
-    // Skip if we're editing an existing task AND still on initial load
-    if (taskId && isInitialLoad) {
+    // Skip if we're editing an existing task and haven't finished loading
+    if (taskId && !hasLoadedTaskData) {
       return; // Don't reset fields during initial load when editing
     }
     
@@ -323,7 +327,7 @@ const CreateTask = () => {
         ...resetData
       }));
     }
-  }, [taskData.orderType, taskData.title, taskId, isInitialLoad]);
+  }, [taskData.orderType, taskData.title, taskId, hasLoadedTaskData]);
 
   // Auto-select order type and computer station based on room number
   useEffect(() => {
