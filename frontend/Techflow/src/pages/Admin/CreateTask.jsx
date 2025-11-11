@@ -293,8 +293,10 @@ const CreateTask = () => {
     
     const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
     console.log("isRoomAutoSelection:", isRoomAutoSelection);
+    // Only auto-populate/reset for new tasks or when user manually changes order type
+    const isInitialLoadOfExistingTask = taskId && hasLoadedTaskData.current && currentTask?.orderType === taskData.orderType;
     
-    if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType] && !isRoomAutoSelection) {
+    if (taskData.orderType && AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType] && !isRoomAutoSelection && !isInitialLoadOfExistingTask) {
       const timestamp = formatTimestamp();
       const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[taskData.orderType].map(item => `${item} ${timestamp}`);
       const existingCustomItems = taskData.todoChecklist.filter(item => 
@@ -340,7 +342,7 @@ const CreateTask = () => {
         ...resetData
       }));
     }
-  }, [taskData.orderType, taskData.title, taskId]);
+  }, [taskData.orderType, taskData.title, taskId, currentTask]);
 
   // Auto-select order type and computer station based on room number
   useEffect(() => {
