@@ -80,7 +80,7 @@ const ManageTasks = () => {
         { 
           label: "Disconnected", 
           count: statusSummary.disconnectedTasks || 0, 
-          showBadge: (statusSummary.disconnectedTasks || 0) >= 10 
+          showBadge: (statusSummary.disconnectedTasks || 0) >= 15
         },
       ];
 
@@ -154,7 +154,7 @@ const ManageTasks = () => {
   useEffect(() => {
     const hasSeenWarning = sessionStorage.getItem('disconnectedWarning_ManageTasks');
     
-    if (filterStatus === "Disconnected" && !hasSeenWarning && disconnectedCount >= 10) {
+    if (filterStatus === "Disconnected" && !hasSeenWarning && disconnectedCount >= 15) {
       setShowDisconnectedWarning(true);
       sessionStorage.setItem('disconnectedWarning_ManageTasks', 'true');
     }
