@@ -204,14 +204,6 @@ const CreateTask = () => {
       if (response.data) {
         const taskInfo = response.data;
         
-        console.log("=== LOADED TASK DATA ===");
-        console.log("electrodeType:", taskInfo.electrodeType);
-        console.log("adhesiveType:", taskInfo.adhesiveType);
-        console.log("allergyType:", taskInfo.allergyType);
-        console.log("sleepDeprivationType:", taskInfo.sleepDeprivationType);
-        console.log("orderType:", taskInfo.orderType);
-        console.log("title (room):", taskInfo.title);
-        
         setCurrentTask(taskInfo);
         hasLoadedTaskData.current = true;
         
@@ -278,21 +270,11 @@ const CreateTask = () => {
 
   // Auto-populate checklist when orderType changes
   useEffect(() => {
-    console.log("=== ORDER TYPE EFFECT TRIGGERED ===");
-    console.log("taskId:", taskId);
-    console.log("hasLoadedTaskData.current:", hasLoadedTaskData.current);
-    console.log("orderType:", taskData.orderType);
-    console.log("title:", taskData.title);
-    console.log("Current electrodeType:", taskData.electrodeType);
-    console.log("Current adhesiveType:", taskData.adhesiveType);
-    
     if (taskId && !hasLoadedTaskData.current) {
-      console.log("RETURNING EARLY - editing task, not loaded yet");
       return;
     }
     
     const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
-    console.log("isRoomAutoSelection:", isRoomAutoSelection);
     // Only auto-populate/reset for new tasks or when user manually changes order type
     const isInitialLoadOfExistingTask = taskId && hasLoadedTaskData.current && currentTask?.orderType === taskData.orderType;
     
