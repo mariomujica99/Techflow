@@ -26,6 +26,7 @@ const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -203,19 +204,20 @@ const CreateTask = () => {
       if (response.data) {
         const taskInfo = response.data;
         setCurrentTask(taskInfo);
-
+        setIsInitialLoad(false); // Mark that initial load is complete
+        
         setTaskData((prevState) => ({
           title: taskInfo.title,
-          orderType: taskInfo.orderType ?? "Routine EEG | IP",
-          electrodeType: taskInfo.electrodeType ?? "Regular Leads",
-          adhesiveType: taskInfo.adhesiveType ?? "None",
-          allergyType: taskInfo.allergyType ?? "None",
-          sleepDeprivationType: taskInfo.sleepDeprivationType ?? "Not Ordered",
+          orderType: taskInfo.orderType || "Routine EEG | IP",
+          electrodeType: taskInfo.electrodeType || "Regular Leads",
+          adhesiveType: taskInfo.adhesiveType || "None",
+          allergyType: taskInfo.allergyType || "None",
+          sleepDeprivationType: taskInfo.sleepDeprivationType || "Not Ordered",
           priority: taskInfo.priority,
-          comStation: taskInfo?.comStation?._id ?? "",
-          assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) ?? [],
-          todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) ?? [],
-          comments: taskInfo?.comments ?? [],
+          comStation: taskInfo?.comStation?._id || "",
+          assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
+          todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
+          comments: taskInfo?.comments || [],
         }));
       }
     } catch (error) {
@@ -267,6 +269,11 @@ const CreateTask = () => {
 
   // Auto-populate checklist when orderType changes
   useEffect(() => {
+    // Skip if we're editing an existing task AND still on initial load
+    if (taskId && isInitialLoad) {
+      return; // Don't reset fields during initial load when editing
+    }
+    
     // Skip if this is an auto-selection from room mapping
     const isRoomAutoSelection = ROOM_MAPPINGS[taskData.title]?.orderType === taskData.orderType;
     
@@ -316,7 +323,7 @@ const CreateTask = () => {
         ...resetData
       }));
     }
-  }, [taskData.orderType, taskData.title]);
+  }, [taskData.orderType, taskData.title, taskId, isInitialLoad]);
 
   // Auto-select order type and computer station based on room number
   useEffect(() => {
