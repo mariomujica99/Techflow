@@ -12,7 +12,7 @@ const CustomLegend = ({payload}) => {
   });
 
   return (
-    <div className="flex justify-center mt-8 md:mt-4">
+    <div className="flex justify-center mt-4">
       <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-x-6 gap-y-2">
         {sortedPayload.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center space-x-2">
