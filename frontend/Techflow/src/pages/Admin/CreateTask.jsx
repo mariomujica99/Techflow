@@ -27,6 +27,9 @@ const CreateTask = () => {
   const { taskId } = location.state || {};
   const navigate = useNavigate();
   const hasLoadedTaskData = useRef(false);
+  
+  // Ref for the template section
+  const templateSectionRef = useRef(null);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -380,6 +383,19 @@ const CreateTask = () => {
     }
   }, [location.state?.floorWhiteboardSection, taskId]);
 
+  // Scroll to template section
+  useEffect(() => {
+    if (location.state?.floorWhiteboardSection && showTemplateInputs && templateSectionRef.current) {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        templateSectionRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 100);
+    }
+  }, [showTemplateInputs, location.state?.floorWhiteboardSection]);
+
   useEffect(() => {
     if (taskId) {
       getTaskDetailsByID(taskId);
@@ -629,6 +645,7 @@ const CreateTask = () => {
                   handleValueChange("todoChecklist", value)
                 }
                 currentRoom={taskData.title}
+                templateSectionRef={templateSectionRef}
               />
             </div>
 

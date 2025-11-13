@@ -9,7 +9,7 @@ const formatTimestamp = () => {
   return moment().format('(M/D/YY [at] h:mm A)');
 };
 
-const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
+const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef }) => {
   const location = useLocation();
 
   const [selectedTemplate, setSelectedTemplate] = useState("");
@@ -293,7 +293,10 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom }) => {
         {showTemplateInputs && selectedTemplate && (() => {
           const config = getTemplateInputConfig(selectedTemplate);
           return (
-            <div className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-md">
+            <div 
+              ref={templateSectionRef}
+              className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-md"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {config.showDay && (
                   <div>
