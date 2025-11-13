@@ -250,7 +250,7 @@ const ManageTasks = () => {
               : 'justify-center lg:justify-start'
           }`}>
             <button
-              className="w-full lg:w-auto flex items-center justify-center gap-3 text-xs md:text-[13px] text-rose-500 bg-rose-50 border border-rose-200 rounded px-2 md:px-3 py-2 hover:border-rose-400 cursor-pointer"
+              className="w-full lg:w-auto flex items-center justify-center gap-3 font-medium text-xs md:text-[13px] text-rose-500 bg-rose-50 border border-rose-50 rounded-xl px-2 md:px-3 py-2 hover:border-rose-300 cursor-pointer"
               onClick={() => setShowDeleteAllModal(true)}
             >
               <LuTrash2 className="text-base" />
@@ -260,32 +260,36 @@ const ManageTasks = () => {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 mt-2 md:mt-4">
-          {allTasks?.map((item, index) => (
-            <TaskCard
-              key={item._id}
-              title={item.title}
-              orderType={item.orderType}
-              electrodeType={item.electrodeType}
-              adhesiveType={item.adhesiveType}
-              allergyType={item.allergyType}
-              sleepDeprivationType={item.sleepDeprivationType}
-              priority={item.priority}
-              comStation={item.comStation}
-              status={item.status}
-              progress={item.progress}
-              createdAt={item.createdAt}
-              completedOn={item.completedOn}
-              assignedTo={item.assignedTo || []}
-              commentCount={item.comments?.length || 0}
-              completedTodoCount={item.completedTodoCount || 0}
-              todoChecklist={item.todoChecklist || []}
-              onClick={() => {
-                handleClick(item);
-              }}
-              onDelete={() => handleDeleteClick(item._id)}
-              showDeleteButton={true}
-            />
-          ))}
+          {isLoadingTasks ? (
+            <div></div>
+          ) : (
+            allTasks?.map((item, index) => (
+              <TaskCard
+                key={item._id}
+                title={item.title}
+                orderType={item.orderType}
+                electrodeType={item.electrodeType}
+                adhesiveType={item.adhesiveType}
+                allergyType={item.allergyType}
+                sleepDeprivationType={item.sleepDeprivationType}
+                priority={item.priority}
+                comStation={item.comStation}
+                status={item.status}
+                progress={item.progress}
+                createdAt={item.createdAt}
+                completedOn={item.completedOn}
+                assignedTo={item.assignedTo || []}
+                commentCount={item.comments?.length || 0}
+                completedTodoCount={item.completedTodoCount || 0}
+                todoChecklist={item.todoChecklist || []}
+                onClick={() => {
+                  handleClick(item);
+                }}
+                onDelete={() => handleDeleteClick(item._id)}
+                showDeleteButton={true}
+              />
+            ))
+          )}
         </div>
       </div>
 
