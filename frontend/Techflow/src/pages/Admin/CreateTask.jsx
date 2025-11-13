@@ -734,9 +734,12 @@ const CreateTask = () => {
       <Modal
         isOpen={showInactiveModal}
         onClose={() => setShowInactiveModal(false)}
-        title="Inactive Computer Station"
+        title="Computer Station Issue"
       >
-        <p className="text-sm dark:text-white">The selected computer station is currently inactive. You can change the status under the Computer Stations Tab.</p>
+        <p className="text-sm dark:text-white">
+          This computer station has a reported issue but can still be selected if functional. 
+          To resolve, update the status to Active in the Computer Stations Tab.
+        </p>
         <div className="flex justify-end mt-4">
           <button className="card-btn" onClick={() => setShowInactiveModal(false)}>
             OK

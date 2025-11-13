@@ -534,7 +534,7 @@ const FloorWhiteboard = () => {
               
               <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
               <p className="text-xs text-gray-400 truncate">
-                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"}
+                {lastUpdated ? moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A") : "Not Updated"}
               </p>
             </div>
 
@@ -771,7 +771,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
         </button>
       </div>
 
-      <div className="space-y-2 max-h-96 overflow-y-auto">
+      <div className="space-y-2 max-h-100 overflow-y-auto">
         {tasks.map((task) => {
           const { roomWithPrefix, orderTypeShort } = formatOrderDisplay(task);
           

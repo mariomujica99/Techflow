@@ -274,11 +274,21 @@ const LabWhiteboard = () => {
               <p className="text-sm md:text-base text-gray-600 font-medium">
                 {moment().format("dddd Do MMMM YYYY")}
               </p>
-
               <p className="text-xs font-medium text-gray-400">Whiteboard Last Updated</p>
-              <p className="text-xs text-gray-400 truncate">
-                {whiteboardData?.updatedAt ? moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A") : "Never Updated"} 
-                {whiteboardData?.lastUpdatedBy && ` by ${whiteboardData.lastUpdatedBy.name}`}
+              <p className="text-xs text-gray-400">
+                {whiteboardData?.updatedAt ? (
+                  <>
+                    {moment(whiteboardData.updatedAt).format("dddd Do MMM YYYY [at] h:mm A")}
+                    {whiteboardData?.lastUpdatedBy && (
+                      <>
+                        <span className="hidden md:inline"> by {whiteboardData.lastUpdatedBy.name}</span>
+                        <span className="block md:hidden">by {whiteboardData.lastUpdatedBy.name}</span>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  "Not Updated"
+                )}
               </p>
             </div>
                   

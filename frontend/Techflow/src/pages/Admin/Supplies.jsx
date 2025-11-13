@@ -223,14 +223,21 @@ const Supplies = () => {
               <p className="text-sm md:text-base text-gray-600 font-medium">
                 {moment().format("dddd Do MMMM YYYY")}
               </p>
-
               <p className="text-xs font-medium text-gray-400">Supply Lists Last Updated</p>
-              <p className="text-xs text-gray-400 truncate">
-                {lastUpdated
-                  ? `${moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A")}${
-                      lastUpdatedBy ? ` by ${lastUpdatedBy}` : ""
-                    }`
-                  : "Never Updated"}
+              <p className="text-xs text-gray-400">
+                {lastUpdated ? (
+                  <>
+                    {moment(lastUpdated).format("dddd Do MMM YYYY [at] h:mm A")}
+                    {lastUpdatedBy && (
+                      <>
+                        <span className="hidden md:inline"> by {lastUpdatedBy}</span>
+                        <span className="block md:hidden">by {lastUpdatedBy}</span>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  "Not Updated"
+                )}
               </p>
             </div>
 
