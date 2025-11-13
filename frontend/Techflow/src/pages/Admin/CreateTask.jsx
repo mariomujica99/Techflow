@@ -393,7 +393,7 @@ const CreateTask = () => {
           behavior: 'smooth', 
           block: 'center' 
         });
-      }, 100);
+      }, 500);
     }
   }, [showTemplateInputs, location.state?.floorWhiteboardSection]);
 
