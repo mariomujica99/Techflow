@@ -362,7 +362,7 @@ const Files = () => {
                           </div>
                         ) : (
                           !isAdmin && file.type === 'file' && (
-                            <div className="flex items-center gap-1">
+                            <div className="inline-flex items-center gap-1">
                               <button
                                 onClick={() => handlePreview(file)}
                                 className="p-2 hover:bg-gray-100 rounded cursor-pointer"

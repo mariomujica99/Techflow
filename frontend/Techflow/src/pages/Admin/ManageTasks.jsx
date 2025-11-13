@@ -24,6 +24,7 @@ const ManageTasks = () => {
   const [completedCount, setCompletedCount] = useState(0);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [deletingAll, setDeletingAll] = useState(false);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
   const navigate = useNavigate();
 
@@ -37,6 +38,7 @@ const ManageTasks = () => {
   };
 
   const getAllTasks = async () => {
+    setIsLoadingTasks(true);
     try {
       const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS_EVERYONE, {
         params: {
@@ -91,6 +93,8 @@ const ManageTasks = () => {
       setCompletedCount(statusSummary.completedTasks || 0);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setIsLoadingTasks(false);
     }
   };
 
@@ -237,10 +241,16 @@ const ManageTasks = () => {
         </div>
 
         {/* Delete All Button - Shows for Completed and Disconnected tabs */}
-        {(filterStatus === "Completed" || filterStatus === "Disconnected") && allTasks.length > 0 && (
-          <div className="flex justify-end mt-3 mb-2">
+        {!isLoadingTasks && 
+        (filterStatus === "Completed" || filterStatus === "Disconnected") && 
+        allTasks.length > 0 && (
+          <div className={`flex my-2 ${
+            user?.role === 'admin' 
+              ? 'justify-center lg:justify-end' 
+              : 'justify-center lg:justify-start'
+          }`}>
             <button
-              className="w-full lg:w-auto flex items-center justify-center gap-1.5 text-xs md:text-sm font-medium text-rose-500 bg-rose-50 border border-rose-100 rounded-lg px-4 py-2 hover:bg-rose-100 cursor-pointer"
+              className="w-full lg:w-auto flex items-center justify-center gap-3 text-xs md:text-[13px] text-rose-500 bg-rose-50 border border-rose-200 rounded px-2 md:px-3 py-2 hover:border-rose-400 cursor-pointer"
               onClick={() => setShowDeleteAllModal(true)}
             >
               <LuTrash2 className="text-base" />
