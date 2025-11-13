@@ -31,8 +31,8 @@ const CustomPieChart = ({data, colors}) => {
           nameKey="status"
           cx="50%"
           cy="50%"
-          outerRadius={isMobile ? 110 : 130}
-          innerRadius={isMobile ? 85 : 100}
+          outerRadius={isMobile ? 117 : 130}
+          innerRadius={isMobile ? 90 : 100}
           labelLine={false}
         >
           {data.map((entry, index) => (
