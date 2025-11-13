@@ -88,12 +88,14 @@ const CreateTask = () => {
 
   const handleComStationChange = (stationId) => {
     const selectedStation = allComStations.find(station => station._id === stationId);
+    
+    // Always set the station value
+    handleValueChange("comStation", stationId || null);
+    
+    // Show warning modal if inactive, but don't prevent selection
     if (selectedStation && selectedStation.comStationStatus === 'Inactive') {
       setShowInactiveModal(true);
-      handleValueChange("comStation", null);
-      return;
     }
-    handleValueChange("comStation", stationId || null);
   };
 
   // Create Task
@@ -387,13 +389,29 @@ const CreateTask = () => {
   // Scroll to template section
   useEffect(() => {
     if (location.state?.floorWhiteboardSection && showTemplateInputs && templateSectionRef.current) {
-      // Small delay to ensure DOM is fully rendered
-      setTimeout(() => {
-        templateSectionRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
-        });
-      }, 700);
+      let attempts = 0;
+      let animationFrameId = null;
+      const maxAttempts = 60;
+      
+      const checkAndScroll = () => {
+        if (templateSectionRef.current?.offsetHeight > 0) {
+          templateSectionRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        } else if (attempts < maxAttempts) {
+          attempts++;
+          animationFrameId = requestAnimationFrame(checkAndScroll);
+        }
+      };
+      
+      checkAndScroll();
+      
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+      };
     }
   }, [showTemplateInputs, location.state?.floorWhiteboardSection]);
 
@@ -615,7 +633,7 @@ const CreateTask = () => {
                   }))}
                   value={taskData.comStation}
                   onChange={handleComStationChange}
-                  placeholder="Station"
+                  placeholder="COM"
                 />
               </div>
 
