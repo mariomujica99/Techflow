@@ -358,6 +358,50 @@ const deleteTask = async (req, res) => {
   }
 };
 
+// @desc    Delete all tasks by status (Admin only)
+// @route   DELETE /api/tasks/bulk/:status
+// @access  Private (Admin)
+const deleteTasksByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+    
+    if (status !== 'Completed' && status !== 'Disconnected') {
+      return res.status(400).json({ message: 'Can only bulk delete Completed or Disconnected tasks' });
+    }
+
+    // Get all tasks to check which ones are actually in the target status
+    const allTasks = await Task.find();
+    const tasksToDelete = [];
+
+    allTasks.forEach(task => {
+      if (status === 'Disconnected' && isTaskDisconnected(task)) {
+        tasksToDelete.push(task._id);
+      } else if (status === 'Completed') {
+        const completedTodoCount = task.todoChecklist.filter(item => item.completed).length;
+        const totalTodoCount = task.todoChecklist.length;
+        const progress = totalTodoCount > 0 ? Math.round((completedTodoCount / totalTodoCount) * 100) : 0;
+        
+        if (progress === 100 && !isTaskDisconnected(task)) {
+          tasksToDelete.push(task._id);
+        }
+      }
+    });
+
+    if (tasksToDelete.length === 0) {
+      return res.json({ message: `No ${status} tasks to delete`, deletedCount: 0 });
+    }
+
+    const result = await Task.deleteMany({ _id: { $in: tasksToDelete } });
+    
+    res.json({ 
+      message: `${result.deletedCount} ${status} tasks deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // @desc    Update task status
 // @route   PUT /api/tasks/:id/status
 // @access  Private
@@ -586,6 +630,7 @@ module.exports = {
   createTask,
   updateTask,
   deleteTask,
+  deleteTasksByStatus,
   updateTaskStatus,
   updateTaskChecklist,
   getDashboardData,

@@ -293,8 +293,14 @@ const Files = () => {
                   files.map((file) => (
                     <tr
                       key={file._id}
-                      className={`hover:bg-gray-50 ${file.type === 'folder' ? 'cursor-pointer' : ''}`}
-                      onClick={() => file.type === 'folder' && handleFolderClick(file)}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => {
+                        if (file.type === 'folder') {
+                          handleFolderClick(file);
+                        } else {
+                          handlePreview(file);
+                        }
+                      }}
                     >
                       <td className="px-4 py-3 whitespace-nowrap">
                         {getFileIcon(file)}

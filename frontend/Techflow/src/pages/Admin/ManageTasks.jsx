@@ -13,19 +13,17 @@ import toast from "react-hot-toast";
 
 const ManageTasks = () => {
   const { user } = useContext(UserContext);
-  
   const [allTasks, setAllTasks] = useState([]);
-
   const [tabs, setTabs] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
-
   const [deleteTaskId, setDeleteTaskId] = useState(null);
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
-
   const [showDisconnectedWarning, setShowDisconnectedWarning] = useState(false);
   const [disconnectedCount, setDisconnectedCount] = useState(0);
   const [showCompletedWarning, setShowCompletedWarning] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
 
   const navigate = useNavigate();
 
@@ -124,6 +122,25 @@ const ManageTasks = () => {
     }
   };
 
+  // Handle delete all tasks
+  const handleDeleteAll = async () => {
+    setDeletingAll(true);
+    try {
+      const response = await axiosInstance.delete(
+        API_PATHS.TASKS.DELETE_TASKS_BY_STATUS(filterStatus)
+      );
+      
+      setShowDeleteAllModal(false);
+      toast.success(response.data.message || `All ${filterStatus} tasks deleted successfully`);
+      getAllTasks();
+    } catch (error) {
+      console.error("Error deleting tasks:", error);
+      toast.error(error.response?.data?.message || "Failed to delete tasks");
+    } finally {
+      setDeletingAll(false);
+    }
+  };
+
   // Download task report
   const handleDownloadReport = async () => {
     try {
@@ -219,7 +236,20 @@ const ManageTasks = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-2 md:mt-4">
+        {/* Delete All Button - Shows for Completed and Disconnected tabs */}
+        {(filterStatus === "Completed" || filterStatus === "Disconnected") && allTasks.length > 0 && (
+          <div className="flex justify-end mt-3 mb-2">
+            <button
+              className="w-full lg:w-auto flex items-center justify-center gap-1.5 text-xs md:text-sm font-medium text-rose-500 bg-rose-50 border border-rose-100 rounded-lg px-4 py-2 hover:bg-rose-100 cursor-pointer"
+              onClick={() => setShowDeleteAllModal(true)}
+            >
+              <LuTrash2 className="text-base" />
+              Delete All {filterStatus}
+            </button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 mt-2 md:mt-4">
           {allTasks?.map((item, index) => (
             <TaskCard
               key={item._id}
@@ -297,6 +327,20 @@ const ManageTasks = () => {
             </button>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        isOpen={showDeleteAllModal}
+        onClose={() => setShowDeleteAllModal(false)}
+        title={`Delete All ${filterStatus} Tasks`}
+      >
+        <DeleteAlert
+          content={`Are you sure you want to delete all ${filterStatus.toLowerCase()} tasks? This will permanently remove ${allTasks.length} task${allTasks.length !== 1 ? 's' : ''}. This action cannot be undone.`}
+          onDelete={handleDeleteAll}
+        />
+        {deletingAll && (
+          <p className="text-xs text-gray-500 mt-2">Deleting tasks</p>
+        )}
       </Modal>
     </DashboardLayout>
   );

@@ -559,7 +559,6 @@ const FloorWhiteboard = () => {
                 sectionType="skinCheck"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('skinCheck', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'skinChecks', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'skinCheck')}
                 roomNumbers={roomNumbers}
@@ -573,7 +572,6 @@ const FloorWhiteboard = () => {
                 sectionType="electrodeFixes"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('electrodeFixes', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'electrodeFixes', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'electrodeFixes')}
                 roomNumbers={roomNumbers}
@@ -587,7 +585,6 @@ const FloorWhiteboard = () => {
                 sectionType="disconnects"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('disconnects', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'disconnects', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'disconnects')}
                 roomNumbers={roomNumbers}
@@ -601,7 +598,6 @@ const FloorWhiteboard = () => {
                 sectionType="rehooks"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('rehooks', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'rehooks', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'rehooks')}
                 roomNumbers={roomNumbers}
@@ -615,7 +611,6 @@ const FloorWhiteboard = () => {
                 sectionType="hyperventilation"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('hyperventilation', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'hyperventilation', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'hyperventilation')}
                 roomNumbers={roomNumbers}
@@ -629,7 +624,6 @@ const FloorWhiteboard = () => {
                 sectionType="photic"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('photic', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'photic', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'photic')}
                 roomNumbers={roomNumbers}
@@ -643,7 +637,6 @@ const FloorWhiteboard = () => {
                 sectionType="transfers"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('transfers', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'transfers', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'transfers')}
                 roomNumbers={roomNumbers}
@@ -657,7 +650,6 @@ const FloorWhiteboard = () => {
                 sectionType="troubleshoots"
                 isEditMode={isEditMode}
                 onAdd={(roomNumber) => handleAddToSection('troubleshoots', roomNumber)}
-                onTaskClick={handleTaskClick}
                 onTodoComplete={(taskId, isCompleted) => handleTodoComplete(taskId, 'troubleshoots', isCompleted)}
                 onDelete={(taskId) => handleDeleteTask(taskId, 'troubleshoots')}
                 roomNumbers={roomNumbers}
@@ -779,7 +771,7 @@ const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateT
         </button>
       </div>
 
-      <div className="space-y-2 max-h-48 overflow-y-auto">
+      <div className="space-y-2 max-h-96 overflow-y-auto">
         {tasks.map((task) => {
           const { roomWithPrefix, orderTypeShort } = formatOrderDisplay(task);
           
@@ -924,8 +916,7 @@ const WhiteboardSection = ({
   tasks, 
   sectionType, 
   isEditMode, 
-  onAdd, 
-  onTaskClick, 
+  onAdd,
   onTodoComplete, 
   onDelete,
   roomNumbers,
@@ -1122,7 +1113,11 @@ const WhiteboardSection = ({
                   ? 'bg-green-50 hover:bg-green-100' 
                   : 'bg-gray-50 hover:bg-gray-100'
               }`}
-              onClick={() => onTaskClick(task._id)}
+              onClick={() => {
+                if (!isEditMode && relevantTodo) {
+                  onTodoComplete(task._id, !relevantTodo.completed);
+                }
+              }}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <span className={`text-sm font-medium ${
@@ -1139,12 +1134,7 @@ const WhiteboardSection = ({
                   <input
                     type="checkbox"
                     checked={relevantTodo.completed}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      onTodoComplete(task._id, !relevantTodo.completed);
-                    }}
-                    readOnly
+                    onChange={() => {}}
                     className="w-4 h-4 ml-1 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
                   />
                 )}

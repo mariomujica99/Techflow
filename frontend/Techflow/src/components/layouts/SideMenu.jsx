@@ -79,7 +79,7 @@ const SideMenu = ({activeMenu}) => {
         </div>
 
         {/* Scrollable Menu Section */}
-        <div className="flex-1 overflow-y-auto overscroll-contain touch-pan-y">
+        <div className="flex-1 overflow-y-auto overscroll-contain touch-pan-y pb-5">
           {sideMenuData.map((item, index) => (
             <button
               key={`menu_${index}`}
