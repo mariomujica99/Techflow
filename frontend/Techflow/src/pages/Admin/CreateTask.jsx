@@ -427,9 +427,6 @@ const CreateTask = () => {
           observerInstance = observer;
         }
 
-        // Do an initial scroll attempt after a short delay
-        timeoutId = setTimeout(scrollToElement, 300);
-
         // Cleanup
         return () => {
           if (timeoutId) clearTimeout(timeoutId);
