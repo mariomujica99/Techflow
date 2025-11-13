@@ -250,7 +250,7 @@ const ManageTasks = () => {
               : 'justify-center lg:justify-start'
           }`}>
             <button
-              className="w-full lg:w-auto flex items-center justify-center gap-3 font-medium text-xs md:text-[13px] text-rose-500 bg-rose-50 border border-rose-50 rounded-xl px-2 md:px-3 py-2 hover:border-rose-300 cursor-pointer"
+              className="w-full lg:w-auto flex items-center justify-center gap-3 font-medium text-xs md:text-[13px] text-rose-500 bg-rose-50 border border-rose-100 rounded-xl md:rounded shadow-md shadow-gray-100 px-2 md:px-3 py-2 hover:border-rose-300 cursor-pointer"
               onClick={() => setShowDeleteAllModal(true)}
             >
               <LuTrash2 className="text-base" />
