@@ -9,7 +9,7 @@ const formatTimestamp = () => {
   return moment().format('(M/D/YY [at] h:mm A)');
 };
 
-const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef }) => {
+const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef, showTemplateInputs, setShowTemplateInputs }) => {
   const location = useLocation();
 
   const [selectedTemplate, setSelectedTemplate] = useState("");
@@ -21,7 +21,6 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef 
   const [editableTextRef, setEditableTextRef] = useState(null);
   const [customTextRef, setCustomTextRef] = useState(null);
 
-  const [showTemplateInputs, setShowTemplateInputs] = useState(false);
   const [templateInputs, setTemplateInputs] = useState({
     day: '',
     room: '',

@@ -30,6 +30,7 @@ const CreateTask = () => {
   
   // Ref for the template section
   const templateSectionRef = useRef(null);
+  const [showTemplateInputs, setShowTemplateInputs] = useState(false);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -646,6 +647,8 @@ const CreateTask = () => {
                 }
                 currentRoom={taskData.title}
                 templateSectionRef={templateSectionRef}
+                showTemplateInputs={showTemplateInputs}
+                setShowTemplateInputs={setShowTemplateInputs}
               />
             </div>
 
