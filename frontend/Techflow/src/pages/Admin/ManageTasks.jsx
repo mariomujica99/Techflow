@@ -3,7 +3,7 @@ import DashboardLayout from "../../components/layouts/DashboardLayout"
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
-import { LuFileSpreadsheet } from "react-icons/lu";
+import { LuFileSpreadsheet, LuTrash2 } from "react-icons/lu";
 import TaskStatusTabs from "../../components/TaskStatusTabs";
 import TaskCard from "../../components/Cards/TaskCard";
 import { UserContext } from "../../context/userContext";
