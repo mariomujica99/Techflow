@@ -12,18 +12,20 @@ const CustomLegend = ({payload}) => {
   });
 
   return (
-    <div className="grid grid-cols-2 justify-center md:flex md:flex-wrap md:justify-center gap-x-6 gap-y-2 mt-4">
-      {sortedPayload.map((entry, index) => (
-        <div key={`legend-${index}`} className="flex items-center space-x-2">
-          <div
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-            style={{ backgroundColor: entry.color }}
-          ></div>
-          <span className="text-xs text-gray-700 font-medium">
-            {entry.value}
-          </span>
-        </div>
-      ))}
+    <div className="flex justify-center mt-4">
+      <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-x-6 gap-y-2">
+        {sortedPayload.map((entry, index) => (
+          <div key={`legend-${index}`} className="flex items-center space-x-2">
+            <div
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: entry.color }}
+            ></div>
+            <span className="text-xs text-gray-700 font-medium">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
