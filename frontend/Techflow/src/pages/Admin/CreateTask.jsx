@@ -387,33 +387,56 @@ const CreateTask = () => {
   }, [location.state?.floorWhiteboardSection, taskId]);
 
   // Scroll to template section
-  useEffect(() => {
-    if (location.state?.floorWhiteboardSection && showTemplateInputs && templateSectionRef.current) {
-      let attempts = 0;
-      let animationFrameId = null;
-      const maxAttempts = 60;
-      
-      const checkAndScroll = () => {
-        if (templateSectionRef.current?.offsetHeight > 0) {
-          templateSectionRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
+    useEffect(() => {
+      if (location.state?.floorWhiteboardSection && showTemplateInputs && templateSectionRef.current) {
+        let timeoutId;
+        let observerInstance;
+        
+        const scrollToElement = () => {
+          if (templateSectionRef.current) {
+            // Use requestAnimationFrame to ensure browser has painted
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                templateSectionRef.current?.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center' 
+                });
+              });
+            });
+          }
+        };
+
+        // Create a MutationObserver to watch for DOM changes
+        const observer = new MutationObserver((mutations) => {
+          // Clear existing timeout
+          if (timeoutId) clearTimeout(timeoutId);
+          
+          // Debounce: wait for DOM to settle before scrolling
+          timeoutId = setTimeout(scrollToElement, 150);
+        });
+
+        // Start observing the parent container for changes
+        const formCard = document.querySelector('.form-card');
+        if (formCard) {
+          observer.observe(formCard, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class']
           });
-        } else if (attempts < maxAttempts) {
-          attempts++;
-          animationFrameId = requestAnimationFrame(checkAndScroll);
+          observerInstance = observer;
         }
-      };
-      
-      checkAndScroll();
-      
-      return () => {
-        if (animationFrameId) {
-          cancelAnimationFrame(animationFrameId);
-        }
-      };
-    }
-  }, [showTemplateInputs, location.state?.floorWhiteboardSection]);
+
+        // Do an initial scroll attempt after a short delay
+        timeoutId = setTimeout(scrollToElement, 300);
+
+        // Cleanup
+        return () => {
+          if (timeoutId) clearTimeout(timeoutId);
+          if (observerInstance) observerInstance.disconnect();
+        };
+      }
+    }, [showTemplateInputs, location.state?.floorWhiteboardSection]);
 
   useEffect(() => {
     if (taskId) {
