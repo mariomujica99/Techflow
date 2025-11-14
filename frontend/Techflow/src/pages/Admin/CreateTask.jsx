@@ -654,6 +654,8 @@ const CreateTask = () => {
                   value={taskData.comStation}
                   onChange={handleComStationChange}
                   placeholder="COM"
+                  clearable={true}
+                  clearLabel="COM"
                 />
               </div>
 
