@@ -124,6 +124,12 @@ const CreateTask = () => {
         navigate(`${basePath}/floor-whiteboard`);
       } else {
         clearData();
+        // Scroll to top after DOM updates
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
       }
     } catch (error) {
       console.error("Error creating task:", error);
