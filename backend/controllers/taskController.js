@@ -4,18 +4,39 @@ const Task = require('../models/Task');
 const isTaskDisconnected = (task) => {
   if (!task.todoChecklist || task.todoChecklist.length === 0) return false;
   
-  // Check if both disconnect-related todos are completed
-  const hasDisconnect = task.todoChecklist.some(todo => {
-    const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-    return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
-  });
+  const orderType = task.orderType;
   
-  const hasEndTimeChart = task.todoChecklist.some(todo => {
-    const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-    return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
-  });
+  // For Continuous orders (EEG and SEEG)
+  if (orderType?.startsWith("Continuous")) {
+    const hasDisconnect = task.todoChecklist.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+    });
+    
+    const hasEndTimeChart = task.todoChecklist.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
+    });
+    
+    return hasDisconnect && hasEndTimeChart;
+  }
   
-  return hasDisconnect && hasEndTimeChart;
+  // For Routine EEG orders (IP, OP, BMC, Pediatric, Neonate, WADA) AND Neuropsychiatric EEG
+  if (orderType?.startsWith("Routine EEG") || orderType === "Neuropsychiatric EEG") {
+    const hasDisconnect = task.todoChecklist.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+    });
+    
+    const hasPlaceChargeChart = task.todoChecklist.some(todo => {
+      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+      return text.includes('place charge') && text.includes('chart') && todo.completed;
+    });
+    
+    return hasDisconnect && hasPlaceChargeChart;
+  }
+  
+  return false;
 };
 
 // @desc    Get tasks assigned to the current user (always user-specific)

@@ -292,8 +292,8 @@ export const AUTOMATIC_CHECKLIST_ITEMS = {
   ],
   "Neuropsychiatric EEG": [
     "Hook-Up",
-    "Transfer Patient",
     "Place Charge & Chart",
+    "Transfer Patient",
     "Disconnect"
   ]
 };

@@ -14,7 +14,7 @@ import CustomPieChart from "../../components/Charts/CustomPieChart";
 import CustomBarChart from "../../components/Charts/CustomBarChart";
 import { AUTOMATIC_CHECKLIST_ITEMS } from "../../utils/data";
 
-const COLORS = ["#8D51FF", "#00B8DB", "#0ccb57", "#FF1F57"];
+const COLORS = ["#8D51FF", "#00B8DB", "#0ccb57", "#718096"];
 
 const Dashboard = () => {
   useUserAuth();
@@ -36,22 +36,41 @@ const Dashboard = () => {
 
   // Helper function to determine order status
   const getOrderStatus = (task) => {
-    // Check if disconnected
-    const hasDisconnect = task.todoChecklist?.some(todo => {
-      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-      return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
-    });
+    const orderType = task.orderType;
     
-    const hasEndTimeChart = task.todoChecklist?.some(todo => {
-      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-      return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
-    });
-    
-    if (hasDisconnect && hasEndTimeChart) {
-      return 'Disconnected';
+    // Check if disconnected based on order type
+    if (orderType?.startsWith("Continuous")) {
+      // For Continuous orders
+      const hasDisconnect = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+      });
+      
+      const hasEndTimeChart = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
+      });
+      
+      if (hasDisconnect && hasEndTimeChart) {
+        return 'Disconnected';
+      }
+    } else if (orderType?.startsWith("Routine EEG") || orderType === "Neuropsychiatric EEG") {
+      // For Routine EEG orders and Neuropsychiatric EEG
+      const hasDisconnect = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+      });
+      
+      const hasPlaceChargeChart = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return text.includes('place charge') && text.includes('chart') && todo.completed;
+      });
+      
+      if (hasDisconnect && hasPlaceChargeChart) {
+        return 'Disconnected';
+      }
     }
     
-    const orderType = task.orderType;
     const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[orderType];
     
     if (!automaticItems || automaticItems.length === 0) {
@@ -206,7 +225,7 @@ const Dashboard = () => {
           <InfoCard
             label="Disconnected"
             value={addThousandsSeparator(orderDistribution.disconnected)}
-            color="bg-red-500"
+            color="bg-gray-500"
           />
         </div>
       </div>

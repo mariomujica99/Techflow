@@ -386,15 +386,28 @@ const FloorWhiteboard = () => {
         }
       }
 
-      // Special handling for DC section - also complete the "Place End Time & Chart | Inform Reading Provider" todo
+      // Special handling for DC section - also complete the corresponding chart todo
       if (todoType === 'disconnects' && isCompleted) {
         todoChecklist.forEach(todo => {
           const textWithoutTimestamp = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim();
-          if (textWithoutTimestamp.toLowerCase().includes("place end time") && 
-              textWithoutTimestamp.toLowerCase().includes("chart") && 
-              textWithoutTimestamp.toLowerCase().includes("inform reading provider")) {
-            todo.completed = isCompleted;
-            updated = true;
+          
+          // For Continuous orders only
+          if (targetTask.orderType?.startsWith("Continuous")) {
+            if (textWithoutTimestamp.toLowerCase().includes("place end time") && 
+                textWithoutTimestamp.toLowerCase().includes("chart") && 
+                textWithoutTimestamp.toLowerCase().includes("inform reading provider")) {
+              todo.completed = isCompleted;
+              updated = true;
+            }
+          }
+          
+          // For Routine EEG orders AND Neuropsychiatric EEG
+          if (targetTask.orderType?.startsWith("Routine EEG") || targetTask.orderType === "Neuropsychiatric EEG") {
+            if (textWithoutTimestamp.toLowerCase().includes("place charge") && 
+                textWithoutTimestamp.toLowerCase().includes("chart")) {
+              todo.completed = isCompleted;
+              updated = true;
+            }
           }
         });
       }
@@ -677,22 +690,41 @@ const FloorWhiteboard = () => {
 // Orders section component (different from other sections)
 const OrdersSection = ({ title, tasks, isEditMode, onAdd, onTaskClick, onUpdateTask, onDelete }) => {
   const getStatusColor = (task) => {
-    // Check if task is disconnected
-    const hasDisconnect = task.todoChecklist?.some(todo => {
-      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-      return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
-    });
+    const orderType = task.orderType;
     
-    const hasEndTimeChart = task.todoChecklist?.some(todo => {
-      const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
-      return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
-    });
-    
-    if (hasDisconnect && hasEndTimeChart) {
-      return 'bg-red-500'; // Disconnected
+    // Check if task is disconnected based on order type
+    if (orderType?.startsWith("Continuous")) {
+      // For Continuous orders
+      const hasDisconnect = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+      });
+      
+      const hasEndTimeChart = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return text.includes('place end time') && text.includes('chart') && text.includes('inform reading provider') && todo.completed;
+      });
+      
+      if (hasDisconnect && hasEndTimeChart) {
+        return 'bg-gray-500'; // Disconnected
+      }
+    } else if (orderType?.startsWith("Routine EEG") || orderType === "Neuropsychiatric EEG") {
+      // For Routine EEG orders and Neuropsychiatric EEG
+      const hasDisconnect = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return (text.includes('disconnect') || text.includes('discontinue')) && todo.completed;
+      });
+      
+      const hasPlaceChargeChart = task.todoChecklist?.some(todo => {
+        const text = todo.text.replace(/\s*\(\d{1,2}\/\d{1,2}\/\d{2}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\)\s*$/, '').trim().toLowerCase();
+        return text.includes('place charge') && text.includes('chart') && todo.completed;
+      });
+      
+      if (hasDisconnect && hasPlaceChargeChart) {
+        return 'bg-gray-500'; // Disconnected
+      }
     }
     
-    const orderType = task.orderType;
     const automaticItems = AUTOMATIC_CHECKLIST_ITEMS[orderType];
     
     if (!automaticItems || automaticItems.length === 0) {
