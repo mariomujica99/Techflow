@@ -59,7 +59,7 @@ const App = () => {
             </Route>
 
             {/* User Routes */}
-            <Route element={<PrivateRoute allowedRoles={["user"]} />}>
+            <Route element={<PrivateRoute allowedRoles={["member"]} />}>
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/lab-whiteboard" element={<LabWhiteboard />} />
               <Route path="/user/floor-whiteboard" element={<FloorWhiteboard />} />
