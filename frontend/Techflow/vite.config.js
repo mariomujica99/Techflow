@@ -8,12 +8,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
     {
-      name: 'copy-redirects',
+      name: 'copy-files',
       closeBundle() {
         try {
           copyFileSync('public/_redirects', 'dist/_redirects')
+          copyFileSync('public/sw.js', 'dist/sw.js')
         } catch (err) {
-          console.warn('Could not copy _redirects:', err)
+          console.warn('Could not copy files:', err)
         }
       },
     },

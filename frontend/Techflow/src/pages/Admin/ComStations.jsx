@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState, useRef } from "react"
 import DashboardLayout from "../../components/layouts/DashboardLayout"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
@@ -16,6 +16,7 @@ const ComStations = () => {
   const [selectedFilter, setSelectedFilter] = useState("All Computer Stations");
   const [isEditMode, setIsEditMode] = useState(false);
   const [allComStations, setAllComStations] = useState([]);
+  const dropdownRef = useRef(null);
 
   const handleSelect = (option) => {
     setSelectedFilter(option);
@@ -116,6 +117,20 @@ const ComStations = () => {
     getAllComStations();
   }, [selectedFilter]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
   return (
     <DashboardLayout activeMenu="Computer Stations">
       <div className="mt-5 mb-10">
@@ -162,7 +177,7 @@ const ComStations = () => {
         </div>
 
         <div className="flex md:flex-row md:items-center justify-between mt-3">
-          <div className="relative w-64">
+          <div className="relative w-64" ref={dropdownRef}>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="w-full text-sm text-black outline-none bg-white border border-slate-100 px-3 py-2 rounded-md flex justify-between items-center cursor-pointer"

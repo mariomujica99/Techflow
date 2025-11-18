@@ -44,24 +44,21 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
         {SUPPLIES.map((supply) => (
           <div
             key={supply.value}
-            className="flex items-center p-2 border-b dark:border-white"
+            className="flex items-center p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
+            onClick={() => toggleItemSelection(supply.value)}
           >
             <div className="flex-1">
               <p className="text-sm dark:text-white">{supply.label}</p>
             </div>
-
-            <input
-              type="checkbox"
-              checked={tempSelectedItems.includes(supply.value)}
-              onChange={() => toggleItemSelection(supply.value)}
-              className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
-            />
+            {tempSelectedItems.includes(supply.value) && (
+              <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
+            )}
           </div>
         ))}
       </div>
 
       {/* Custom Item Input */}
-      <div className="px-4 mb-4">
+      <div className="px-4 pb-4 pt-3 border-t dark:border-gray-600">
         <label className="text-xs font-medium dark:text-white block mb-2">
           Add Custom Supply Item
         </label>
@@ -82,8 +79,15 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
         </div>
       </div>
 
+      {/* Supplies Count */}
+      <div className="text-center md:text-left md:pl-4 pt-4 border-t dark:border-gray-600">
+        <p className="text-sm font-medium dark:text-white">
+          Supplies Selected | {tempSelectedItems.length}
+        </p>
+      </div>
+
       {/* Action Buttons */}
-      <div className="flex justify-between gap-4 pt-4 pr-4 border-t dark:border-white">
+      <div className="flex justify-between gap-4 pt-4 pr-4">
         <button className="card-btn ml-4" onClick={handleClearAll}>
           CLEAR ALL
         </button>

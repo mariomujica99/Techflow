@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
@@ -37,6 +37,7 @@ const Files = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewFile, setPreviewFile] = useState(null);
+  const dropdownRef = useRef(null);
 
   const isAdmin = user?.role === 'admin';
 
@@ -203,6 +204,23 @@ const Files = () => {
     getAllFiles();
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openDropdown]);
+
   return (
     <DashboardLayout activeMenu="Files">
       <div className="mt-5 mb-10">
@@ -322,7 +340,7 @@ const Files = () => {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                         {isAdmin ? (
-                          <div className="relative inline-block">
+                          <div className="relative inline-block" ref={dropdownRef}>
                             <button
                               onClick={() => setOpenDropdown(openDropdown === file._id ? null : file._id)}
                               className="p-2 hover:bg-gray-100 rounded cursor-pointer"

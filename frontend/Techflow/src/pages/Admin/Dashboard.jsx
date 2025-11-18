@@ -174,7 +174,7 @@ const Dashboard = () => {
             <p className="text-xs md:text-sm text-gray-500 mb-1.75">
               {moment().format("dddd Do MMM YYYY")}
             </p>
-            <h1 className="text-base md:text-lg font-medium text-primary mt-1">Orders</h1>
+            <h1 className="text-base md:text-lg font-medium text-primary mt-1">Current Orders</h1>
           </div>
         </div>
 
@@ -216,8 +216,9 @@ const Dashboard = () => {
         <div>
           <div className="card">
             <div className="flex items-center justify-between">
-              <h5 className="font-medium text-gray-600 mb-2">Status Of Orders</h5>
+              <h5 className="font-medium text-gray-600">Status Of Orders</h5>
             </div>
+            <p className="text-xs text-gray-500 mb-2">Hook-up/Disconnect Tasks</p>
 
             <CustomPieChart
               data={pieChartData}
@@ -229,8 +230,9 @@ const Dashboard = () => {
         <div>
           <div className="card">
             <div className="flex items-center justify-between">
-              <h5 className="font-medium text-gray-600 mb-2">Order Priority Levels</h5>
+              <h5 className="font-medium text-gray-600">Priority Levels</h5>
             </div>
+            <p className="text-xs text-gray-500 mb-8.25">For All Current Orders</p>
 
             <CustomBarChart
               data={barChartData}

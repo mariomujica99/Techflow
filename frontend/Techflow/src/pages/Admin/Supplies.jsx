@@ -315,23 +315,23 @@ const StorageRoomSection = ({
           items.map((item) => (
             <div
               key={item}
-              className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded"
+              className={`flex justify-between items-center py-2 px-3 bg-gray-50 rounded ${
+                !isEditMode ? 'cursor-pointer hover:bg-gray-100' : ''
+              }`}
+              onClick={() => !isEditMode && onCheckItem(item)}
             >
-              <span className="text-xs md:text-sm text-gray-600">{item}</span>
+              <span className="text-sm text-gray-600">{item}</span>
 
               {isEditMode ? (
                 <HiOutlineTrash
-                  className="text-red-500 hover:text-red-300 cursor-pointer flex-shrink-0"
+                  className="text-lg text-red-500 cursor-pointer flex-shrink-0"
                   onClick={() => onDeleteItem(item)}
                 />
               ) : (
                 <input
                   type="checkbox"
                   checked={false}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    onCheckItem(item);
-                  }}
+                  readOnly
                   className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer flex-shrink-0"
                 />
               )}

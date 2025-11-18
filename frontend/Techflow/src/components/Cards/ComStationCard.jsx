@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { LuTrash2, LuPlus, LuChevronDown } from "react-icons/lu";
 import { FaComputer } from "react-icons/fa6";
 import Modal from "../Modal";
@@ -18,6 +18,10 @@ const ComStationCard = ({
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // For each dropdown
+  const typeDropdownRef = useRef(null);
+  const locationDropdownRef = useRef(null);
   
   // Form states for add/edit
   const [formData, setFormData] = useState({
@@ -128,6 +132,21 @@ const ComStationCard = ({
   const getStatusColor = (status) => {
     return status === 'Active' ? 'bg-green-500' : 'bg-red-500';
   };
+
+  // Click-outside dropdown handlers
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target)) {
+        setDropdownStates(prev => ({ ...prev, type: false }));
+      }
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+        setDropdownStates(prev => ({ ...prev, location: false }));
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (isAddCard) {
     return (
@@ -297,7 +316,7 @@ const ComStationCard = ({
         <div>
           <label className="text-xs text-gray-500 block mb-1">Type</label>
           {isEditMode ? (
-            <div className="relative">
+            <div className="relative" ref={typeDropdownRef}>
               <button
                 onClick={() => setDropdownStates(prev => ({ ...prev, type: !prev.type }))}
                 className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"
@@ -328,7 +347,7 @@ const ComStationCard = ({
         <div>
           <label className="text-xs text-gray-500 block mb-1">Location</label>
           {isEditMode ? (
-            <div className="relative">
+            <div className="relative" ref={locationDropdownRef}>
               <button
                 onClick={() => setDropdownStates(prev => ({ ...prev, location: !prev.location }))}
                 className="w-full text-sm bg-white border border-slate-100 rounded-md px-2 py-1 flex justify-between items-center cursor-pointer"

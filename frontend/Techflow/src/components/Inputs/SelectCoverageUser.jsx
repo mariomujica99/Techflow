@@ -113,7 +113,8 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
             allUsers.map((user) => (
               <div
                 key={user._id}
-                className="flex items-center gap-4 p-3 border-b border-gray-200"
+                className="flex items-center gap-4 p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
+                onClick={() => toggleUserSelection(user._id)}
               >
                 {user.profileImageUrl ? (
                   <img
@@ -134,18 +135,21 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
                   <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
                 </div>
 
-                <input
-                  type="checkbox"
-                  checked={tempSelectedUsers.includes(user._id)}
-                  onChange={() => toggleUserSelection(user._id)}
-                  className="w-4 h-4 accent-primary bg-gray-100 border-gray-300 rounded-sm outline-none cursor-pointer"
-                />
+                {tempSelectedUsers.includes(user._id) && (
+                  <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
+                )}
               </div>
             ))
           )}
         </div>
 
-        <div className="flex justify-between gap-4 pt-4 pr-4">
+        <div className="text-center md:text-left md:pl-4 pt-4 border-t dark:border-gray-600">
+          <p className="text-sm font-medium dark:text-white">
+            Members Selected | {tempSelectedUsers.length}
+          </p>
+        </div>
+
+        <div className="flex justify-between gap-4 pt-1 pr-4">
           <button className="card-btn ml-4" onClick={handleClear}>
             CLEAR ALL
           </button>

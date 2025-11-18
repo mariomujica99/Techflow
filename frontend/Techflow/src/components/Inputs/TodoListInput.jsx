@@ -34,6 +34,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef,
   });
 
   const [hasUserCanceled, setHasUserCanceled] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Handle template selection from dropdown
   const handleTemplateSelect = (template) => {
@@ -228,6 +229,20 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef,
     }
   }, [location.state?.floorWhiteboardSection, selectedTemplate, hasUserCanceled]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen]);
+
   return (
     <div>
       {/* Display existing todo items */}
@@ -261,7 +276,7 @@ const TodoListInput = ({ todoList, setTodoList, currentRoom, templateSectionRef,
           Select Task Template
         </label>
 
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-full text-sm text-gray-600 outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center cursor-pointer"

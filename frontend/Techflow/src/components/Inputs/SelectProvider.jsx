@@ -96,7 +96,6 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
               <div className="w-4 h-4 bg-primary rounded-full"></div>
             )}
           </div>
-
           {allProviders.map((provider) => (
             <div
               key={provider._id}
@@ -114,13 +113,13 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
                 <p className="text-[13px] text-gray-500 truncate">Reading Provider</p>
               </div>
               {selectedProviderId === provider._id && (
-                <div className="w-4 h-4 bg-primary rounded-full"></div>
+                <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
               )}
             </div>
           ))}
         </div>
 
-        <div className="flex justify-end gap-4 pt-4 pr-4">
+        <div className="flex justify-end gap-4 pt-4 pr-4 border-t dark:border-gray-600">
           <button className="card-btn" onClick={() => setIsModalOpen(false)}>
             CANCEL
           </button>

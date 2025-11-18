@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState, useRef } from "react"
 import DashboardLayout from "../../components/layouts/DashboardLayout"
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
@@ -923,6 +923,7 @@ const WhiteboardSection = ({
   dropdownOpen,
   onToggleDropdown
 }) => {
+  const dropdownRef = useRef(null);
   
   const getRelevantTodoText = (task, sectionType) => {
     // Find ALL matching todos
@@ -1033,6 +1034,20 @@ const WhiteboardSection = ({
     return roomA.localeCompare(roomB);
   });
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        onToggleDropdown(); // Close dropdown
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+
   return (
     <div className="whiteboard-card">
       <h2 className="text-base md:text-lg font-medium text-gray-600 mb-2">
@@ -1045,7 +1060,7 @@ const WhiteboardSection = ({
         )}
       </h2>
       <div className="flex items-center gap-2 mb-3">
-        <div className="relative flex-1">
+        <div className="relative flex-1" ref={dropdownRef}>
           <button 
             className="flex flex-shrink-0 items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 pl-3 pr-2 py-1 rounded-lg border border-gray-200/50 cursor-pointer"
             onClick={onToggleDropdown}
@@ -1058,7 +1073,7 @@ const WhiteboardSection = ({
               {roomNumbers.map(roomNumber => (
                 <button
                   key={roomNumber}
-                  className="block w-full text-left px-3 py-2 text-base text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-lg md:text-base text-gray-600 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
                     onAdd(roomNumber);
                     onToggleDropdown();
