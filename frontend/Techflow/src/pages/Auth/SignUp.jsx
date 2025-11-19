@@ -19,6 +19,7 @@ const SignUp = () => {
   const [adminInviteToken, setAdminInviteToken] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [pagerNumber, setPagerNumber] = useState('');
+  const [departmentInviteToken, setDepartmentInviteToken] = useState('');
 
   const [selectedColor, setSelectedColor] = useState('#30b5b2');
 
@@ -69,6 +70,11 @@ const SignUp = () => {
       return;
     }
 
+    if (!departmentInviteToken || departmentInviteToken.trim() === '') {
+      setError('Please enter the department invite token.');
+      return;
+    }
+
     setError('');
 
     try {
@@ -87,6 +93,7 @@ const SignUp = () => {
         profileImageUrl,
         profileColor,
         adminInviteToken,
+        departmentInviteToken,
         phoneNumber,
         pagerNumber,
       });
@@ -201,8 +208,19 @@ const SignUp = () => {
                   maxLength={14}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1 mb-4">Can add or change at a later time</p>
+              <p className="text-xs text-gray-500 mt-1">Can add or change at a later time</p>
             </div>
+
+            <div className="md:col-span-2">
+              <Input
+                value={departmentInviteToken}
+                onChange={({ target }) => setDepartmentInviteToken(target.value)}
+                label="Department Invite Token"
+                placeholder="Enter department invite token"
+                type="text"
+              />
+              <p className="text-xs text-gray-500 mt-1 mb-4">Required to create an account</p>
+            </div>            
           </div>
 
           {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}

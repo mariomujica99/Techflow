@@ -32,8 +32,11 @@ axiosInstance.interceptors.response.use(
   (error) => {
     // Handle common errors globally
     if (error.response) {
-      if (error.response.status === 401) {
-        // Redirect to login page
+      // Don't redirect on registration/login errors - let the form handle them
+      const isAuthEndpoint = error.config.url?.includes('/api/auth/register') || error.config.url?.includes('/api/auth/login');
+      
+      if (error.response.status === 401 && !isAuthEndpoint) {
+        // Redirect to login page only for authenticated routes
         window.location.href = "/login";
       } else if (error.response.status === 500) {
         console.error("Server error. Please try again later.");

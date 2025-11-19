@@ -14,13 +14,19 @@ const generateToken = (userId) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl, profileColor, adminInviteToken, phoneNumber, pagerNumber } = 
-      req.body;
+    const { name, email, password, profileImageUrl, profileColor, adminInviteToken, phoneNumber, pagerNumber, departmentInviteToken } = req.body;
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Department Invite Token Check
+    if (!departmentInviteToken || departmentInviteToken !== process.env.DEPARTMENT_INVITE_TOKEN) {
+      return res.status(401).json({ 
+        message: 'Invalid Invite Token. Please try again or contact the admin for the code.' 
+      });
     }
 
     // Determine user role: Admin if invite token is provided, otherwise Member
