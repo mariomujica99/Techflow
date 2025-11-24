@@ -36,7 +36,7 @@
 }
 
 .card-btn {
-  @apply flex items-center gap-1 md:gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-50 hover:bg-blue-50 px-2.5 md:px-4 py-1.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap;
+  @apply flex items-center gap-1 md:gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-200 dark:bg-gray-50 hover:bg-blue-50 px-2.5 md:px-4 py-1.5 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap;
 }
 
 .card-btn-fill {

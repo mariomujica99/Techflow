@@ -44,7 +44,7 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
         {SUPPLIES.map((supply) => (
           <div
             key={supply.value}
-            className="flex items-center p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
+            className="flex items-center p-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={() => toggleItemSelection(supply.value)}
           >
             <div className="flex-1">
@@ -58,8 +58,8 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
       </div>
 
       {/* Custom Item Input */}
-      <div className="px-4 pb-4 pt-3 border-t dark:border-gray-600">
-        <label className="text-xs font-medium dark:text-white block mb-2">
+      <div className="px-4 pb-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+        <label className="text-xs font-medium text-gray-800 dark:text-white block mb-2">
           Add Custom Supply Item
         </label>
         <div className="flex items-center gap-3">
@@ -68,10 +68,10 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
             placeholder="Enter custom supply item"
             value={customItem}
             onChange={(e) => setCustomItem(e.target.value)}
-            className="flex-1 min-w-0 text-xs md:text-sm text-black outline-none dark:bg-white border border-slate-100 px-3 py-1.75 rounded-md placeholder:text-gray-500"
+            className="flex-1 min-w-0 text-xs md:text-sm text-gray-600 outline-none bg-gray-200 dark:bg-gray-50 border border-gray-200 dark:border-gray-50 px-3 py-1.75 rounded-md placeholder:text-gray-500"
           />
           <button
-            className="flex flex-shrink-0 items-center gap-2 text-[12px] font-medium text-gray-700 hover:text-primary bg-gray-50 hover:bg-blue-50 px-4 py-1.75 md:py-2 rounded-lg border border-gray-200/50 cursor-pointer whitespace-nowrap"
+            className="flex flex-shrink-0 items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-200 dark:bg-gray-50 hover:bg-blue-50 px-4 py-1.75 md:py-2 rounded-lg border border-gray-200 dark:border-gray-50 cursor-pointer whitespace-nowrap"
             onClick={handleAddCustom}
           >
             <HiMiniPlus className="text-lg" />
@@ -80,8 +80,8 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
       </div>
 
       {/* Supplies Count */}
-      <div className="text-center md:text-left md:pl-4 pt-4 border-t dark:border-gray-600">
-        <p className="text-sm font-medium dark:text-white">
+      <div className="text-center md:text-left md:pl-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+        <p className="text-sm font-medium text-gray-800 dark:text-white">
           Supplies Selected | {tempSelectedItems.length}
         </p>
       </div>

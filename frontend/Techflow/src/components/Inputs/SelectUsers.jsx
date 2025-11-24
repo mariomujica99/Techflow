@@ -10,8 +10,10 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempSelectedUsers, setTempSelectedUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getAllUsers = async () => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
       if (response.data?.length > 0) {
@@ -19,6 +21,8 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,40 +90,44 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
         title="Select Member"
       >
         <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
-          {allUsers.map((user) => (
-            <div
-              key={user._id}
-              className="flex items-center gap-4 p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
-              onClick={() => toggleUserSelection(user._id)}
-            >
-              {user.profileImageUrl ? (
-                <img
-                  src={user.profileImageUrl}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                />
-              ) : (
-                <div 
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium flex-shrink-0"
-                  style={{ backgroundColor: user.profileColor || "#30b5b2" }}
-                >
-                  {getInitials(user.name)}
+          {loading ? (
+            <p className="text-center text-gray-500 dark:text-gray-300">Loading Members...</p>
+          ) : (
+            allUsers.map((user) => (
+              <div
+                key={user._id}
+                className="flex items-center gap-4 p-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => toggleUserSelection(user._id)}
+              >
+                {user.profileImageUrl ? (
+                  <img
+                    src={user.profileImageUrl}
+                    alt={user.name}
+                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div 
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium flex-shrink-0"
+                    style={{ backgroundColor: user.profileColor || "#30b5b2" }}
+                  >
+                    {getInitials(user.name)}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
+                  <p className="text-[13px] text-gray-500 dark:text-gray-300 truncate">{user.email}</p>
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
-                <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
-              </div>
 
-              {tempSelectedUsers.includes(user._id) && (
-                <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
-              )}
-            </div>
-          ))}
+                {tempSelectedUsers.includes(user._id) && (
+                  <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
+                )}
+              </div>
+            ))
+          )}
         </div>
 
-        <div className="text-center md:text-left md:pl-4 pt-4 border-t dark:border-gray-600">
-          <p className="text-sm font-medium dark:text-white">
+        <div className="text-center md:text-left md:pl-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+          <p className="text-sm font-medium text-gray-800 dark:text-white">
             Members Selected | {tempSelectedUsers.length}
           </p>
         </div>

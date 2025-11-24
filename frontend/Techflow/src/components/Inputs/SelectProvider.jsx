@@ -13,6 +13,7 @@ const CACHE_DURATION = 60000; // 1 minute
 const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "Select Provider", label }) => {
   const [allProviders, setAllProviders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const selectedProvider = allProviders.find(provider => provider._id === selectedProviderId);
 
@@ -22,6 +23,7 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
       return;
     }
 
+    setLoading(true);
     try {
       const response = await axiosInstance.get(API_PATHS.PROVIDERS.GET_ALL_PROVIDERS);
       if (response.data?.length > 0) {
@@ -31,6 +33,8 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
       }
     } catch (error) {
       console.error("Error fetching providers:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,47 +83,54 @@ const SelectProvider = ({ selectedProviderId, onProviderSelect, placeholder = "S
         onClose={() => setIsModalOpen(false)}
         title={label || "Select Reading Provider"}
       >
-        <div className=" h-[60vh] overflow-y-auto pr-4 pl-4">
-          {/* Clear selection option */}
-          <div
-            className="flex items-center gap-4 p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
-            onClick={handleClear}
-          >
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
-              <span className="text-gray-500 text-sm">—</span>
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-800 dark:text-white">Select None</p>
-              <p className="text-[13px] text-gray-500">Clear selection</p>
-            </div>
-            {selectedProviderId === null && (
-              <div className="w-4 h-4 bg-primary rounded-full"></div>
-            )}
-          </div>
-          {allProviders.map((provider) => (
-            <div
-              key={provider._id}
-              className="flex items-center gap-4 p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
-              onClick={() => handleProviderSelect(provider._id)}
-            >
-              <div 
-                className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
-                style={{ backgroundColor: provider.profileColor || "#30b5b2" }}
+        <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
+          {loading ? (
+            <p className="text-center text-gray-500 dark:text-gray-300">Loading Providers...</p>
+          ) : (
+            <>
+              {/* Clear selection option */}
+              <div
+                className="flex items-center gap-4 p-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={handleClear}
               >
-                {getInitials(provider.name)}
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-400 dark:bg-gray-100">
+                  <span className="text-white dark:text-gray-500 text-sm">—</span>
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800 dark:text-white">Select None</p>
+                  <p className="text-[13px] text-gray-500 dark:text-gray-300">Clear selection</p>
+                </div>
+                {selectedProviderId === null && (
+                  <div className="w-4 h-4 bg-primary rounded-full"></div>
+                )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-800 dark:text-white truncate">Dr. {provider.name}</p>
-                <p className="text-[13px] text-gray-500 truncate">Reading Provider</p>
-              </div>
-              {selectedProviderId === provider._id && (
-                <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
-              )}
-            </div>
-          ))}
+              
+              {allProviders.map((provider) => (
+                <div
+                  key={provider._id}
+                  className="flex items-center gap-4 p-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                  onClick={() => handleProviderSelect(provider._id)}
+                >
+                  <div 
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-white text-sm font-medium"
+                    style={{ backgroundColor: provider.profileColor || "#30b5b2" }}
+                  >
+                    {getInitials(provider.name)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-800 dark:text-white truncate">Dr. {provider.name}</p>
+                    <p className="text-[13px] text-gray-500 dark:text-gray-300 truncate">Reading Provider</p>
+                  </div>
+                  {selectedProviderId === provider._id && (
+                    <div className="w-4 h-4 bg-primary rounded-full flex-shrink-0"></div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
         </div>
-
-        <div className="flex justify-end gap-4 pt-4 pr-4 border-t dark:border-gray-600">
+        
+        <div className="flex justify-end gap-4 pt-4 pr-4 border-t border-gray-200 dark:border-gray-600">
           <button className="card-btn" onClick={() => setIsModalOpen(false)}>
             CANCEL
           </button>

@@ -108,12 +108,12 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
       >
         <div className="h-[60vh] overflow-y-auto pr-4 pl-4">
           {loading ? (
-            <p className="text-center text-gray-500">Loading users...</p>
+            <p className="text-center text-gray-500 dark:text-gray-300">Loading Members...</p>
           ) : (
             allUsers.map((user) => (
               <div
                 key={user._id}
-                className="flex items-center gap-4 p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-800"
+                className="flex items-center gap-4 p-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
                 onClick={() => toggleUserSelection(user._id)}
               >
                 {user.profileImageUrl ? (
@@ -132,7 +132,7 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
-                  <p className="text-[13px] text-gray-500 truncate">{user.email}</p>
+                  <p className="text-[13px] text-gray-500 dark:text-gray-300 truncate">{user.email}</p>
                 </div>
 
                 {tempSelectedUsers.includes(user._id) && (
@@ -143,8 +143,8 @@ const SelectCoverageUser = ({ selectedUsers, setSelectedUsers }) => {
           )}
         </div>
 
-        <div className="text-center md:text-left md:pl-4 pt-4 border-t dark:border-gray-600">
-          <p className="text-sm font-medium dark:text-white">
+        <div className="text-center md:text-left md:pl-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+          <p className="text-sm font-medium text-gray-800 dark:text-white">
             Members Selected | {tempSelectedUsers.length}
           </p>
         </div>
