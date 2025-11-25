@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { HiMiniPlus } from "react-icons/hi2";
+import { HiMiniPlus, HiOutlineTrash } from "react-icons/hi2";
 import { SUPPLIES } from "../../utils/data";
 
 const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
@@ -58,17 +58,21 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
       </div>
 
       {/* Custom Item Input */}
-      <div className="px-4 pb-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+      <div className={`px-4 pt-3 border-t border-gray-200 dark:border-gray-600 ${
+        tempSelectedItems.filter(item => !SUPPLIES.some(s => s.value === item)).length > 0 
+          ? 'pb-2' 
+          : 'pb-4'
+      }`}>
         <label className="text-xs font-medium text-gray-800 dark:text-white block mb-2">
-          Add Custom Supply Item
+          Add Custom Supply
         </label>
         <div className="flex items-center gap-3">
           <input
             type="text"
-            placeholder="Enter custom supply item"
+            placeholder="Enter Supply"
             value={customItem}
             onChange={(e) => setCustomItem(e.target.value)}
-            className="flex-1 min-w-0 text-xs md:text-sm text-gray-600 outline-none bg-gray-200 dark:bg-gray-50 border border-gray-200 dark:border-gray-50 px-3 py-1.75 rounded-md placeholder:text-gray-500"
+            className="flex-1 min-w-0 text-xs md:text-sm text-gray-800 dark:text-white outline-none bg-gray-200 dark:bg-gray-600 border border-gray-200 dark:border-gray-600 px-3 py-1.75 rounded-md placeholder:text-gray-400"
           />
           <button
             className="flex flex-shrink-0 items-center gap-2 text-[12px] font-medium text-gray-600 hover:text-primary bg-gray-200 dark:bg-gray-50 hover:bg-blue-50 px-4 py-1.75 md:py-2 rounded-lg border border-gray-200 dark:border-gray-50 cursor-pointer whitespace-nowrap"
@@ -78,6 +82,31 @@ const SelectSupplies = ({ selectedItems, onItemsChange, onClose }) => {
           </button>
         </div>
       </div>
+
+      {/* Display Added Custom Items */}
+      {tempSelectedItems.filter(item => !SUPPLIES.some(s => s.value === item)).length > 0 && (
+        <div className="px-4 pb-4">
+          <label className="text-xs font-medium text-gray-800 dark:text-white block mb-2">
+            Custom Supplies
+          </label>
+          <div className="space-y-2">
+            {tempSelectedItems
+              .filter(item => !SUPPLIES.some(s => s.value === item))
+              .map((item) => (
+                <div
+                  key={item}
+                  className="flex justify-between items-center py-2 px-3 bg-gray-200 dark:bg-gray-600 rounded"
+                >
+                  <span className="text-sm text-gray-800 dark:text-white">{item}</span>
+                  <HiOutlineTrash
+                    className="text-lg text-red-500 dark:text-red-400 cursor-pointer flex-shrink-0 hover:text-red-600"
+                    onClick={() => setTempSelectedItems(prev => prev.filter(i => i !== item))}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* Supplies Count */}
       <div className="text-center md:text-left md:pl-4 pt-4 border-t border-gray-200 dark:border-gray-600">
