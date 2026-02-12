@@ -25,6 +25,7 @@
 - [Backend](#backend)
 - [Learning Outcomes](#learning-outcomes)
 - [Author](#author)
+- [Disclaimer](#disclaimer)
 
 ---
 
