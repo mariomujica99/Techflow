@@ -2,13 +2,13 @@
   <img src="https://github.com/user-attachments/assets/93b3fb76-371f-4fa4-b88c-927e28067a36" alt="Techflow Logo" width="100" height="100" />
   
 # Techflow
-### EEG Task Management System
+### EEG Workflow Management System
 
 [![Website](https://img.shields.io/badge/Website-Techflow-30b5b2?style=for-the-badge)](https://techflow-eeg.onrender.com)
 [![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge)](https://youtu.be/ULuMOTTXwl8)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Mario_Mujica-blue?style=for-the-badge)](https://www.linkedin.com/in/mario-mujica-903b19172)
 
-> A comprehensive Progressive Web App (PWA) for hospital neurophysiology departments, streamlining EEG workflow management, equipment tracking, and team collaboration.
+> A comprehensive Progressive Web App (PWA) for EEG Technologists in the hospital neurophysiology department. This project streamlines EEG workflow management, equipment tracking, and team collaboration.
 
 </div>
 
