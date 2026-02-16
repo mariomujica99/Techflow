@@ -2,6 +2,12 @@ const File = require('../models/File');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 
+// Demo account emails that have restricted access
+const DEMO_EMAILS = ['userdemo@gmail.com', 'admindemo@gmail.com'];
+
+// Helper function to check if user is a demo account
+const isDemoAccount = (email) => DEMO_EMAILS.includes(email);
+
 // Upload file using Cloudinary
 const uploadFile = async (req, res) => {
   try {
@@ -65,6 +71,12 @@ const deleteFileFromCloudinary = async (cloudinaryId, fileType) => {
 
 const deleteFile = async (req, res) => {
   try {
+    // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot delete files.' 
+      });
+    }
     const file = await File.findById(req.params.id);
     
     if (!file) {

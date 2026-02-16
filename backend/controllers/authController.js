@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
+// Demo account emails that have restricted access
+const DEMO_EMAILS = ['userdemo@gmail.com', 'admindemo@gmail.com'];
+
+// Helper function to check if user is a demo account
+const isDemoAccount = (email) => DEMO_EMAILS.includes(email);
+
 // Generate JWT token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '14d' });
@@ -142,6 +148,12 @@ const deleteImageFile = (imageUrl) => {
 // @access  Private (Requires JWT)
 const updateUserProfile = async (req, res) => {
   try {
+        // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot modify profile settings.' 
+      });
+    }
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -203,6 +215,12 @@ const updateUserProfile = async (req, res) => {
 // @access Private
 const deleteUserAccount = async (req, res) => {
   try {
+        // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot be deleted.' 
+      });
+    }
     const user = await User.findById(req.user._id);
     
     if (!user) {

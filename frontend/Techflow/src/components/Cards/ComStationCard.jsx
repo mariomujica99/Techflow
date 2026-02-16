@@ -14,7 +14,8 @@ const ComStationCard = ({
   onComStationDeleted,
   onComStationUpdated,
   onComStationCreated,
-  userRole
+  userRole,
+  isDemoAccount = false
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -304,8 +305,9 @@ const ComStationCard = ({
 
         {isEditMode && userRole === 'admin' && (
           <button
-            className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
+            className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setOpenDeleteAlert(true)}
+            disabled={isDemoAccount}
           >
             <LuTrash2 className="text-base" />
           </button>
@@ -455,7 +457,8 @@ const ComStationCard = ({
       {isEditMode && !isAddCard && (
         <button
           onClick={handleSubmit}
-          className="w-full mt-4 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80 cursor-pointer"
+          className="w-full mt-4 bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary/80 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isDemoAccount}
         >
           Save Changes
         </button>

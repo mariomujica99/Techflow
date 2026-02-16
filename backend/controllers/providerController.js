@@ -1,6 +1,12 @@
 const Provider = require('../models/Provider');
 const bcrypt = require('bcryptjs');
 
+// Demo account emails that have restricted access
+const DEMO_EMAILS = ['userdemo@gmail.com', 'admindemo@gmail.com'];
+
+// Helper function to check if user is a demo account
+const isDemoAccount = (email) => DEMO_EMAILS.includes(email);
+
 // @desc    Get all providers
 // @route   GET /api/providers
 // @access  Private
@@ -82,6 +88,12 @@ const updateProvider = async (req, res) => {
 // @access  Private (Admin only)
 const deleteProvider = async (req, res) => {
   try {
+        // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot delete providers.' 
+      });
+    }
     const provider = await Provider.findById(req.params.id);
     
     if (!provider) {

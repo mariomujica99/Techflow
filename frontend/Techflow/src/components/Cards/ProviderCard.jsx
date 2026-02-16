@@ -16,7 +16,8 @@ const ProviderCard = ({
   isAddCard = false,
   onProviderDeleted,
   onProviderUpdated,
-  onProviderCreated 
+  onProviderCreated,
+  isDemoAccount = false
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [formData, setFormData] = useState({
@@ -205,8 +206,9 @@ const ProviderCard = ({
 
         {isEditMode && (
           <button
-            className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
+            className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setOpenDeleteAlert(true)}
+            disabled={isDemoAccount}
           >
             <LuTrash2 className="text-base" />
           </button>

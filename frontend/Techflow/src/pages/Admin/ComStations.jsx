@@ -17,6 +17,7 @@ const ComStations = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [allComStations, setAllComStations] = useState([]);
   const dropdownRef = useRef(null);
+  const isDemoAccount = user?.email === 'userdemo@gmail.com' || user?.email === 'admindemo@gmail.com';
 
   const handleSelect = (option) => {
     setSelectedFilter(option);
@@ -134,6 +135,14 @@ const ComStations = () => {
   return (
     <DashboardLayout activeMenu="Computer Stations">
       <div className="mt-5 mb-10">
+        {/* Demo Alert */}
+        {isDemoAccount && isEditMode && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-amber-800">
+              <strong>Demo Account:</strong> Computer station editing and deletion is disabled.
+            </p>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <h2 className="text-xl md:text-xl text-gray-500 font-bold">{getHeaderText()}</h2>
@@ -223,6 +232,7 @@ const ComStations = () => {
               onComStationDeleted={handleComStationDeleted}
               onComStationUpdated={handleComStationUpdated}
               userRole={user?.role}
+              isDemoAccount={isDemoAccount}
             />
           ))}
           

@@ -10,7 +10,7 @@ import { API_PATHS } from "../../utils/apiPaths";
 import toast from "react-hot-toast";
 import { displayPhoneNumber } from "../../utils/phoneFormatter";
 
-const UserCard = ({ userInfo, onUserDeleted, showAdminBadge = false }) => {
+const UserCard = ({ userInfo, onUserDeleted, showAdminBadge = false, isDemoAccount = false }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
   const deleteUser = async () => {
@@ -73,8 +73,9 @@ return (
 
     {showAdminBadge && (
       <button
-        className="absolute top-4 right-4 flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer"
+        className="absolute top-4 right-4 flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded-full px-2 py-2 border border-rose-100 hover:border-rose-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => setOpenDeleteAlert(true)}
+        disabled={isDemoAccount}
       >
         <LuTrash2 className="text-base" />
       </button>

@@ -26,6 +26,7 @@ import moment from "moment";
 
 const Files = () => {
   const { user } = useContext(UserContext);
+  const isDemoAccount = user?.email === 'admindemo@gmail.com';
   const [files, setFiles] = useState([]);
   const [currentFolder, setCurrentFolder] = useState(null);
   const [folderPath, setFolderPath] = useState([]);
@@ -37,7 +38,7 @@ const Files = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewFile, setPreviewFile] = useState(null);
-  const dropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
 
   const isAdmin = user?.role === 'admin';
 
@@ -207,23 +208,35 @@ const Files = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      // Check if the click is inside any of the dropdown refs
+      const clickedInsideAnyDropdown = Object.values(dropdownRefs.current).some(
+        ref => ref && ref.contains(event.target)
+      );
+      
+      if (!clickedInsideAnyDropdown) {
         setOpenDropdown(null);
       }
     };
 
     if (openDropdown !== null) {
       document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, [openDropdown]);
 
   return (
     <DashboardLayout activeMenu="Files">
       <div className="mt-5 mb-10">
+        {/* Demo Alert */}
+        {isDemoAccount && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4 mt-5">
+            <p className="text-sm text-amber-800">
+              <strong>Demo Account:</strong> File deletion is disabled.
+            </p>
+          </div>
+        )}
         <div className="flex flex-row items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             {folderPath.length > 0 && (
@@ -340,7 +353,10 @@ const Files = () => {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                         {isAdmin ? (
-                          <div className="relative inline-block" ref={dropdownRef}>
+                          <div 
+                            className="relative inline-block" 
+                            ref={(el) => dropdownRefs.current[file._id] = el}
+                          >
                             <button
                               onClick={() => setOpenDropdown(openDropdown === file._id ? null : file._id)}
                               className="p-2 hover:bg-gray-100 rounded cursor-pointer"
@@ -370,7 +386,8 @@ const Files = () => {
                                 )}
                                 <button
                                   onClick={() => openDeleteConfirmation(file)}
-                                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer border-t border-gray-100"
+                                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer border-t border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  disabled={isDemoAccount}
                                 >
                                   <LuTrash2 className="text-base" />
                                   Delete

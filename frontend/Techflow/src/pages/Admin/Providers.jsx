@@ -13,6 +13,7 @@ const Providers = () => {
   const { user } = useContext(UserContext);
   const [isEditMode, setIsEditMode] = useState(false);
   const [allProviders, setAllProviders] = useState([]);
+  const isDemoAccount = user?.email === 'admindemo@gmail.com';
 
   const handleProviderDeleted = (deletedProviderId) => {
     setAllProviders(prev => prev.filter(provider => provider._id !== deletedProviderId));
@@ -71,6 +72,14 @@ const Providers = () => {
   return (
     <DashboardLayout activeMenu="Reading Providers">
       <div className="mt-5 mb-10">
+        {/* Demo Alert */}
+        {isDemoAccount && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-amber-800">
+              <strong>Demo Account:</strong> Provider deletion is disabled.
+            </p>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row md:justify-between mb-2 gap-3">
           <div>
             <div className="flex items-center gap-3 mt-1">
@@ -118,6 +127,7 @@ const Providers = () => {
               isEditMode={isEditMode}
               onProviderDeleted={handleProviderDeleted}
               onProviderUpdated={handleProviderUpdated}
+              isDemoAccount={isDemoAccount}
             />
           ))}
           

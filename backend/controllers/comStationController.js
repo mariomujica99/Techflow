@@ -1,5 +1,11 @@
 const ComStation = require('../models/ComStation');
 
+// Demo account emails that have restricted access
+const DEMO_EMAILS = ['userdemo@gmail.com', 'admindemo@gmail.com'];
+
+// Helper function to check if user is a demo account
+const isDemoAccount = (email) => DEMO_EMAILS.includes(email);
+
 // @desc    Get all computer stations
 // @route   GET /api/com-stations
 // @access  Private
@@ -67,6 +73,12 @@ const createComStation = async (req, res) => {
 // @access  Private
 const updateComStation = async (req, res) => {
   try {
+    // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot update computer stations.' 
+      });
+    }
     const { comStationType, comStationLocation, comStationStatus, issueDescription, hasTicket, ticketNumber } = req.body;
     
     const comStation = await ComStation.findById(req.params.id);
@@ -101,6 +113,12 @@ const updateComStation = async (req, res) => {
 // @access  Private
 const deleteComStation = async (req, res) => {
   try {
+    // Check if demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot delete computer stations.' 
+      });
+    }
     const comStation = await ComStation.findById(req.params.id);
     if (!comStation) {
       return res.status(404).json({ message: 'Computer station not found' });

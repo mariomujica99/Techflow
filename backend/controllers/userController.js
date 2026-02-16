@@ -4,6 +4,12 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path')
 
+// Demo account emails that have restricted access
+const DEMO_EMAILS = ['userdemo@gmail.com', 'admindemo@gmail.com'];
+
+// Helper function to check if user is a demo account
+const isDemoAccount = (email) => DEMO_EMAILS.includes(email);
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private
@@ -80,7 +86,12 @@ const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    // Check if current user is a demo account
+    if (isDemoAccount(req.user.email)) {
+      return res.status(403).json({ 
+        message: 'Demo accounts cannot delete users.' 
+      });
+    }
     // Delete profile image if exists
     if (user.profileImageUrl) {
       deleteImageFile(user.profileImageUrl);

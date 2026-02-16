@@ -17,7 +17,7 @@ import { formatPhoneNumber, displayPhoneNumber } from '../../utils/phoneFormatte
 const EditProfile = () => {
   const { user, updateUser, clearUser } = useContext(UserContext);
   const navigate = useNavigate();
-
+  const isDemoAccount = user?.email === 'userdemo@gmail.com' || user?.email === 'admindemo@gmail.com';
   const [profilePic, setProfilePic] = useState(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -146,6 +146,14 @@ const EditProfile = () => {
   return (
     <DashboardLayout activeMenu="Edit Profile">
       <div className="mt-5 mb-10">
+        {/* Demo Alert */}
+        {isDemoAccount && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-amber-800">
+              <strong>Demo Account:</strong> Profile editing is disabled.
+            </p>
+          </div>
+        )}
         <div className="form-card mt-4">
           <div className="flex items-center gap-3">
             <h2 className="text-xl md:text-xl text-gray-600 font-bold mb-2">Edit Profile</h2>
@@ -238,16 +246,17 @@ const EditProfile = () => {
             <div className="flex items-center gap-3 mt-6">
               <button 
                 type="button"
-                className="w-full text-sm font-medium text-white bg-rose-400 shadow-lg shadow-rose-300/20 p-[10px] rounded-md hover:bg-rose-300 cursor-pointer"
+                className="w-full text-sm font-medium text-white bg-rose-400 shadow-lg shadow-rose-300/20 p-[10px] rounded-md hover:bg-rose-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setOpenDeleteAlert(true)}
+                disabled={isDemoAccount}
               >
                 DELETE ACCOUNT
               </button>
 
               <button 
                 type="submit" 
-                className="btn-primary"
-                disabled={loading}
+                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || isDemoAccount}
               >
                 {loading ? 'UPDATING PROFILE' : 'UPDATE PROFILE'}
               </button>
