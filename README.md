@@ -5,7 +5,7 @@
 ### EEG Workflow Management System
 
 [![Website](https://img.shields.io/badge/Website-Techflow-30b5b2?style=for-the-badge)](https://techflow-eeg.onrender.com)
-[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge)](https://youtu.be/ULuMOTTXwl8)
+[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge)](https://youtu.be/jFayn1NAa2k)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Mario_Mujica-blue?style=for-the-badge)](https://www.linkedin.com/in/mario-mujica-903b19172)
 
 > A comprehensive Progressive Web App (PWA) for EEG Technologists in the hospital neurophysiology department. This project streamlines EEG workflow management, equipment tracking, and team collaboration.
@@ -54,27 +54,46 @@ This application was built to demonstrate my full-stack development skills inclu
 
 ## Demo
 
-### **Desktop Views**
+### **Desktop**
 
-#### **PWA Mac App Icon**
-<img width="500" alt="Techflow PWA Mac App Icon" src="https://github.com/user-attachments/assets/597c74bb-662d-4108-a791-310ec17b66e2" />
-
-#### **Safari Favorites App Icon**
-<img width="500" alt="Techflow Safari Favorites App Icon" src="https://github.com/user-attachments/assets/5925f097-eb64-497e-8cb1-52278e2af187" />
-
-#### **Sign Up Page**
-<img width="500" alt="Techflow PWA Mac Sign Up Screen" src="https://github.com/user-attachments/assets/18f544b5-7b04-43c3-b073-aa99cb200b56" />
-
-#### **Dashboard**
-<img width="500" alt="Techflow PWA Mac Dashboard" src="https://github.com/user-attachments/assets/d6c6c49d-b4f1-4655-8b92-eb70901193f4" />
+<table>
+  <tr>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/597c74bb-662d-4108-a791-310ec17b66e2" alt="Mac PWA Icon" width="100%" />
+      <p align="center"><em>Mac PWA App Icon</em></p>
+    </td>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/5925f097-eb64-497e-8cb1-52278e2af187" alt="Safari Favorites" width="100%" />
+      <p align="center"><em>Safari Favorites App Icon</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/44f2c110-e86e-4b7b-9bd4-21194ee23dbb" alt="Safari Install" width="100%" />
+      <p align="center"><em>Safari Mac PWA Install</em></p>
+    </td>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/651bc97d-54cb-4f7f-ad30-006acb889977" alt="Chrome Install" width="100%" />
+      <p align="center"><em>Chrome Mac PWA Install</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/5780cea4-18b9-4890-b8dd-79acef326d8f" alt="Techflow PWA Mac Log In Screen" width="100%"  />
+      <p align="center"><em>Mac PWA Log In Screen</em></p>
+    </td>
+    <td width="50%">
+      <img src="https://github.com/user-attachments/assets/d6c6c49d-b4f1-4655-8b92-eb70901193f4" alt="Dashboard" width="100%" />
+      <p align="center"><em>Mac PWA Dashboard</em></p>
+    </td>
+  </tr>
+</table>
 
 
 ### **Video Demo**
-[![Watch Full Demo](https://img.shields.io/badge/Watch_Demo-6:35_Full_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/ULuMOTTXwl8)
+[![Watch Full Demo](https://img.shields.io/badge/Watch_Demo-6:00_Full_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/jFayn1NAa2k)
 
 *Complete feature demonstration showcasing all pages and functionality on a mobile device (iPhone)*
-
----
 
 ## Website Access
 
@@ -98,7 +117,25 @@ Email: admindemo@gmail.com
 Password: Demo2025!
 ```
 
-**Note:** Please log out when you are finished testing the application to ensure availability for other reviewers.
+### **Demo Account Restrictions**
+
+For the best experience for all users, demo accounts have **limited access**:
+
+**Restricted Actions:**
+- Profile editing (name, email, password, contact info)
+- Account deletion
+- Deleting users, providers, computer stations, or files
+
+**Full Access:**
+- Create and manage tasks
+- Update whiteboards
+- Manage supplies
+- View all pages and features
+- Download Excel reports
+
+These restrictions preserve demo data integrity so everyone can explore the full application without encountering deleted or modified content.
+
+**Note:** Please log out when you are finished testing the application to ensure availability for others.
 
 ---
 
@@ -131,21 +168,59 @@ Password: Demo2025!
 
 ### **Whiteboard System**
 - **Lab Whiteboard:**
-  - Coverage assignments (On-Call, Surg-Call, Scanning, Surgicals, WADA)
-  - Outpatient scheduling (6 time slots: NP 8am, OP 8am-1, OP 8am-2, OP 10am, OP 12pm, OP 2pm)
-  - Reading provider assignments (EMU, LTM, Routine)
-  - Automatic NP task creation from whiteboard assignments
-  - Real-time last-updated tracking
+  - **Coverage Assignments:**
+    - **On-Call** - After-hours on-call coverage
+    - **Surg-Call** - Surgical on-call coverage
+    - **Scanning** - Scan EEG studies
+    - **Surgicals** - Surgical EEG hook-up
+    - **WADA** - WADA test procedure
+  
+  - **Outpatient Scheduling (6 Time Slots):**
+    - **NP 8am** - Neuropsychiatric EEG appointments
+      - Automatic task creation when users assigned to this slot
+      - Creates pre-configured NP task with 75% completion (Hook-up, Transfer, Place Charge & Chart completed)
+      - Only "Disconnect" remains unchecked for completion
+    - **OP 8am-1, 8am-2, 10am, 12pm, 2pm** - Outpatient slots
+    - Only two 8am slots can be selected for the day (8am 1|2|NP).
+  
+  - **Reading Provider Assignments:**
+    - **EMU** - Epilepsy Monitoring Unit reading provider
+    - **LTM** - Long-term monitoring reading provider
+    - **Routine** - Routine EEG reading provider
+  
+  - **Automation Features:**
+    - **Date Display** - Always shows current date for reference
+    - **Last Updated Tracking** - Displays who made changes and precise timestamp
+    - **Comments Section** - Add important notes or special instructions for the day
+  
+  - **Workflow Benefits:**
+    - Single source of truth for daily coverage
+    - Can be accessed anywhere
+    - Supports shift handoffs
   
 - **Floor Whiteboard:**
-  - 8 EMU room management (6820, 6822, 6824, 6826, 6827, 6828, 6829, 6831)
-  - Multi-section assignments per room
-  - Template-based task creation from whiteboard selections
-  - Patient transfer tracking with automatic room updates
+  - **Orders**
+    - Displays today's active orders
+    - Includes incomplete orders from previous days (Pending/In Progress status)
+    - Automatically hides completed and disconnected orders from past days
+    - Eliminates need to navigate between multiple screens
+    - Orders display quick-view details
+      - Real-time status badges (Pending, In Progress, Completed, Disconnected)
+      - Priority indicators (Routine, ASAP, STAT) with color coding
+
+  - **Multi-Section Task Management Per Room:**
+    - **Skin Check** - Daily monitoring of skin integrity (Day 1, Day 2, Day 3, etc.)
+    - **Electrode Fixes** - Repair or replace problematic electrodes
+    - **Hyperventilation (HV)** - Breathing activation procedure
+    - **Photic Stimulation** - Flashing light test
+    - **Disconnect (DC's)** - End-of-study electrode removal and cleanup
+    - **Rehooks** - Reconnect patient (multiple electrodes off)
+    - **Patient Transfers** - Move patient between rooms (automatic room number update)
+    - **Troubleshoots** - Address technical issues with equipment or recording quality
 
 ### **Computer Station Monitoring**
 - Equipment types: EMU Stations & EEG Carts
-- Location tracking: Inpatient, Outpatient, Bellevue (BMC)
+- Location tracking: Inpatient, Outpatient, BMC
 - Active/Inactive status management
 - Issue description with IT ticket integration
 - Filtering system (All, Inactive, by Type, by Location)
@@ -168,7 +243,6 @@ Password: Demo2025!
 - Provider profile creation with color-coded avatars
 - Contact information (Phone, Pager, Email)
 - Assignment to whiteboard sections
-- Quick-select provider modals
 
 ### **File Management System**
 - Hierarchical folder structure
