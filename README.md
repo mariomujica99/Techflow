@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/93b3fb76-371f-4fa4-b88c-927e28067a36" alt="Techflow Logo" width="100" height="100" />
   
-# Techflow
+# Techflow Portal
 ### EEG Workflow Management Portal
 
 [![Website](https://img.shields.io/badge/Website-Techflow-30b5b2?style=for-the-badge)](https://techflow-portal.onrender.com)
@@ -15,11 +15,11 @@ A Progressive Web App (PWA) for EEG Technologists in the hospital neurophysiolog
 ---
 
 > ### About This Repository
-> This is the **production-ready version** of Techflow, developed for potential department adoption.
+> This is the **department-ready version** of Techflow, built specifically for potential adoption in a hospital neurophysiology department.
 >
-> A Task Management System (EEG orders, patient task checklists, procedure-level data) requires a formal HIPAA compliance review for deployment in a clinical environment.
+> A Task Management System (EEG orders, patient task checklists, procedure-level data) requires a formal HIPAA compliance review for deployment in a clinical environment. This version intentionally excludes those features as a deliberate compliance decision, and adds multi-department architecture.
 > 
-> Techflow intentionally excludes those features as a deliberate compliance decision. A separate repository preserves the full feature set for portfolio and demonstration purposes.
+> This version was demonstrated to my department, but ultimately, the department did not move forward with implementation. The full feature set, including the Task Management System, is preserved in a separate repository and is the primary showcase of this project.
 >
 > ### Task Management Version
 > [![Techflow](https://img.shields.io/badge/Techflow-EEG_Task_Manager_Repo-30b5b2?style=for-the-badge&logo=github)](https://github.com/mariomujica99/eeg-task-manager)  
